@@ -56,6 +56,16 @@ Only the dataset *tree* is retrieved this way — annexed file content comes
 separately. Most data files show up as broken symlinks until explicitly
 fetched; that is normal for Datalad, not a bug.
 
+`fetch` also retrieves `cneuromod.all.qa_figures`, a much smaller sibling
+repository holding per-run QC measures (head motion, tSNR) that the group-stats
+step will use. It has no annexed content, so installing its tree already *is*
+the data — no credentials needed:
+
+```bash
+invoke fetch-qa-figures --source ~/git/cneuromod.all.qa_figures   # symlink an existing checkout
+invoke fetch --qa-figures-source ~/git/cneuromod.all.qa_figures   # same, via the umbrella task
+```
+
 #### Credentials for a full fetch
 
 **Timeseries content currently requires credentials for every dataset**,
@@ -155,6 +165,7 @@ The plumbing is real; the science is not wired up yet.
 | --- | --- |
 | `fetch-cneuromod` | ✅ implemented — symlinks or clones the superdataset |
 | `fetch-timeseries` | ✅ implemented — installs each `{dataset}/timeseries` subdataset and pulls the `schaefer1000` files |
+| `fetch-qa-figures` | ✅ implemented — symlinks or clones the qa_figures QC tables (no credentials needed) |
 | `run-connectomes` | 🚧 **stub** — prints its plan, writes nothing |
 | `run-group-stats` | 🚧 **stub** — prints its plan, writes nothing |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
@@ -207,9 +218,10 @@ what the group statistics summarize. The parcellation is settled:
 
 | Task                | Description                                              |
 | ------------------- | -------------------------------------------------------- |
-| `fetch`             | Gets all source data: the superdataset, then the timeseries assets |
+| `fetch`             | Gets all source data: the superdataset, the timeseries assets, and the qa_figures QC tables |
 | `fetch-cneuromod`   | Makes the cneuromod.all superdataset available (symlink via `--source`, else clone) |
 | `fetch-timeseries`  | Retrieves the parcelled `schaefer1000` timeseries; `--dataset`/`--subject` narrow it |
+| `fetch-qa-figures`  | Makes the cneuromod.all.qa_figures QC tables available (symlink via `--source`, else clone; no credentials needed) |
 | `run`               | Runs the full pipeline in order; `--force` cleans first  |
 | `run-connectomes`   | Builds a connectome per subject and run (**stub**)       |
 | `run-group-stats`   | Aggregates connectomes into group statistics (**stub**)  |
@@ -225,6 +237,7 @@ what the group statistics summarize. The parcellation is settled:
 | `clean-figure`      | Removes the composed montage PNG (never the hand-authored SVG) |
 | `clean-source`      | Removes all fetched source data; routes to each `clean-{name}` |
 | `clean-cneuromod`   | Removes the fetched cneuromod.all superdataset           |
+| `clean-qa-figures`  | Removes the fetched cneuromod.all.qa_figures checkout    |
 
 Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 

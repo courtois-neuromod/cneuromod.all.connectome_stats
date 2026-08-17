@@ -18,8 +18,27 @@
       "resolved_path": "/home/pbellec/git/cneuromod.all",
       "sha256": null,
       "size_bytes": null
+    },
+    "qa_figures": {
+      "datalad_id": "a66eebf1-640d-4c8f-bc25-4113fe8f15bd",
+      "declared_source": "../git/cneuromod.all.qa_figures",
+      "exists": true,
+      "git": {
+        "branch": "main",
+        "commit": "09d1acd46d3720938e84c547104f2c7c2a11bd0b",
+        "dirty": false,
+        "remote": "git@github.com:courtois-neuromod/cneuromod.all.qa_figures.git",
+        "toplevel": "/home/pbellec/git/cneuromod.all.qa_figures"
+      },
+      "is_symlink": true,
+      "mode": "symlink",
+      "mtime": "2026-08-04T14:57:02+00:00",
+      "path": "source_data/cneuromod.all.qa_figures",
+      "resolved_path": "/home/pbellec/git/cneuromod.all.qa_figures",
+      "sha256": null,
+      "size_bytes": null
     }
   },
-  "recorded_at": "2026-08-17T15:09:53+00:00",
+  "recorded_at": "2026-08-17T16:02:09+00:00",
   "schema": "airoh/manifest/1"
 }

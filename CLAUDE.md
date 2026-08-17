@@ -35,6 +35,33 @@ cneuromod.all/{dataset}/timeseries/timeseries/schaefer1000/sub-0X/
 
 Three other parcellations ship in every repo and are deliberately not fetched: `cneuromod2026` (1134 parcels, adding subcortical and cerebellar), `voxel_mni` and `voxel_native` (voxelwise, much larger).
 
+### The QC measures asset (qa_figures)
+
+`run-connectomes` and `run-group-stats` will need per-run quality-control
+covariates — head motion and tSNR — to decide which runs enter a connectome and
+to model data-quality effects at the group level. Those already exist,
+computed, in a second source asset: `cneuromod.all.qa_figures`, wired in
+alongside `cneuromod.all` via `datasets: qa_figures` in `invoke.yaml` and
+`fetch-qa-figures`/`clean-qa-figures` in `tasks.py`.
+
+Unlike `cneuromod.all`, this dataset has **no annexed content** — every tracked
+file is a plain git blob (~33 MB total) — so installing the tree via
+`airoh.datalad.install_dataset` already *is* the data; no content-fetch step
+follows it, and no credentials are needed.
+
+Two table families live under `output_data/tables/` inside the checkout, both
+**per functional run**: `tables/{dataset}.tsv` (motion, tSNR and related QC
+scalars) and `tables/atlas_tsnr/{dataset}.tsv` (tSNR per Yeo network plus
+cerebellum/subcortex). `analysis/qc_measures.py` is the reader — pure functions
+over these tables, no invoke context. Coverage is partial (several per-dataset
+tables are empty), so callers must tolerate that; see
+`source_data/CONTENT.md`, "QC measures (qa_figures)" for the exact gaps.
+
+Joining these entities against the timeseries `.h5` run keys is an **open
+item**, deliberately not done in `analysis/qc_measures.py` — the entity
+conventions differ per dataset (blank `run`, task-encoded segments), and that
+mapping belongs with `run-connectomes`, once its method is settled.
+
 Two traps to avoid:
 
 - **Do not match on the atlas entity.** Upstream writes `atlas-Schaefer2018` while the repos' own `TIMESERIES.md` documents `atlas-Schaefer18`. `analysis/timeseries_layout.py` matches on the filename *suffix* (`*_timeseries.h5`, `*_dseg.nii.gz`, `*_mask.nii.gz`) precisely so that drift cannot break retrieval.

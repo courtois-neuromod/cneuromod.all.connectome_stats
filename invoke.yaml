@@ -30,7 +30,7 @@ figures:
 
 # Datalad datasets
 #
-# The cneuromod.all superdataset is the sole data source. It is a Datalad
+# The cneuromod.all superdataset is the primary data source. It is a Datalad
 # superdataset holding many subdatasets whose file content is retrieved on
 # demand, not all at once.
 #
@@ -41,11 +41,21 @@ figures:
 #                    lives at ~/git/cneuromod.all, i.e. ../git/cneuromod.all
 #                    relative to this repo — and can be overridden on the
 #                    command line with `invoke fetch --source /path`.
+#
+# `qa_figures` is a second, much smaller source asset: per-run QC measures
+# (head motion, tSNR) that `run-connectomes`/`run-group-stats` will use. Unlike
+# cneuromod.all it is a Datalad dataset with NO annexed content — every tracked
+# file is a plain git blob (~33 MB total) — so installing the tree *is*
+# retrieving the data, and no content-fetch step follows it.
 datasets:
   cneuromod_all:
     url: https://github.com/courtois-neuromod/cneuromod.all
     output_dir: source_data/cneuromod.all
     source: ../git/cneuromod.all
+  qa_figures:
+    url: https://github.com/courtois-neuromod/cneuromod.all.qa_figures
+    output_dir: source_data/cneuromod.all.qa_figures
+    source: ../git/cneuromod.all.qa_figures
 
 # Which derivative subdataset of each cneuromod.all dataset holds the parcelled
 # BOLD timeseries this project reads.
@@ -117,5 +127,12 @@ verify:
     - output_data/group_stats
     - connectomes
     - group_stats
+    # A path *inside* the qa_figures checkout (source_data/cneuromod.all.qa_figures/
+    # output_data/tables), only present after `invoke fetch-qa-figures`. Named in
+    # prose relative to the checkout root, which the doc_paths check can't resolve.
+    - output_data/tables
+    # Prose from CONTENT.md describing qa_figures column/table naming, not paths.
+    - fd_prop_gt02/gt05
+    - friends.tsv
   # Largest file git may track before the check fails (default 10 MB).
   max_tracked_bytes: 10485760

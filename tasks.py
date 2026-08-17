@@ -6,9 +6,19 @@ from invoke import task
 # --------------------------------------------------------------------------- #
 # Helpers
 # --------------------------------------------------------------------------- #
+def _dataset_dir(c, name):
+    """Where a `datasets:` entry is made available under source_data/."""
+    return Path(c.config.get("datasets", {}).get(name, {})["output_dir"])
+
+
 def _cneuromod_dir(c):
     """Where the cneuromod.all superdataset is made available under source_data/."""
-    return Path(c.config.get("datasets", {}).get("cneuromod_all", {})["output_dir"])
+    return _dataset_dir(c, "cneuromod_all")
+
+
+def _qa_figures_dir(c):
+    """Where the cneuromod.all.qa_figures checkout is made available under source_data/."""
+    return _dataset_dir(c, "qa_figures")
 
 
 def _list_datasets(c, marker):
@@ -102,6 +112,25 @@ def fetch_cneuromod(c, source=None):
 
 
 @task(help={
+    "source": "Path to an existing local cneuromod.all.qa_figures checkout to "
+              "symlink instead of cloning (defaults to the `source:` key in "
+              "invoke.yaml, i.e. ../git/cneuromod.all.qa_figures).",
+})
+def fetch_qa_figures(c, source=None):
+    """
+    Make the cneuromod.all.qa_figures repository available under source_data/.
+
+    Unlike cneuromod.all, this dataset holds no annexed content — every tracked
+    file is a plain git blob — so installing the tree *is* retrieving the data;
+    no content-fetch step follows it. Coverage of the per-network tSNR tables is
+    partial (see source_data/CONTENT.md). No-op when the checkout is already in
+    place.
+    """
+    from airoh.datalad import install_dataset
+    install_dataset(c, "qa_figures", source=source)
+
+
+@task(help={
     "dataset": "Comma-separated cneuromod.all dataset names to restrict the "
                "fetch to (default: every dataset carrying a timeseries "
                "subdataset).",
@@ -176,15 +205,17 @@ def fetch_timeseries(c, dataset=None, subject=None, strict=False):
 @task(help={
     "source": "Path to an existing local cneuromod.all checkout to symlink "
               "instead of cloning.",
+    "qa_figures_source": "Path to an existing local cneuromod.all.qa_figures "
+                         "checkout to symlink instead of cloning.",
     "dataset": "Comma-separated dataset names to restrict the fetch to.",
     "subject": "Comma-separated subject labels to restrict the fetch to.",
     "strict": "Raise if a timeseries subdataset fails to install. Content "
               "retrieval stays tolerant either way.",
 })
-def fetch(c, source=None, dataset=None, subject=None, strict=False):
+def fetch(c, source=None, qa_figures_source=None, dataset=None, subject=None, strict=False):
     """
-    Retrieve all source data: the cneuromod.all superdataset, then the
-    timeseries assets the analysis steps read.
+    Retrieve all source data: the cneuromod.all superdataset, the timeseries
+    assets the analysis steps read, and the qa_figures QC tables.
 
     Records what each asset actually resolved to in source_data/MANIFEST.json,
     so the inputs a later run consumed stay identifiable — including the commit
@@ -194,6 +225,7 @@ def fetch(c, source=None, dataset=None, subject=None, strict=False):
 
     fetch_cneuromod(c, source=source)
     fetch_timeseries(c, dataset=dataset, subject=subject, strict=strict)
+    fetch_qa_figures(c, source=qa_figures_source)
     record_sources(c)
     print("✅ fetch complete.")
 
@@ -467,6 +499,27 @@ def clean_cneuromod(c):
 
 
 @task
+def clean_qa_figures(c):
+    """
+    Remove the fetched cneuromod.all.qa_figures checkout (symlink or clone).
+
+    Not called by `clean` or `run --force` — those only touch output_data/.
+    Use this before re-fetching when you need to point a stale symlink
+    somewhere new.
+    """
+    dest = _qa_figures_dir(c)
+    if dest.is_symlink():
+        dest.unlink()
+        print(f"🧹 Removed symlink {dest}")
+    elif dest.exists():
+        print(f"⚠️  {dest} is a real clone, not a symlink — remove it manually "
+              f"if you are sure: rm -rf {dest}")
+    else:
+        print(f"🫧 Nothing to clean — {dest} is not present")
+
+
+@task
 def clean_source(c):
     """Remove all source data assets. Body calls each clean-{name} task."""
     clean_cneuromod(c)
+    clean_qa_figures(c)

@@ -9,6 +9,7 @@
 
 # The fetched superdataset (normally a symlink to a local checkout).
 cneuromod.all
+cneuromod.all.qa_figures
 
 # Which files this machine could not retrieve, so fetch-timeseries does not
 # retry them. Per-environment (it records *your* access), never shared.
