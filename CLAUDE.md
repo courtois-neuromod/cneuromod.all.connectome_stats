@@ -10,46 +10,58 @@ Built on the [`invoke`](https://www.pyinvoke.org/) task runner. The `airoh` pip 
 
 ### Current state: scaffolding
 
-The pipeline is wired end to end and `invoke run-smoke` passes, but the analysis steps are **stubs** that print their plan and write nothing:
+The pipeline is wired end to end, `invoke run-smoke` passes, and `fetch` retrieves real data. The remaining **stubs** print their plan and write nothing:
 
-- `fetch-timeseries` — blocked, see below
 - `run-connectomes` — not implemented
 - `run-group-stats` — not implemented
 - the notebook panels are placeholders
 
-`fetch-cneuromod`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
+`fetch-cneuromod`, `fetch-timeseries`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
 
-### Blocked: the timeseries assets are not reachable
+### The timeseries assets
 
-This project reads parcelled BOLD timeseries. The `courtois-neuromod/*.timeseries` repositories exist on GitHub — 14 of them (`floc.timeseries`, `movie10.timeseries`, `friends.timeseries`, …) — but as of **2026-08-17** they are **not registered as submodules of `cneuromod.all`**. Neither the local checkout nor `origin/main` lists a `timeseries` submodule, so the `{dataset}/timeseries` path configured in `invoke.yaml` does not resolve anywhere.
+This project reads parcelled BOLD timeseries. As of **2026-08-17**, 12 `{dataset}/timeseries` submodules are registered in `cneuromod.all`: `floc`, `movie10`, `friends`, `things`, `hcptrt`, `harrypotter`, `mario`, `mario3`, `mariostars`, `petit-prince`, `retinotopy`, `shinobi`. `fetch-timeseries` discovers them via `_list_datasets` rather than reading that list.
 
-Do **not** "fix" this by pointing the pipeline at `anat/atlases` or at fMRIPrep BOLD — the parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. Wait for the submodules to land, or ask the user before changing the retrieval route.
-
-Expected layout once available:
+Layout:
 
 ```
-cneuromod.all/{dataset}/timeseries/timeseries/{parcellation}/sub-0X/
-    sub-0X_..._desc-...Parcels..._timeseries.h5   # one 2D (timepoints, parcels) array per run,
-                                                  # keyed ses-XXX/ses-XXX_task-..._run-N_timeseries
-    sub-0X_..._desc-...Parcels..._dseg.nii.gz     # the parcellation itself
-    sub-0X_..._label-...(GM)..._mask.nii.gz       # grey-matter mask
+cneuromod.all/{dataset}/timeseries/timeseries/schaefer1000/sub-0X/
+    sub-0X_task-{dataset}_..._atlas-Schaefer2018_desc-1000Parcels7Networks_timeseries.h5
+    sub-0X_task-{dataset}_..._atlas-Schaefer2018_desc-1000Parcels7Networks_dseg.nii.gz
+    sub-0X_task-{dataset}_..._label-GMfromTemplate_desc-indivFunc_mask.nii.gz
 ```
 
-Four parcellations ship in every repo: `schaefer1000` (1000 cortical parcels), `cneuromod2026` (1134, adding subcortical and cerebellar), `voxel_mni` and `voxel_native` (voxelwise, much larger).
+**One `.h5` per subject**, holding every session and run as separate 2D `(timepoints, parcels)` arrays keyed `ses-XXX/ses-XXX_task-..._run-N_timeseries`. That is the annex's finest unit, so `--subject` narrows a fetch but there is nothing session-level to request — session selection is a read-time concern for `run-connectomes`.
+
+Three other parcellations ship in every repo and are deliberately not fetched: `cneuromod2026` (1134 parcels, adding subcortical and cerebellar), `voxel_mni` and `voxel_native` (voxelwise, much larger).
+
+Two traps to avoid:
+
+- **Do not match on the atlas entity.** Upstream writes `atlas-Schaefer2018` while the repos' own `TIMESERIES.md` documents `atlas-Schaefer18`. `analysis/timeseries_layout.py` matches on the filename *suffix* (`*_timeseries.h5`, `*_dseg.nii.gz`, `*_mask.nii.gz`) precisely so that drift cannot break retrieval.
+- **Do not point the pipeline at `anat/atlases` or at fMRIPrep BOLD.** The parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. Ask the user before changing the retrieval route.
+
+### Timeseries content is credentialed
+
+Each `{dataset}.timeseries` repo stores annexed content on **one** S3 special remote (`s3.unf-montreal.ca`, one bucket per dataset) that denies anonymous reads. Without credentials `datalad get` reports `No publicurl is configured for this remote` per file. git-annex reads `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` for it — *not* `CNEUROMOD_USERNAME`/`PASSWORD`, which an earlier version of the docs wrongly advertised.
+
+The `*.fmriprep` datasets additionally publish to the CONP RIA store via an autoenabled anonymous `httpalso` remote (`https://sftp.conp.ca/...`); the `*.timeseries` datasets have not been published there yet. **That is an upstream gap this repo cannot fix** — it needs a push to the CONP server and an `initremote` recorded in each timeseries repo's `git-annex` branch. Nothing here needs to change when it lands: datalad enables autoenabled remotes on its own.
+
+Consequence for `fetch-timeseries`: **two different tolerances, on purpose.** Installing a subdataset needs only the public git tree, so `--strict` makes a failure there fatal. Pulling content hits the credentialed remote, so it always warns and skips, `--strict` or not. Do not "simplify" this into one flag.
 
 ### Open decisions
 
 Do not settle these unilaterally — raise them with the user:
 
-- **Which parcellation** to build connectomes from. `invoke.yaml` sets `parcellation: schaefer1000` *provisionally*.
 - **The connectome method** — correlation, partial correlation, tangent space, confound handling, run concatenation versus per-run estimates.
 - **The group statistics** — what is being summarized across subjects and datasets.
+
+Settled: the parcellation is **`schaefer1000`**.
 
 ### Project-specific conventions
 
 - **The chunk concept is the dataset.** `run-*` steps take a `--dataset` flag naming one or more top-level cneuromod.all datasets (`floc`, `movie10`, …), and iterate over them. Subject-level slicing exists on `fetch` (`--subject`) and will extend to the run steps when they are implemented.
 - **Datasets are discovered, not hardcoded.** `_list_datasets(c, marker)` in `tasks.py` returns every top-level cneuromod.all directory carrying the given derivative subdataset. It returns an empty list when the superdataset is absent, so the stubs degrade to a message rather than a traceback.
-- **The smoke target is `floc` / `sub-01`** (`smoke_dataset`, `smoke_subject` in `invoke.yaml`). `floc` is the smallest dataset with a timeseries repo *and* is openly accessible, so a smoke failure means broken plumbing rather than missing credentials.
+- **The smoke target is `movie10` / `sub-01`** (`smoke_dataset`, `smoke_subject` in `invoke.yaml`). Since no timeseries dataset is anonymously readable, open access is no longer a selection criterion — the target is chosen for size. `run-smoke` passes `strict=True`, which only makes a failed subdataset *install* fatal; missing content never fails it.
 - **Never run `git submodule update --init --recursive` or `datalad install -r`** inside `cneuromod.all`. Submodules re-expose their own sub-submodules at differing versions; recursive cloning triggers a massive, redundant retrieval. Use `airoh.datalad.install_subdataset` (`datalad get -n`) to reach a nested subdataset.
 - **CNeuroMod content is partly credentialed.** Retrieval must stay tolerant — warn and skip, never abort — except in the smoke test. A full fetch expects credentials in environment variables; see README.md, "Credentials for a full fetch".
 

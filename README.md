@@ -11,10 +11,11 @@ and a composed multi-panel figure.
 Built on the [`invoke`](https://www.pyinvoke.org/) task runner, with reusable
 tasks from [`airoh`](https://pypi.org/project/airoh/).
 
-> ⚠️ **Status: scaffolding.** The pipeline is wired end to end and the smoke test
-> passes, but the analysis steps are **stubs** — `fetch-timeseries`,
-> `run-connectomes` and `run-group-stats` report what they would do and write
-> nothing. The figure panels are placeholders. See **Current state** below.
+> ⚠️ **Status: scaffolding.** The pipeline is wired end to end, the smoke test
+> passes, and `fetch` retrieves real data — but the analysis steps are still
+> **stubs**: `run-connectomes` and `run-group-stats` report what they would do
+> and write nothing. The figure panels are placeholders. See **Current state**
+> below.
 
 ---
 
@@ -57,22 +58,24 @@ fetched; that is normal for Datalad, not a bug.
 
 #### Credentials for a full fetch
 
-Most CNeuroMod data is openly accessible, but **not all of it has been
-configured that way yet**. Content on a credentialed remote fails per-file for
-anyone without access, so retrieval is deliberately **tolerant**: it warns,
-skips, and carries on rather than aborting.
+**Timeseries content currently requires credentials for every dataset**,
+including `floc`. Each `*.timeseries` repository stores its content on a single
+S3 remote that denies anonymous reads; unlike the `*.fmriprep` datasets, they
+are not yet published to the anonymous CONP mirror. Retrieval is therefore
+deliberately **tolerant**: it warns, skips, and carries on rather than aborting.
 
-For a full fetch, expose your CNeuroMod credentials as environment variables in
-your shell before running:
+For a full fetch, export S3 credentials before running — git-annex reads the
+standard AWS variable names for this remote:
 
 ```bash
-export CNEUROMOD_USERNAME=...   # your CNeuroMod credentials
-export CNEUROMOD_PASSWORD=...
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
 invoke fetch
 ```
 
-A fetch that came back partly empty most likely means you lack access to that
-content, not that the pipeline is broken. See
+Filenames appear regardless of credentials (the git tree is public); only the
+file *contents* need access. A fetch that came back empty means you lack access
+to that content, not that the pipeline is broken. See
 [`source_data/CONTENT.md`](source_data/CONTENT.md) for the full access notes.
 
 ---
@@ -151,7 +154,7 @@ The plumbing is real; the science is not wired up yet.
 | Piece | State |
 | --- | --- |
 | `fetch-cneuromod` | ✅ implemented — symlinks or clones the superdataset |
-| `fetch-timeseries` | 🚧 **stub** — the data is not reachable yet, see below |
+| `fetch-timeseries` | ✅ implemented — installs each `{dataset}/timeseries` subdataset and pulls the `schaefer1000` files |
 | `run-connectomes` | 🚧 **stub** — prints its plan, writes nothing |
 | `run-group-stats` | 🚧 **stub** — prints its plan, writes nothing |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
@@ -159,18 +162,17 @@ The plumbing is real; the science is not wired up yet.
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
 | `verify`, `clean*` | ✅ implemented |
 
-**Why `fetch-timeseries` is a stub.** The `courtois-neuromod/*.timeseries`
-repositories exist on GitHub (14 of them: `floc.timeseries`,
-`movie10.timeseries`, `friends.timeseries`, …) but are **not registered as
-submodules of `cneuromod.all`**. The `{dataset}/timeseries` path this project is
-configured to read therefore does not resolve in any checkout — not locally, not
-on `origin/main`. Once they land upstream, the stub gets its real body and the
-`timeseries_marker` / `parcellation` keys in `invoke.yaml` take effect.
+**The timeseries submodules have landed.** 12 `{dataset}/timeseries` submodules
+are now registered in `cneuromod.all` (`floc`, `movie10`, `friends`, `things`,
+`hcptrt`, `harrypotter`, `mario`, `mario3`, `mariostars`, `petit-prince`,
+`retinotopy`, `shinobi`), so `fetch-timeseries` has a real body. Their **content
+is credentialed** for now — see "Credentials for a full fetch" above and
+[`source_data/CONTENT.md`](source_data/CONTENT.md).
 
-**Still to decide:** which parcellation to build connectomes from
-(`schaefer1000`, `cneuromod2026`, `voxel_mni`, `voxel_native` all ship in each
-repo), and the connectome and group-statistic methods themselves. `invoke.yaml`
-defaults to `schaefer1000` provisionally.
+**Still to decide:** the connectome method (correlation, partial correlation,
+tangent space; confound handling; per-run versus concatenated estimates) and
+what the group statistics summarize. The parcellation is settled:
+**`schaefer1000`**.
 
 ---
 
@@ -207,7 +209,7 @@ defaults to `schaefer1000` provisionally.
 | ------------------- | -------------------------------------------------------- |
 | `fetch`             | Gets all source data: the superdataset, then the timeseries assets |
 | `fetch-cneuromod`   | Makes the cneuromod.all superdataset available (symlink via `--source`, else clone) |
-| `fetch-timeseries`  | Retrieves the parcelled timeseries assets (**stub** — not reachable yet) |
+| `fetch-timeseries`  | Retrieves the parcelled `schaefer1000` timeseries; `--dataset`/`--subject` narrow it |
 | `run`               | Runs the full pipeline in order; `--force` cleans first  |
 | `run-connectomes`   | Builds a connectome per subject and run (**stub**)       |
 | `run-group-stats`   | Aggregates connectomes into group statistics (**stub**)  |

@@ -1,5 +1,5 @@
 {
-  "command": "/home/pbellec/cneuromod.all.connectome_stats/.venv/bin/invoke run --force",
+  "command": "/home/pbellec/cneuromod.all.connectome_stats/.venv/bin/invoke run",
   "environment": {
     "lockfiles": {
       "uv.lock": "95d581ec4fa91fe3a70237aa36e7fb4357adb444252ffe6eb8625c31d9813124"
@@ -23,13 +23,13 @@
   "inputs": {
     "assets": {
       "cneuromod_all": {
-        "commit": "87ad08a00f9883fcfe20a18ebc0b2e64791f9238",
+        "commit": "02ab5a0f848613c78ed5d38def297168f83b2a98",
         "resolved_path": "/home/pbellec/git/cneuromod.all",
         "sha256": null
       }
     },
     "manifest_file": "source_data/MANIFEST.json",
-    "manifest_sha256": "58fc794178091bef1a39c516d25b6a4ac0200dee0df3266cfae9c9a7252d1bb4"
+    "manifest_sha256": "6475faa616b3ebfa77ad341812d81430358e3925a1edb564a680c25d8f175309"
   },
   "outputs": {
     "connectome_figure.png": {
@@ -53,10 +53,10 @@
       "size_bytes": 133
     }
   },
-  "recorded_at": "2026-08-17T14:07:24+00:00",
+  "recorded_at": "2026-08-17T15:12:10+00:00",
   "repository": {
     "branch": "main",
-    "commit": "02abba99bcec9ccf00468975ab8498aa7268c1f3",
+    "commit": "526324b146d4ca4823e752c3a45ae5ef2dc25b73",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/cneuromod.all.connectome_stats"

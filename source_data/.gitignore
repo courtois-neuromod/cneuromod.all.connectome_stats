@@ -10,5 +10,9 @@
 # The fetched superdataset (normally a symlink to a local checkout).
 cneuromod.all
 
+# Which files this machine could not retrieve, so fetch-timeseries does not
+# retry them. Per-environment (it records *your* access), never shared.
+.fetch_failures.json
+
 # Provenance is tracked: it records what the inputs actually were.
 !MANIFEST.json

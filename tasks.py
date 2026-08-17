@@ -32,11 +32,38 @@ def _list_datasets(c, marker):
 
 def _select_datasets(c, requested, smoke):
     """Resolve which datasets a run task should process."""
+    from analysis.timeseries_layout import parse_labels
+
     if requested:
-        return [name.strip() for name in requested.split(",") if name.strip()]
+        return parse_labels(requested)
     if smoke:
-        return [c.config.get("smoke_dataset", "floc")]
+        return [c.config.get("smoke_dataset", "movie10")]
     return _list_datasets(c, c.config.get("timeseries_marker", "timeseries"))
+
+
+def _prefetch_into(root, subdir, match, failures):
+    """Retrieve every timeseries file under `subdir`, one glob pattern at a time.
+
+    Mutates `failures` in place — the caller's running set of paths this
+    environment could not retrieve — adding what newly failed and dropping
+    anything that has since succeeded. Returns the per-dataset counts.
+    """
+    from airoh.datalad import prefetch_pattern
+
+    from analysis.timeseries_layout import timeseries_patterns
+
+    counts = {"present": 0, "fetched": 0, "skipped": 0, "failed": 0}
+    for pattern in timeseries_patterns():
+        present, fetched, skipped, new_failures, resolved = prefetch_pattern(
+            root, pattern, subdir=subdir, skip_set=failures, match=match,
+        )
+        counts["present"] += present
+        counts["fetched"] += fetched
+        counts["skipped"] += skipped
+        counts["failed"] += len(new_failures)
+        failures |= new_failures
+        failures -= resolved
+    return counts
 
 
 def montage_dpi(c):
@@ -80,36 +107,70 @@ def fetch_cneuromod(c, source=None):
                "subdataset).",
     "subject": "Comma-separated subject labels (e.g. 01,03) to restrict the "
                "fetch to.",
+    "strict": "Raise if a timeseries subdataset fails to install. Content "
+              "retrieval stays tolerant either way.",
 })
-def fetch_timeseries(c, dataset=None, subject=None):
+def fetch_timeseries(c, dataset=None, subject=None, strict=False):
     """
-    Retrieve the parcelled BOLD timeseries assets. **Not implemented yet.**
+    Retrieve the parcelled BOLD timeseries assets for the configured
+    `parcellation`.
 
-    The intended shape, once the data is reachable: install each
-    `{dataset}/{timeseries_marker}` subdataset with
-    `airoh.datalad.install_subdataset` (a nested subdataset, so `datalad get -n`
-    rather than plain `git submodule`), then `datalad get` the `.h5` timeseries,
-    the `_dseg.nii.gz` parcellation and the grey-matter mask for the configured
-    `parcellation`, via `airoh.datalad.prefetch_pattern`. Tolerant of partial
-    access by default — inaccessible content warns and is skipped.
+    For each selected dataset: install `{dataset}/{timeseries_marker}` with
+    `airoh.datalad.install_subdataset` — a subdataset nested inside another
+    subdataset, which plain `git submodule` cannot reach, hence `datalad get -n`
+    — then retrieve the `.h5` timeseries, the `_dseg.nii.gz` parcellation and
+    the grey-matter mask via `airoh.datalad.prefetch_pattern`.
 
-    ⚠️ Blocked: the `courtois-neuromod/*.timeseries` repositories exist on
-    GitHub but are NOT registered as submodules of cneuromod.all, so the marker
-    path does not resolve in any checkout. See source_data/CONTENT.md.
+    Two different tolerances, deliberately. Installing a subdataset only needs
+    the public git tree, so a failure there means the retrieval route is broken
+    and `--strict` (used by `run-smoke`) makes it fatal. Pulling annexed content
+    hits a credentialed S3 remote that not everyone can reach, so it always
+    warns and skips — see source_data/CONTENT.md, "Access requirements".
+
+    Paths that failed are remembered in `source_data/.fetch_failures.json` and
+    not retried on the next call; a path that later succeeds is dropped from
+    that cache.
     """
+    from airoh.datalad import install_subdataset, load_known_failures, save_known_failures
+
+    from analysis.timeseries_layout import parcellation_subdir, parse_labels, subject_filter
+
+    root = _cneuromod_dir(c)
     marker = c.config.get("timeseries_marker", "timeseries")
     parcellation = c.config.get("parcellation")
-    available = _list_datasets(c, marker)
+    source_dir = Path(c.config.get("source_data_dir"))
 
-    print(f"TODO: fetch '{marker}' assets (parcellation: {parcellation})")
-    if available:
-        print(f"   {len(available)} dataset(s) carry a '{marker}' subdataset: "
-              f"{', '.join(available)}")
-    else:
-        print(f"   No dataset carries a '{marker}' subdataset yet — the "
-              f"*.timeseries repos are not registered in cneuromod.all.")
-    if dataset or subject:
-        print(f"   (requested dataset={dataset}, subject={subject})")
+    names = _select_datasets(c, dataset, smoke=False)
+    if not names:
+        print(f"⚠️  No dataset carries a '{marker}' subdataset under {root}.")
+        print("   Run `invoke fetch-cneuromod` first — this step reads the "
+              "superdataset, it does not create it.")
+        return
+
+    match = subject_filter(parse_labels(subject, prefix="sub-"))
+    failures = load_known_failures(source_dir)
+    totals = {"present": 0, "fetched": 0, "skipped": 0, "failed": 0}
+
+    print(f"📥 Fetching '{parcellation}' timeseries for {len(names)} dataset(s): "
+          f"{', '.join(names)}")
+
+    for name in names:
+        install_subdataset(f"{name}/{marker}", root, strict=strict)
+        subdir = f"{name}/{marker}/{parcellation_subdir(parcellation)}"
+        counts = _prefetch_into(root, subdir, match, failures)
+
+        for key, value in counts.items():
+            totals[key] += value
+        print(f"   {name}: {counts['present']} present, {counts['fetched']} fetched, "
+              f"{counts['skipped']} skipped (known failures), {counts['failed']} failed")
+
+    save_known_failures(source_dir, failures)
+    print(f"📦 timeseries totals — {totals['present']} present, "
+          f"{totals['fetched']} fetched, {totals['skipped']} skipped, "
+          f"{totals['failed']} failed")
+    if totals["failed"] or totals["skipped"]:
+        print("   Inaccessible content is expected without CNeuroMod S3 "
+              "credentials; see source_data/CONTENT.md.")
 
 
 @task(help={
@@ -117,8 +178,10 @@ def fetch_timeseries(c, dataset=None, subject=None):
               "instead of cloning.",
     "dataset": "Comma-separated dataset names to restrict the fetch to.",
     "subject": "Comma-separated subject labels to restrict the fetch to.",
+    "strict": "Raise if a timeseries subdataset fails to install. Content "
+              "retrieval stays tolerant either way.",
 })
-def fetch(c, source=None, dataset=None, subject=None):
+def fetch(c, source=None, dataset=None, subject=None, strict=False):
     """
     Retrieve all source data: the cneuromod.all superdataset, then the
     timeseries assets the analysis steps read.
@@ -130,7 +193,7 @@ def fetch(c, source=None, dataset=None, subject=None):
     from airoh.provenance import record_sources
 
     fetch_cneuromod(c, source=source)
-    fetch_timeseries(c, dataset=dataset, subject=subject)
+    fetch_timeseries(c, dataset=dataset, subject=subject, strict=strict)
     record_sources(c)
     print("✅ fetch complete.")
 
@@ -289,11 +352,16 @@ def run_smoke(c):
     reduced workload. The point is to exercise the plumbing quickly, not to
     produce real results. Unlike `run`, this is the one mode that fetches, so
     it can check retrieval too.
+
+    `strict=True` makes a failed *subdataset install* fatal: that only needs the
+    public git tree, so failing there means the retrieval route is genuinely
+    broken. Annexed content stays tolerant even here, because no timeseries
+    dataset is anonymously readable yet — see source_data/CONTENT.md.
     """
-    smoke_dataset = c.config.get("smoke_dataset", "floc")
+    smoke_dataset = c.config.get("smoke_dataset", "movie10")
     smoke_subject = c.config.get("smoke_subject", "01")
 
-    fetch(c, dataset=smoke_dataset, subject=smoke_subject)
+    fetch(c, dataset=smoke_dataset, subject=smoke_subject, strict=True)
     run_connectomes(c, smoke=True)
     run_group_stats(c, smoke=True)
     run_figure_layout(c)

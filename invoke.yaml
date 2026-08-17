@@ -50,24 +50,26 @@ datasets:
 # Which derivative subdataset of each cneuromod.all dataset holds the parcelled
 # BOLD timeseries this project reads.
 #
-# ⚠️ NOT YET AVAILABLE. As of 2026-08-17 the `courtois-neuromod/*.timeseries`
-# repositories exist on GitHub (floc.timeseries, movie10.timeseries, …) but are
-# NOT registered as submodules of cneuromod.all, so `{dataset}/timeseries` does
-# not resolve in any checkout. `fetch-timeseries` is a deliberate stub until
-# they land; see source_data/CONTENT.md.
+# As of 2026-08-17, 12 `{dataset}/timeseries` submodules are registered in
+# cneuromod.all: floc, movie10, friends, things, hcptrt, harrypotter, mario,
+# mario3, mariostars, petit-prince, retinotopy and shinobi. `fetch-timeseries`
+# discovers them rather than reading this list — it fetches every dataset
+# carrying the marker directory below.
 timeseries_marker: timeseries
 
 # Which parcellation's timeseries to read. Each *.timeseries repo ships
 # schaefer1000, cneuromod2026, voxel_mni and voxel_native, each with its own
 # `_dseg.nii.gz` parcellation and grey-matter mask alongside the `.h5`.
-# PROVISIONAL — the choice is still open, see CLAUDE.md "Open decisions".
+# This project uses schaefer1000 only: 1000 cortical parcels in MNI space, small
+# enough that the whole multi-dataset fetch stays tractable (~7 MB per subject).
 parcellation: schaefer1000
 
 # Canonical target for `invoke run-smoke` (overridable with --dataset/--subject).
-# floc is the smallest dataset with a timeseries repo, and its content is
-# openly accessible, so a smoke failure means broken plumbing rather than
-# missing credentials.
-smoke_dataset: floc
+# No timeseries dataset is anonymously readable yet (see source_data/CONTENT.md),
+# so the target is not chosen for open access — it is chosen for size. movie10 is
+# a small, long-standing dataset; the smoke test fetches one subject and fails
+# only if the subdataset *tree* cannot be installed, which needs no credentials.
+smoke_dataset: movie10
 smoke_subject: "01"
 
 # provenance records
@@ -99,10 +101,16 @@ verify:
     - courtois-neuromod/*.timeseries
     - origin/main
     - .tsv
+    # Per-environment cache of content this machine could not retrieve, written
+    # by fetch-timeseries. Never committed (see source_data/.gitignore).
+    - .fetch_failures.json
     # A path *inside* the cneuromod.all superdataset, deliberately NOT used by
     # this project (the parcellations ship inside the timeseries repos). The
     # docs name it to say so.
     - anat/atlases
+    # The timeseries repos' own documentation, cited by CLAUDE.md for the
+    # atlas-entity naming drift. Lives upstream, not in this repo.
+    - TIMESERIES.md
     # Outputs of the stubbed analysis steps: documented as _(pending)_ in
     # output_data/CONTENT.md, and created once those steps are implemented.
     - output_data/connectomes
