@@ -7,10 +7,17 @@ Once the pipeline is run, this folder will contain the following.
 the figure-layout and notebook outputs below actually appear today. The entries
 marked _(pending)_ describe the intended outputs.
 
-- `connectomes/` _(pending)_ — one connectome table per cneuromod.all dataset,
-  written by `invoke run-connectomes`.
-- `group_stats/` _(pending)_ — group-level summary tables aggregated across
-  subjects and datasets, written by `invoke run-group-stats`.
+- `connectomes/` _(pending)_ — per-session, per-network connectomes, one set per
+  cneuromod.all dataset, written by `invoke run-connectomes`: for each session
+  that clears the usable-data criterion, seven within-network **partial
+  correlation** matrices and seven **Pearson** matrices (raw and Fisher-z), each
+  with its numerical diagnostics (rank, condition number, minimum eigenvalue,
+  n samples, n parcels) and the session's QC summary.
+- `group_stats/` _(pending)_ — group-level summaries aggregated across subjects
+  and datasets, written by `invoke run-group-stats`: session × session
+  similarity, within- versus between-subject and same-/different-task contrasts,
+  and fingerprinting outcomes (accuracy, true-subject rank, identification
+  margin) — computed identically for both measures.
 - `figures/figure_connectomes/overview.png` — the montage's large left panel.
   A placeholder until the analysis steps land.
 - `figures/figure_connectomes/distribution.png` — the montage's smaller right

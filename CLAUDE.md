@@ -4,9 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-**CNeuroMod Connectome Statistics** — computes and summarizes functional connectome statistics across the [Courtois NeuroMod](https://www.cneuromod.ca/) datasets. The pipeline reads parcelled BOLD timeseries from the `cneuromod.all` Datalad superdataset, builds a connectome per subject and run, and aggregates them into group-level statistics plus a composed multi-panel figure.
+**CNeuroMod Connectome Statistics** — computes and summarizes functional connectome statistics across the [Courtois NeuroMod](https://www.cneuromod.ca/) datasets. The pipeline reads parcelled BOLD timeseries from the `cneuromod.all` Datalad superdataset, builds a within-network connectome per session, and aggregates them into group-level statistics plus a composed multi-panel figure.
 
 Built on the [`invoke`](https://www.pyinvoke.org/) task runner. The `airoh` pip package provides reusable invoke tasks; this repo customizes them via `tasks.py` and `invoke.yaml`.
+
+### Scientific objective
+
+The project tests whether functional brain organization carries a **stable, subject-specific component** across extremely heterogeneous cognitive contexts and across a longitudinal acquisition spanning roughly five years. The data are six deeply sampled individuals, scanned several times per week across many distinct experiments (very different stimuli, tasks and cognitive constraints), at 2 mm isotropic and TR = 1.5 s, preprocessed and denoised upstream. Runs are typically ~10 minutes; sessions hold several runs, ~30–60 minutes total.
+
+The hypothesis: **conditional statistical dependencies between regions are substantially more stable across cognitive contexts than ordinary bivariate correlations.** Partial correlation is therefore the primary measure and Pearson correlation the comparator, computed on exactly the same time series. The result being established is that despite very large variation in experimental context, the conditional dependency structure contains a stable, reproducible and strongly subject-specific component — while Pearson correlation is expected to show a comparatively stronger task effect, though it too retains a subject-specific component.
+
+**Get the interpretation right when writing code, comments or docstrings.** Task-related activity is *not* a contaminant superimposed on some privileged "intrinsic" process; task and unconstrained activity are both brain activity. The mechanism claimed here is narrower: partial correlation conditions out activity shared across multiple regions, so it should be less sensitive to large-scale common fluctuations — whatever their cause, experimental or physiological or noise. Do not write "removes task confounds" or "recovers the intrinsic connectome" anywhere in this repo.
+
+The headline analyses are within- versus between-subject connectome similarity, same-subject/different-task versus different-subject/same-task similarity, and subject fingerprinting both leave-one-session-out and leave-one-task-out. With only six participants, identification **margin and rank** are the meaningful continuous outcomes — accuracy will sit near ceiling. Inference must not treat sessions as independent subjects: prefer permutation tests, participant-level resampling, and effects replicated across the six individuals over thousands of edge-wise tests.
 
 ### Current state: scaffolding
 
@@ -38,8 +48,12 @@ Three other parcellations ship in every repo and are deliberately not fetched: `
 ### The QC measures asset (qa_figures)
 
 `run-connectomes` and `run-group-stats` will need per-run quality-control
-covariates — head motion and tSNR — to decide which runs enter a connectome and
-to model data-quality effects at the group level. Those already exist,
+covariates — head motion and tSNR — for two concrete jobs: deciding which runs
+are usable (and hence whether a session clears the ~30-minute bar that admits it
+to the primary analysis), and checking at the group level whether low-stability
+sessions are systematically lower-quality acquisitions. Every session that
+enters the analysis should carry its motion summary alongside its connectomes,
+so that check is possible after the fact. Those covariates already exist,
 computed, in a second source asset: `cneuromod.all.qa_figures`, wired in
 alongside `cneuromod.all` via `datasets: qa_figures` in `invoke.yaml` and
 `fetch-qa-figures`/`clean-qa-figures` in `tasks.py`.
@@ -75,18 +89,28 @@ The `*.fmriprep` datasets additionally publish to the CONP RIA store via an auto
 
 Consequence for `fetch-timeseries`: **two different tolerances, on purpose.** Installing a subdataset needs only the public git tree, so `--strict` makes a failure there fatal. Pulling content hits the credentialed remote, so it always warns and skips, `--strict` or not. Do not "simplify" this into one flag.
 
-### Open decisions
+### Settled analysis decisions
+
+These are decided. Implement them as written; do not reopen them unprompted.
+
+- **Parcellation: `schaefer1000`**, with parcels grouped into the **7 Yeo networks** (~150 parcels each).
+- **Primary measure: partial correlation.** Estimate the sample covariance, invert it to a precision matrix `Θ`, then `ρ_ij = -Θ_ij / sqrt(Θ_ii · Θ_jj)`. The primary estimator is **ordinary sample covariance plus matrix inversion — no graphical lasso, no shrinkage**, unless numerical instability empirically forces it. Regularized estimators are a robustness analysis, not the primary path.
+- **Comparator: Pearson correlation** on exactly the same time series. Everything downstream runs **identically** for both measures — the scientific quantity of interest is the difference between them, so no analysis may exist for one measure only.
+- **Estimate independently within each network.** For a network of `p` parcels, build the `p × p` covariance and invert that. The primary analysis must **never silently attempt to invert a 1000 × 1000 covariance matrix** — it is both computationally and statistically wrong here. Seven within-network matrices per session; cross-network edges are out of the primary analysis. A full regularized 1000-parcel precision matrix is a possible *later* secondary analysis.
+- **Unit of analysis: the session**, restricted to sessions with roughly ≥30 minutes of usable data (~1,200 volumes at TR = 1.5 s, versus ~150 parcels per network — comfortably more observations than variables). Run-level (~10 min) estimates are computed too, but **only as a secondary unit**, to establish how much data a stable estimate needs. Run-level results never replace session-level ones.
+- **Standardize, then concatenate.** Each run's parcel time series is z-scored *within the run* before runs from the same session are concatenated. Never concatenate raw runs — run-specific means and scaling differences would themselves induce correlations.
+- **Store both raw coefficients and Fisher-z** (`atanh`) of the off-diagonal, and record per-matrix numerical diagnostics: rank, condition number, minimum eigenvalue, number of samples, number of parcels. Those diagnostics are what tells us empirically whether unregularized partial correlation is well behaved, so they are part of the output, not debug logging.
+
+### Still open
 
 Do not settle these unilaterally — raise them with the user:
 
-- **The connectome method** — correlation, partial correlation, tangent space, confound handling, run concatenation versus per-run estimates.
-- **The group statistics** — what is being summarized across subjects and datasets.
-
-Settled: the parcellation is **`schaefer1000`**.
+- **What counts as usable data** — which motion and tSNR thresholds gate a run, and how censored volumes count toward the ~30-minute session criterion. One standing rule: **exclusion thresholds must not be tuned against fingerprinting performance.** Pick them a priori from QC, then report headline results with and without the worst-quality sessions.
+- **The QC-entity ↔ timeseries-run mapping** — joining the qa_figures tables' entities to the `.h5` run keys, described under "The QC measures asset" above.
 
 ### Project-specific conventions
 
-- **The chunk concept is the dataset.** `run-*` steps take a `--dataset` flag naming one or more top-level cneuromod.all datasets (`floc`, `movie10`, …), and iterate over them. Subject-level slicing exists on `fetch` (`--subject`) and will extend to the run steps when they are implemented.
+- **The chunk concept is the dataset.** `run-*` steps take a `--dataset` flag naming one or more top-level cneuromod.all datasets (`floc`, `movie10`, …), and iterate over them. Subject-level slicing exists on `fetch` (`--subject`) and will extend to the run steps when they are implemented. **The chunk is not the statistical unit** — the dataset is how work is *divided*, while the session is what a connectome is *estimated from*. Session- and duration-level selection is a read-time concern inside `run-connectomes` (there is nothing session-level to fetch: one `.h5` holds every session of a subject), so it belongs in `analysis/`, not in a fetch flag.
 - **Datasets are discovered, not hardcoded.** `_list_datasets(c, marker)` in `tasks.py` returns every top-level cneuromod.all directory carrying the given derivative subdataset. It returns an empty list when the superdataset is absent, so the stubs degrade to a message rather than a traceback.
 - **The smoke target is `movie10` / `sub-01`** (`smoke_dataset`, `smoke_subject` in `invoke.yaml`). Since no timeseries dataset is anonymously readable, open access is no longer a selection criterion — the target is chosen for size. `run-smoke` passes `strict=True`, which only makes a failed subdataset *install* fatal; missing content never fails it.
 - **Never run `git submodule update --init --recursive` or `datalad install -r`** inside `cneuromod.all`. Submodules re-expose their own sub-submodules at differing versions; recursive cloning triggers a massive, redundant retrieval. Use `airoh.datalad.install_subdataset` (`datalad get -n`) to reach a nested subdataset.
@@ -337,6 +361,16 @@ called.
 **Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` and currently hold only a placeholder.
 
 **Filling in a stub:** `run-connectomes` and `run-group-stats` are placeholders that print their plan. When implementing one, put the real logic in a new `analysis/` module, keep the task body to argument handling plus the existence check that makes it idempotent, give it a matching `clean-{name}` (both already exist), and replace the corresponding placeholder panel in `notebooks/figure_connectomes.ipynb`. Update `output_data/CONTENT.md` in the same commit — the entries there are currently marked _(pending)_.
+
+The contract for each, from **Settled analysis decisions** above: `run-connectomes` reads the parcelled timeseries and writes, per session, seven within-network **partial correlation** matrices and seven **Pearson** matrices — raw and Fisher-z — each accompanied by its numerical diagnostics and the session's QC summary. `run-group-stats` reads those and produces the similarity and fingerprinting summaries.
+
+**Respect the analysis hierarchy; do not flatten it.** Three tiers, and a step belongs to exactly one:
+
+1. **Primary** — session-level, within-network, both measures: within- versus between-subject similarity, same-subject/different-task versus different-subject/same-task, leave-one-session-out and leave-one-task-out fingerprinting, and the per-network replication of all of it.
+2. **Secondary** — reliability as a function of data duration, which is where run-level estimates live.
+3. **Robustness** — regularized precision estimators, removal of the group-average connectome, spatial-distance dependence and neighbouring-parcel exclusion, QC dependence, explicit early-versus-late temporal separation.
+
+A tier-3 analysis does not get promoted into the pipeline's main path because it was interesting to implement, and turning every possible branch into an equally weighted step is the failure mode to avoid here. When adding something, say which tier it is in.
 
 **Adding a new analysis step:** add a function to `analysis/`, add a `run-{name}` task and a matching `clean-{name}` task in `tasks.py`, call both from the bodies of the top-level `run` and `clean` tasks (see the `pre=` warning above — a body call, not `pre=`), and create or extend a notebook in `notebooks/` for visualization.
 

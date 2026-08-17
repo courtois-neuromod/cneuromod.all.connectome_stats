@@ -5,8 +5,8 @@ _why don't you have a cup of relaxing jasmine tea?_
 Computes and summarizes functional connectome statistics across the
 [Courtois NeuroMod](https://www.cneuromod.ca/) datasets. The pipeline reads
 parcelled BOLD timeseries from the `cneuromod.all` Datalad superdataset, builds a
-connectome per subject and run, and aggregates them into group-level statistics
-and a composed multi-panel figure.
+within-network connectome per session, and aggregates them into group-level
+statistics and a composed multi-panel figure.
 
 Built on the [`invoke`](https://www.pyinvoke.org/) task runner, with reusable
 tasks from [`airoh`](https://pypi.org/project/airoh/).
@@ -16,6 +16,49 @@ tasks from [`airoh`](https://pypi.org/project/airoh/).
 > **stubs**: `run-connectomes` and `run-group-stats` report what they would do
 > and write nothing. The figure panels are placeholders. See **Current state**
 > below.
+
+---
+
+## 🔬 What this measures
+
+The question is whether functional brain organization carries a **stable,
+subject-specific component** across extremely heterogeneous cognitive contexts
+and across a longitudinal acquisition spanning roughly five years. CNeuroMod
+gives us six deeply sampled individuals, scanned several times a week across
+many different experiments — very different stimuli, tasks and cognitive
+constraints — at 2 mm isotropic resolution and TR = 1.5 s, already preprocessed
+and denoised upstream.
+
+The hypothesis is that **conditional dependencies between regions are
+substantially more stable across contexts than ordinary bivariate
+correlations**. That is not a claim that task activity is a contaminant sitting
+on top of some privileged "intrinsic" process — task and unconstrained activity
+are both brain activity. It is narrower: partial correlation conditions out
+fluctuations shared across many regions at once, so it should be less sensitive
+to the large-scale common signal that changing experimental constraints,
+physiology and noise all induce.
+
+So:
+
+- **Partial correlation is the primary measure**, with **Pearson correlation
+  computed on exactly the same time series** as a comparator. Everything
+  downstream runs identically for both — the interesting quantity is the
+  *difference* between them.
+- **The session is the unit of analysis**, restricted to sessions carrying
+  roughly 30 minutes or more of usable data (~1,200 volumes). Runs are
+  z-scored individually and only then concatenated within a session. Run-level
+  estimates are a secondary unit, for working out how much data a stable
+  estimate needs.
+- **Estimation is per network, not whole-brain.** `schaefer1000`'s parcels are
+  grouped into the 7 Yeo networks (~150 parcels each), and the precision matrix
+  is estimated independently within each — seven matrices per session.
+
+The headline analyses are within- versus between-subject connectome similarity,
+same-subject/different-task versus different-subject/same-task similarity, and
+subject fingerprinting both leave-one-session-out and leave-one-task-out. With
+only six participants, identification *margin* and *rank* matter more than raw
+accuracy, and inference leans on permutation and participant-level resampling
+rather than treating sessions as independent subjects.
 
 ---
 
@@ -166,8 +209,8 @@ The plumbing is real; the science is not wired up yet.
 | `fetch-cneuromod` | ✅ implemented — symlinks or clones the superdataset |
 | `fetch-timeseries` | ✅ implemented — installs each `{dataset}/timeseries` subdataset and pulls the `schaefer1000` files |
 | `fetch-qa-figures` | ✅ implemented — symlinks or clones the qa_figures QC tables (no credentials needed) |
-| `run-connectomes` | 🚧 **stub** — prints its plan, writes nothing |
-| `run-group-stats` | 🚧 **stub** — prints its plan, writes nothing |
+| `run-connectomes` | 🚧 **stub** — will compute per-session, per-network partial and Pearson matrices; prints its plan, writes nothing |
+| `run-group-stats` | 🚧 **stub** — will compute similarity and fingerprinting summaries; prints its plan, writes nothing |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
 | `run-notebooks` | ✅ implemented — renders **placeholder** panels |
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
@@ -180,10 +223,23 @@ are now registered in `cneuromod.all` (`floc`, `movie10`, `friends`, `things`,
 is credentialed** for now — see "Credentials for a full fetch" above and
 [`source_data/CONTENT.md`](source_data/CONTENT.md).
 
-**Still to decide:** the connectome method (correlation, partial correlation,
-tangent space; confound handling; per-run versus concatenated estimates) and
-what the group statistics summarize. The parcellation is settled:
-**`schaefer1000`**.
+**The method is settled** — see "What this measures" above. In short:
+
+- Parcellation: **`schaefer1000`**, grouped into the 7 Yeo networks.
+- Measure: **partial correlation** from the sample covariance and its inverse,
+  with **no regularizer** in the primary analysis; **Pearson correlation** on
+  the same time series as the comparator. Both stored raw and Fisher-z.
+- Unit: the **session** (≳30 min usable), runs z-scored individually before
+  being concatenated. Run-level estimates are secondary.
+- Estimation: **independently within each network** — the primary analysis never
+  inverts a 1000 × 1000 covariance matrix.
+- Every matrix ships its numerical diagnostics: rank, condition number, minimum
+  eigenvalue, number of samples and number of parcels.
+
+**Genuinely still open:** the QC criteria that define "usable" data (which
+motion and tSNR thresholds, and how censored volumes count toward the 30
+minutes), and the mapping between the QC tables' entities and the timeseries
+`.h5` run keys — see [`source_data/CONTENT.md`](source_data/CONTENT.md).
 
 ---
 
@@ -223,8 +279,8 @@ what the group statistics summarize. The parcellation is settled:
 | `fetch-timeseries`  | Retrieves the parcelled `schaefer1000` timeseries; `--dataset`/`--subject` narrow it |
 | `fetch-qa-figures`  | Makes the cneuromod.all.qa_figures QC tables available (symlink via `--source`, else clone; no credentials needed) |
 | `run`               | Runs the full pipeline in order; `--force` cleans first  |
-| `run-connectomes`   | Builds a connectome per subject and run (**stub**)       |
-| `run-group-stats`   | Aggregates connectomes into group statistics (**stub**)  |
+| `run-connectomes`   | Builds per-session, per-network partial and Pearson connectomes (**stub**) |
+| `run-group-stats`   | Aggregates connectomes into similarity and fingerprinting summaries (**stub**) |
 | `run-figure-layout` | Writes the montage's panel geometry to `output_data/figures/panel_sizes.json`; always re-runs |
 | `run-notebooks`     | Executes notebooks and saves panels to `output_data/figures/` |
 | `compose-figure`    | Renders `connectome_figure.svg` to PNG with Inkscape (optional binary) |
