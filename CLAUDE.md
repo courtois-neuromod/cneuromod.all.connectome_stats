@@ -4,7 +4,54 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the `airoh-mini` template — a starting point for structuring a reproducible data analysis. It is built on the [`invoke`](https://www.pyinvoke.org/) task runner. The `airoh` pip package provides reusable invoke tasks; this repo customizes them via `tasks.py` and `invoke.yaml`.
+**CNeuroMod Connectome Statistics** — computes and summarizes functional connectome statistics across the [Courtois NeuroMod](https://www.cneuromod.ca/) datasets. The pipeline reads parcelled BOLD timeseries from the `cneuromod.all` Datalad superdataset, builds a connectome per subject and run, and aggregates them into group-level statistics plus a composed multi-panel figure.
+
+Built on the [`invoke`](https://www.pyinvoke.org/) task runner. The `airoh` pip package provides reusable invoke tasks; this repo customizes them via `tasks.py` and `invoke.yaml`.
+
+### Current state: scaffolding
+
+The pipeline is wired end to end and `invoke run-smoke` passes, but the analysis steps are **stubs** that print their plan and write nothing:
+
+- `fetch-timeseries` — blocked, see below
+- `run-connectomes` — not implemented
+- `run-group-stats` — not implemented
+- the notebook panels are placeholders
+
+`fetch-cneuromod`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
+
+### Blocked: the timeseries assets are not reachable
+
+This project reads parcelled BOLD timeseries. The `courtois-neuromod/*.timeseries` repositories exist on GitHub — 14 of them (`floc.timeseries`, `movie10.timeseries`, `friends.timeseries`, …) — but as of **2026-08-17** they are **not registered as submodules of `cneuromod.all`**. Neither the local checkout nor `origin/main` lists a `timeseries` submodule, so the `{dataset}/timeseries` path configured in `invoke.yaml` does not resolve anywhere.
+
+Do **not** "fix" this by pointing the pipeline at `anat/atlases` or at fMRIPrep BOLD — the parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. Wait for the submodules to land, or ask the user before changing the retrieval route.
+
+Expected layout once available:
+
+```
+cneuromod.all/{dataset}/timeseries/timeseries/{parcellation}/sub-0X/
+    sub-0X_..._desc-...Parcels..._timeseries.h5   # one 2D (timepoints, parcels) array per run,
+                                                  # keyed ses-XXX/ses-XXX_task-..._run-N_timeseries
+    sub-0X_..._desc-...Parcels..._dseg.nii.gz     # the parcellation itself
+    sub-0X_..._label-...(GM)..._mask.nii.gz       # grey-matter mask
+```
+
+Four parcellations ship in every repo: `schaefer1000` (1000 cortical parcels), `cneuromod2026` (1134, adding subcortical and cerebellar), `voxel_mni` and `voxel_native` (voxelwise, much larger).
+
+### Open decisions
+
+Do not settle these unilaterally — raise them with the user:
+
+- **Which parcellation** to build connectomes from. `invoke.yaml` sets `parcellation: schaefer1000` *provisionally*.
+- **The connectome method** — correlation, partial correlation, tangent space, confound handling, run concatenation versus per-run estimates.
+- **The group statistics** — what is being summarized across subjects and datasets.
+
+### Project-specific conventions
+
+- **The chunk concept is the dataset.** `run-*` steps take a `--dataset` flag naming one or more top-level cneuromod.all datasets (`floc`, `movie10`, …), and iterate over them. Subject-level slicing exists on `fetch` (`--subject`) and will extend to the run steps when they are implemented.
+- **Datasets are discovered, not hardcoded.** `_list_datasets(c, marker)` in `tasks.py` returns every top-level cneuromod.all directory carrying the given derivative subdataset. It returns an empty list when the superdataset is absent, so the stubs degrade to a message rather than a traceback.
+- **The smoke target is `floc` / `sub-01`** (`smoke_dataset`, `smoke_subject` in `invoke.yaml`). `floc` is the smallest dataset with a timeseries repo *and* is openly accessible, so a smoke failure means broken plumbing rather than missing credentials.
+- **Never run `git submodule update --init --recursive` or `datalad install -r`** inside `cneuromod.all`. Submodules re-expose their own sub-submodules at differing versions; recursive cloning triggers a massive, redundant retrieval. Use `airoh.datalad.install_subdataset` (`datalad get -n`) to reach a nested subdataset.
+- **CNeuroMod content is partly credentialed.** Retrieval must stay tolerant — warn and skip, never abort — except in the smoke test. A full fetch expects credentials in environment variables; see README.md, "Credentials for a full fetch".
 
 ## Persona
 
@@ -12,45 +59,35 @@ Respond as Uncle Airoh: patient, warm, and wise. Assume the user may be new to c
 
 ## Setup
 
+This project uses `uv`. `pyproject.toml` is the single dependency file; no pip- or conda-specific dependency file is kept alongside it.
+
 ```bash
-# uv (recommended):
 uv sync
-
-# pip:
-pip install -r requirements.txt
-
-# conda:
-conda env create -n airoh_env -f environment.yml && conda activate airoh_env
 ```
 
 ## Common Commands
 
-With `uv`:
-```bash
-uv run invoke fetch           # Download source data, record the input manifest
-uv run invoke run             # Full pipeline (cached: skips steps whose output exists)
-uv run invoke run --force     # Clean everything first, then run from scratch
-uv run invoke run-smoke       # Fast end-to-end check that the plumbing works
-uv run invoke run-notebooks   # Execute notebooks, save figures to output_data/figures/
-uv run invoke run-figure-layout # Write the montage's panel geometry to panel_sizes.json (always re-runs)
-uv run invoke compose-figure  # Render figure_montage.svg to PNG with Inkscape (optional binary)
-uv run invoke verify          # Check code, config, data and docs still agree
-uv run invoke clean           # Remove output_data/ contents
-uv run invoke --list          # Show all available tasks
-```
+Prefix with `uv run`, or activate the environment and drop the prefix:
 
-Without `uv` (activate your environment first):
 ```bash
-invoke fetch              # Download source data (configured in invoke.yaml under files:)
-invoke run                # Full pipeline (cached: skips steps whose output exists)
-invoke run --force        # Clean everything first, then run from scratch
-invoke run-smoke          # Fast end-to-end check that the plumbing works
-invoke run-notebooks      # Execute notebooks, save figures to output_data/figures/
-invoke run-figure-layout  # Write the montage's panel geometry to panel_sizes.json (always re-runs)
-invoke compose-figure     # Render figure_montage.svg to PNG with Inkscape (optional binary)
-invoke verify              # Check code, config, data and docs still agree
-invoke clean              # Remove output_data/ contents
-invoke --list             # Show all available tasks
+uv run invoke fetch             # Make cneuromod.all available, retrieve timeseries assets
+uv run invoke fetch --source ~/git/cneuromod.all   # symlink an existing checkout
+uv run invoke run               # Full pipeline (cached: skips steps whose output exists)
+uv run invoke run --force       # Clean everything first, then run from scratch
+uv run invoke run --dataset floc,movie10           # restrict to specific datasets
+uv run invoke run-smoke         # Fast end-to-end check that the plumbing works
+uv run invoke run-connectomes   # Build connectomes per dataset (stub)
+uv run invoke run-group-stats   # Aggregate into group statistics (stub)
+uv run invoke run-notebooks     # Execute notebooks, save panels to output_data/figures/
+uv run invoke run-figure-layout # Write the montage's panel geometry to panel_sizes.json (always re-runs)
+uv run invoke compose-figure    # Render connectome_figure.svg to PNG with Inkscape (optional binary)
+uv run invoke verify            # Check code, config, data and docs still agree
+uv run invoke clean             # Remove output_data/ contents
+uv run invoke clean-source      # Remove fetched source data (never touched by `clean`)
+uv run invoke --list            # Show all available tasks
+
+uv run ruff check .             # Linter
+uv run pytest                   # Unit tests
 ```
 
 ## Architecture
@@ -87,19 +124,19 @@ When results start looking stale or inconsistent, reach for `--force` rather tha
 
 **Notebook outputs must live in the notebook's own folder.** `run-notebooks` treats `{figures_base}/{notebook_stem}/` as the "already ran" marker for each notebook. A notebook that writes anywhere else never creates its marker and therefore re-runs on every single `invoke run`, however cheap the rest of the pipeline is.
 
-**Figures: the Inkscape montage pattern.** `output_data/figure_montage.svg` is hand-authored in Inkscape and is the **single source of truth for panel layout** — it links each notebook panel by relative path resolved from `output_data/` (e.g. `output_data/figures/figure_simulation/scatter.png`), and the box it places a panel in is that panel's true on-page size. `run-figure-layout` (`airoh.figures.figure_layout`) reads those boxes out of every entry in `invoke.yaml`'s `figures:` mapping and writes them to `output_data/figures/panel_sizes.json` on **every** `invoke run`; `figure_simulation.ipynb` calls `airoh.figures.panel_size(name, default)` to render each panel at exactly that size, so placement is 1:1 and text is never stretched. `compose-figure` (`airoh.figures.compose_figure`) then renders the montage to `figure_montage.png` via the Inkscape CLI, an optional system binary: a missing `inkscape` warns and skips the export rather than failing `invoke run`.
+**Figures: the Inkscape montage pattern.** `output_data/connectome_figure.svg` is hand-authored in Inkscape and is the **single source of truth for panel layout** — it links each notebook panel by relative path resolved from `output_data/` (e.g. `output_data/figures/figure_connectomes/overview.png`), and the box it places a panel in is that panel's true on-page size. `run-figure-layout` (`airoh.figures.figure_layout`) reads those boxes out of every entry in `invoke.yaml`'s `figures:` mapping and writes them to `output_data/figures/panel_sizes.json` on **every** `invoke run`; `figure_connectomes.ipynb` calls `airoh.figures.panel_size(name, default)` to render each panel at exactly that size, so placement is 1:1 and text is never stretched. `compose-figure` (`airoh.figures.compose_figure`) then renders the montage to `connectome_figure.png` via the Inkscape CLI, an optional system binary: a missing `inkscape` warns and skips the export rather than failing `invoke run`.
 
 Resizing a box only fully takes effect after the panel it belongs to is re-rendered — and that panel is a notebook output, so it obeys the same existence-based caching as everything else (see **Caching is by existence**, above). `panel_sizes.json` and the composed montage update on every `invoke run` regardless, but a panel whose notebook did *not* re-run keeps its old pixel size, so Inkscape stretches it into the new box — precisely the problem this pattern exists to avoid. After resizing a box, run `invoke clean-figures && invoke run` (or `invoke run --force`) so the affected panel actually redraws at the new size.
 
-Two rules that must be kept wherever a notebook renders a montage panel: **never** pass `bbox_inches="tight"` (it resizes the canvas after the fact, which is exactly what breaks the 1:1 guarantee) — use `layout="constrained"` to reclaim margins inside the fixed canvas instead — and always save at the montage's DPI, so saved pixels equal `figsize × dpi`. That DPI is not hardcoded in the notebook: `run-notebooks` reads it from `figures:` (→ `figure_montage.dpi`, default 300) via the `montage_dpi` helper in `tasks.py` and exports it as `FIGURE_MONTAGE_DPI`, which the notebook reads. Composing the montage at a different resolution therefore re-sizes the panels with it, instead of silently breaking placement.
+Two rules that must be kept wherever a notebook renders a montage panel: **never** pass `bbox_inches="tight"` (it resizes the canvas after the fact, which is exactly what breaks the 1:1 guarantee) — use `layout="constrained"` to reclaim margins inside the fixed canvas instead — and always save at the montage's DPI, so saved pixels equal `figsize × dpi`. That DPI is not hardcoded in the notebook: `run-notebooks` reads it from `figures:` (→ `connectome_figure.dpi`, default 300) via the `montage_dpi` helper in `tasks.py` and exports it as `FIGURE_MONTAGE_DPI`, which the notebook reads. Composing the montage at a different resolution therefore re-sizes the panels with it, instead of silently breaking placement.
 
 `run-figure-layout` is a deliberate exception to the existence-based caching described above: it always re-runs, because it is cheap and a box resized in Inkscape must take effect on the very next `invoke run`, not only after a `clean`.
 
 **Task naming conventions:**
-- Fetch tasks are named `fetch-{name}` (e.g. `fetch-papers`), one per data asset; the umbrella `fetch` calls them all and routes a `--{name}-source` flag to each.
+- Fetch tasks are named `fetch-{name}` (e.g. `fetch-cneuromod`), one per data asset; the umbrella `fetch` calls them all and routes a `--{name}-source` flag to each.
 - Analysis tasks are named `run-{name}` (e.g. `run-preprocessing`, `run-model`).
 - Cleaning tasks mirror them: `clean-{name}` removes only the outputs of the corresponding step. Granular clean tasks are what make a selective re-run possible, so every run step needs one.
-- The top-level `clean` task calls all `clean-{name}` tasks for **analysis** steps in its body — it only ever touches `output_data/`. Source assets have their own mirrored `clean-{name}` tasks (e.g. `clean-papers`) plus an umbrella `clean-source`, kept separate from `clean` since removing a source asset is a deliberate act (e.g. before re-pointing a stale symlink with `fetch-{name} --source`), not something `run --force` should ever do implicitly.
+- The top-level `clean` task calls all `clean-{name}` tasks for **analysis** steps in its body — it only ever touches `output_data/`. Source assets have their own mirrored `clean-{name}` tasks (e.g. `clean-cneuromod`) plus an umbrella `clean-source`, kept separate from `clean` since removing a source asset is a deliberate act (e.g. before re-pointing a stale symlink with `fetch-{name} --source`), not something `run --force` should ever do implicitly.
 - The top-level `run` task calls all steps in its body, in order.
 - `verify` checks the project against its own documentation; see **Verification**.
 
@@ -256,15 +293,11 @@ called.
 
 **Naming:** Prefer self-explanatory names over brevity: `n_subjects` not `n`, `output_path` not `p`, `group_means` not `gm`. Avoid abbreviations unless universally known in the domain (`df` for a DataFrame is fine).
 
-**Linting:** The project linter and its configuration are chosen during `init` and stored in `pyproject.toml` or `ruff.toml`, depending on the package manager chosen at init (see **Setup** — only the `uv` path keeps `pyproject.toml`). Run it before committing. Never disable a lint rule without a comment explaining why.
+**Linting:** `ruff`, configured under `[tool.ruff]` in `pyproject.toml` (line length 100, rules `E`/`F`/`W`/`I`). Run `uv run ruff check .` before committing. Never disable a lint rule without a comment explaining why.
 
-**Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. The test framework and directory are configured during `init`.
+**Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` and currently hold only a placeholder.
 
-**Template cleanup:** When starting a new project from this template, remove the demo code before adding project-specific work:
-- Delete `run_simulation` from `tasks.py` and remove it from the `pre=` chains on `run_notebooks` and `run`
-- Delete `analysis/simulation.py` (and the `analysis/` folder if it stays empty)
-- Clear or replace `source_data/CONTENT.md` and `output_data/CONTENT.md` with project-specific descriptions
-- Update `invoke.yaml` (`files:`, paths) for the new project's data sources
+**Filling in a stub:** `run-connectomes` and `run-group-stats` are placeholders that print their plan. When implementing one, put the real logic in a new `analysis/` module, keep the task body to argument handling plus the existence check that makes it idempotent, give it a matching `clean-{name}` (both already exist), and replace the corresponding placeholder panel in `notebooks/figure_connectomes.ipynb`. Update `output_data/CONTENT.md` in the same commit — the entries there are currently marked _(pending)_.
 
 **Adding a new analysis step:** add a function to `analysis/`, add a `run-{name}` task and a matching `clean-{name}` task in `tasks.py`, call both from the bodies of the top-level `run` and `clean` tasks (see the `pre=` warning above — a body call, not `pre=`), and create or extend a notebook in `notebooks/` for visualization.
 

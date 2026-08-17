@@ -1,75 +1,70 @@
 {
-  "command": "/home/pbellec/git/airoh-mini/.venv/bin/invoke run",
+  "command": "/home/pbellec/cneuromod.all.connectome_stats/.venv/bin/invoke run --force",
   "environment": {
     "lockfiles": {
-      "environment.yml": "240993e42bc3a5a080735b449232ef6020f855afbd236f3330f5bf5ce44ad1be",
-      "requirements.txt": "66b0ee34be504a33a639c8b01da85c08f5ffcc4a199f601223a2a628794465d0",
-      "uv.lock": "79d3fe111a48b0597cb5360ee5a63f9e802f8f08ebcbb51b55249292ce6c7b11"
+      "uv.lock": "95d581ec4fa91fe3a70237aa36e7fb4357adb444252ffe6eb8625c31d9813124"
     },
     "packages": {
       "airoh": "0.5.0",
+      "h5py": "3.16.0",
       "invoke": "3.0.3",
       "jupyter": "1.1.1",
       "matplotlib": "3.10.9",
       "nbconvert": "7.17.1",
+      "numpy": "2.4.4",
       "pandas": "3.0.2",
-      "requests": "2.33.1"
+      "pytest": "9.1.1",
+      "requests": "2.33.1",
+      "ruff": "0.16.3"
     },
     "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
     "python": "3.14.0"
   },
   "inputs": {
     "assets": {
-      "papers": {
-        "commit": null,
-        "resolved_path": "/home/pbellec/git/airoh-mini/source_data/YNIMG_BrainParcellation_summary.tsv",
-        "sha256": "6eee27eb7ef7d280aa3ae5173e1e2abbb9c06ecfd77e99d2b0d7821633da16de"
+      "cneuromod_all": {
+        "commit": "87ad08a00f9883fcfe20a18ebc0b2e64791f9238",
+        "resolved_path": "/home/pbellec/git/cneuromod.all",
+        "sha256": null
       }
     },
     "manifest_file": "source_data/MANIFEST.json",
-    "manifest_sha256": "0e29388df0642de2753c4994b85f3f570e54281988f01a6851def421460a6256"
+    "manifest_sha256": "58fc794178091bef1a39c516d25b6a4ac0200dee0df3266cfae9c9a7252d1bb4"
   },
   "outputs": {
-    "figure_montage.png": {
-      "sha256": "cf882a4451ed2327a270aa58957d2c8dd36d83432f9686a60b23c9049af4bcd1",
-      "size_bytes": 47019
+    "connectome_figure.png": {
+      "sha256": "c85e508c13dd13dbcaac7201b0911a492e5b0a47a90da724ac4b72e093db117e",
+      "size_bytes": 52676
     },
-    "figure_montage.svg": {
-      "sha256": "630c4ad8e50546071c596cbf8d1becf859abf57a792e8466ef43de100b75e0b6",
-      "size_bytes": 794
+    "connectome_figure.svg": {
+      "sha256": "4a434d490cdf85fadec7385e114b9d544166ad7b9ba8ee70b5adec17e085a8b0",
+      "size_bytes": 1011
     },
-    "figures/figure_simulation/histogram.png": {
-      "sha256": "04119ea7b302f8ab8f64054d3c26b250769a88bfa8b1a8302b25057205b25d10",
-      "size_bytes": 11361
+    "figures/figure_connectomes/distribution.png": {
+      "sha256": "7c03df3b67c391b71f6e3c6bc4843a640e8e03c9e891badf353884218dc3f57f",
+      "size_bytes": 14742
     },
-    "figures/figure_simulation/scatter.png": {
-      "sha256": "9d870a5a26d607953029646111fd155cffc00521103db9c6fc7d4e1b0cf0eb70",
-      "size_bytes": 17530
+    "figures/figure_connectomes/overview.png": {
+      "sha256": "d77cefcaa69316c0857e088f3076a50690a3041f799801daa2131f1897814a60",
+      "size_bytes": 18863
     },
     "figures/panel_sizes.json": {
-      "sha256": "0cf8f2f7117147be054ead5e34a884806ccee40315e76965853937a0df51e590",
-      "size_bytes": 127
-    },
-    "figures/summary/authors.csv": {
-      "sha256": "3bb51140343a796ae2b20c389345595b940828136d9232b8c325e25e0e6f87a3",
-      "size_bytes": 340
-    },
-    "simulation_output.csv": {
-      "sha256": "ed2f89d7873468b3d0d1a3fcb8a61121d6405f4fdb0e7d647c8adedc1af90586",
-      "size_bytes": 114
+      "sha256": "61c25718cc6f6a0a7f50d6963759b26d48f83fe30eff2a1f9147b198d3cf4341",
+      "size_bytes": 133
     }
   },
-  "recorded_at": "2026-08-04T14:19:14+00:00",
+  "recorded_at": "2026-08-17T14:07:24+00:00",
   "repository": {
-    "branch": "figures-example",
-    "commit": "45b4c9df7e2c221e75446d36a7fb21ab5aaba82f",
+    "branch": "main",
+    "commit": "02abba99bcec9ccf00468975ab8498aa7268c1f3",
     "dirty": true,
-    "remote": "git@github.com:airoh-pipeline/airoh-mini.git",
-    "toplevel": "/home/pbellec/git/airoh-mini"
+    "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
+    "toplevel": "/home/pbellec/cneuromod.all.connectome_stats"
   },
   "schema": "airoh/provenance/1",
   "tasks": [
-    "run-simulation",
+    "run-connectomes",
+    "run-group-stats",
     "run-figure-layout",
     "run-notebooks",
     "compose-figure"

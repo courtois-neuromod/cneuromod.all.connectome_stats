@@ -5,9 +5,13 @@
        <image> below links a notebook panel by relative path and the box it is
        placed in is that panel's true on-page size — resize a box here in
        Inkscape and the next `invoke run` regenerates that panel at the new
-       size, with text never stretched. -->
-  <image xlink:href="figures/figure_simulation/scatter.png"
+       size, with text never stretched.
+
+       Both panels are currently PLACEHOLDERS drawn by
+       notebooks/figure_connectomes.ipynb, since the analysis steps are stubs.
+       The layout wiring is real and testable; only the content is pending. -->
+  <image xlink:href="figures/figure_connectomes/overview.png"
          x="0" y="5" width="70" height="50" />
-  <image xlink:href="figures/figure_simulation/histogram.png"
+  <image xlink:href="figures/figure_connectomes/distribution.png"
          x="75" y="15" width="40" height="30" />
 </svg>

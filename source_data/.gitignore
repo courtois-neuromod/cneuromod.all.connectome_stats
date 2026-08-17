@@ -1,4 +1,14 @@
 *.tsv
+*.h5
+
+# Guard: CNeuroMod content is neuroimaging data under a data-use agreement, and
+# some of it is not openly licensed. No fetch step writes a volume directly
+# here, but keep these so a stray image can never be committed by accident.
+*.nii
+*.nii.gz
+
+# The fetched superdataset (normally a symlink to a local checkout).
+cneuromod.all
 
 # Provenance is tracked: it records what the inputs actually were.
 !MANIFEST.json

@@ -1,7 +1,14 @@
 *.csv
+*.tsv
 *.png
+*.h5
 
-# panel_sizes.json is fully derived from figure_montage.svg (which is
+# Guard: no step writes a volume here, but keep this so a stray image can never
+# be committed by accident. Derived outputs inherit their inputs' sensitivity.
+*.nii
+*.nii.gz
+
+# panel_sizes.json is fully derived from connectome_figure.svg (which is
 # tracked) and regenerated on every run — no need to also track it.
 figures/panel_sizes.json
 
