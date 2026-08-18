@@ -126,8 +126,13 @@ Once the pipeline is run, this folder will contain the following.
 doubles as the "already ran" marker `run-notebooks` checks, so a notebook that
 wrote anywhere else would re-run on every `invoke run`.
 
-📝 Note: csv, tsv, png and h5 files in this folder are **ignored by Git** (see
-`.gitignore`), so outputs won't be tracked by default. `connectome_figure.svg`
-and `PROVENANCE.json` are the deliberate exceptions: the SVG is hand-authored
-source, not a generated output, and `PROVENANCE.json` is small and is the record
-of where the untracked results came from. It changes on every run, by design.
+📝 Note: csv, tsv and h5 files in this folder are **ignored by Git** (see
+`.gitignore`), so most outputs won't be tracked by default. `connectome_figure.svg`,
+`PROVENANCE.json` and the PNG figures (every panel under `figures/figure_connectomes/`
+plus `connectome_figure.png`) are the deliberate exceptions: the SVG is
+hand-authored source, not a generated output; `PROVENANCE.json` is small and is
+the record of where the untracked results came from (it changes on every run,
+by design); and the figures are the pipeline's actual visual output, small
+enough in aggregate (~1.2 MB) to track and review across pipeline changes
+(CLAUDE.md, "Where data lives"). `panel_sizes.json` stays untracked — it is
+fully derived from the tracked `connectome_figure.svg` and regenerated on every run.

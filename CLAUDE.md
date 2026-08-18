@@ -265,8 +265,14 @@ Both folders are **gitignored by default**, and that default is the right one:
 data has its own distribution channel (a URL, a datalad dataset, a shared
 filesystem), and git is bad at large binaries in a way that cannot be undone —
 a big file committed once stays in the history forever. Track an output only
-when it is small, diffable, and genuinely useful to read in a pull request: a
-metrics table, yes; a NIfTI volume or a multi-megabyte figure, no. When a
+when it is small and genuinely useful to review in a pull request: a metrics
+table, yes; a NIfTI volume, no. **Exception, at the user's request:**
+`output_data/figures/**/*.png` and `output_data/connectome_figure.png` — the
+pipeline's actual figures — are tracked (`!*.png` in `output_data/.gitignore`).
+Small enough in aggregate (~1.2 MB) to stay well under the size check below,
+and worth having in history to see how a change moved the result. A
+multi-megabyte figure or a NIfTI volume is still a no — this exception is
+scoped to these two small, curated locations, not "images in general." When a
 project does start tracking outputs, keep a **guard line** in the folder's
 `.gitignore` for the file types that must never be committed there, even if
 nothing currently produces them:

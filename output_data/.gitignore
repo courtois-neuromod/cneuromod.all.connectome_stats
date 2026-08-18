@@ -1,7 +1,11 @@
 *.csv
 *.tsv
-*.png
 *.h5
+
+# Figures are the deliberate exception to "no binaries" below: small
+# (~1.2 MB total), genuinely useful to diff/review across pipeline runs, and
+# the actual scientific output of this project. Tracked, not ignored.
+!*.png
 
 # Guard: no step writes a volume here, but keep this so a stray image can never
 # be committed by accident. Derived outputs inherit their inputs' sensitivity.
