@@ -99,10 +99,25 @@ parcellations:
 tr_seconds: 1.5
 
 # The two connectome measures `run-connectomes` computes for every network,
-# identically (CLAUDE.md, "Settled analysis decisions"). partial_ledoitwolf
-# (nilearn's default-shrinkage partial correlation, an established regularized
-# estimator) is the primary measure; pearson is the comparator.
+# identically. Both are stored so the comparison stays reproducible, but only
+# one is a result:
 connectome_measures: [pearson, partial_ledoitwolf]
+# Every headline analysis (`run-group-stats`) uses Pearson only.
+# partial_ledoitwolf is still computed and stored above, but it is not a
+# result — see CLAUDE.md, "Why partial correlation was dropped".
+analysis_measure: pearson
+
+# `run-group-stats` settings.
+group_stats:
+  # a priori usable-duration gate, chosen to equalise pair-duration composition
+  # across the cross-context bins (within-task pairs were ~1.6x longer than
+  # between-task pairs at 600s; ~1.04x at 1800s) — an acquisition/design
+  # property, not tuned against similarity contrasts. Costs floc, retinotopy
+  # and things entirely (three of ten task contexts). See CLAUDE.md, "Settled
+  # analysis decisions". Headline tables are reported gated and ungated
+  # (gate="all") regardless.
+  min_usable_seconds: 1800
+  similarity_bins: 60
 
 # Canonical target for `invoke run-smoke` (overridable with --dataset/--subject).
 # No timeseries dataset is anonymously readable yet (see source_data/CONTENT.md),
@@ -166,10 +181,6 @@ verify:
     # The timeseries repos' own documentation, cited by CLAUDE.md for the
     # atlas-entity naming drift. Lives upstream, not in this repo.
     - TIMESERIES.md
-    # Output of the still-stubbed run-group-stats step: documented as
-    # _(pending)_ in output_data/CONTENT.md, created once it is implemented.
-    - output_data/group_stats
-    - group_stats
     # A path *inside* the qa_figures checkout (source_data/cneuromod.all.qa_figures/
     # output_data/tables), only present after `invoke fetch-qa-figures`. Named in
     # prose relative to the checkout root, which the doc_paths check can't resolve.

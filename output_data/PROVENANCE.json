@@ -2,7 +2,7 @@
   "command": "/home/pbellec/cneuromod.all.connectome_stats/.venv/bin/invoke run",
   "environment": {
     "lockfiles": {
-      "uv.lock": "95d581ec4fa91fe3a70237aa36e7fb4357adb444252ffe6eb8625c31d9813124"
+      "uv.lock": "ef65d0ef5e0c88db577306534c05feaaf9d87954df700a3de41297d6afbb73ae"
     },
     "packages": {
       "airoh": "0.5.0",
@@ -11,11 +11,14 @@
       "jupyter": "1.1.1",
       "matplotlib": "3.10.9",
       "nbconvert": "7.17.1",
+      "nibabel": "5.4.2",
+      "nilearn": "0.14.0",
       "numpy": "2.4.4",
       "pandas": "3.0.2",
       "pytest": "9.1.1",
       "requests": "2.33.1",
-      "ruff": "0.16.3"
+      "ruff": "0.16.3",
+      "scikit-learn": "1.8.0"
     },
     "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
     "python": "3.14.0"
@@ -26,37 +29,174 @@
         "commit": "02ab5a0f848613c78ed5d38def297168f83b2a98",
         "resolved_path": "/home/pbellec/git/cneuromod.all",
         "sha256": null
+      },
+      "qa_figures": {
+        "commit": "09d1acd46d3720938e84c547104f2c7c2a11bd0b",
+        "resolved_path": "/home/pbellec/git/cneuromod.all.qa_figures",
+        "sha256": null
       }
     },
     "manifest_file": "source_data/MANIFEST.json",
-    "manifest_sha256": "6475faa616b3ebfa77ad341812d81430358e3925a1edb564a680c25d8f175309"
+    "manifest_sha256": "4aa54f5d043ee77c20fa7cc4bd0eddd8fe350e8d98f81c02b8dcb47f1bbba9ea"
   },
   "outputs": {
     "connectome_figure.png": {
-      "sha256": "c85e508c13dd13dbcaac7201b0911a492e5b0a47a90da724ac4b72e093db117e",
-      "size_bytes": 52676
+      "sha256": "86191e2f382adbd083d4a64523bf4408c6c37f6ad086420b837c0b021a66a0f2",
+      "size_bytes": 261088
     },
     "connectome_figure.svg": {
-      "sha256": "4a434d490cdf85fadec7385e114b9d544166ad7b9ba8ee70b5adec17e085a8b0",
-      "size_bytes": 1011
+      "sha256": "115d01e54d74e57249331193fc2252634f2890f03dfb2e90f5c8b7dcda31fdac",
+      "size_bytes": 1124
     },
-    "figures/figure_connectomes/distribution.png": {
-      "sha256": "7c03df3b67c391b71f6e3c6bc4843a640e8e03c9e891badf353884218dc3f57f",
-      "size_bytes": 14742
+    "connectomes/floc_cneuromod2026.h5": {
+      "sha256": "ae4578b0e27827b153c284939e26e6834563c8dbd0632865fc089f48ce31b5eb",
+      "size_bytes": 12697208
     },
-    "figures/figure_connectomes/overview.png": {
-      "sha256": "d77cefcaa69316c0857e088f3076a50690a3041f799801daa2131f1897814a60",
-      "size_bytes": 18863
+    "connectomes/friends_cneuromod2026.h5": {
+      "sha256": null,
+      "size_bytes": 223687748
+    },
+    "connectomes/harrypotter_cneuromod2026.h5": {
+      "sha256": "ae2f836d5ed1b39588edb6fd83ed6e2802ce692bf3db555fb0587b5558d80396",
+      "size_bytes": 4046536
+    },
+    "connectomes/hcptrt_cneuromod2026.h5": {
+      "sha256": "8ce8dc931e9875543eaf7851c4108a43d058325b74d9e952dc0bd5ea37442d46",
+      "size_bytes": 41318176
+    },
+    "connectomes/mario_cneuromod2026.h5": {
+      "sha256": "d3b62700bd9ca70ce882d2b5d4dec842d551477c92daa3664795be3ec0c052d1",
+      "size_bytes": 77924628
+    },
+    "connectomes/movie10_cneuromod2026.h5": {
+      "sha256": "34f4e010cb52a81c8f44bfc50e9805c2d1e8cdbc5b6b47bb3ed8a0e1d3b762b1",
+      "size_bytes": 45311108
+    },
+    "connectomes/movie10_schaefer1000.h5": {
+      "sha256": "2a915eb85ff55a4c125d4a0b85b7493639f8b4b6a6d6b27298567de7599e6675",
+      "size_bytes": 8249616
+    },
+    "connectomes/petit-prince_cneuromod2026.h5": {
+      "sha256": "ad3ef84a35269f8dfe131aaa4fd541809918a97d69945e929ccbce7e7479765b",
+      "size_bytes": 10700944
+    },
+    "connectomes/retinotopy_cneuromod2026.h5": {
+      "sha256": "f5bee5f122677b37e8b45b9fed7a8c693fc884462b3d7c75a035f6c91faa52a0",
+      "size_bytes": 16024216
+    },
+    "connectomes/shinobi_cneuromod2026.h5": {
+      "sha256": "b633e624bd418139ad505f1080cc312602e03ce890334e1e24e916d3d0f1b167",
+      "size_bytes": 32663732
+    },
+    "connectomes/things_cneuromod2026.h5": {
+      "sha256": "3ba6b379f3b6de74326438bc068092389b986944b2349520cb2b783e85b9a2e4",
+      "size_bytes": 94564016
+    },
+    "figures/figure_connectomes/cross_context.png": {
+      "sha256": "4cfefd76a70a4f62fb41bf7eb9be467aadc3b525036b5a9eed9871606995d3b5",
+      "size_bytes": 60903
+    },
+    "figures/figure_connectomes/cross_context_legend.png": {
+      "sha256": "3f61b8b514adf27671ccaba0a5c8e93ad95dd4af12a2738c1de013bcb8c82f92",
+      "size_bytes": 31628
+    },
+    "figures/figure_connectomes/cross_context_pearson_histograms.png": {
+      "sha256": "4e84c81da105aa20210e7e425cbaff2dc3a9025b9e3512eaef667aa84ac6006e",
+      "size_bytes": 224687
+    },
+    "figures/figure_connectomes/domain_movies.png": {
+      "sha256": "ecbf91a14d7f364fa242bb1c8cae60f0cfb21406c55564e8aa0df063de867ee0",
+      "size_bytes": 75689
+    },
+    "figures/figure_connectomes/domain_movies_legend.png": {
+      "sha256": "d4591004563e6f8ab8b0a3b80a9b76398ebca07379e1822b070043f631f57ded",
+      "size_bytes": 25870
+    },
+    "figures/figure_connectomes/domain_stories.png": {
+      "sha256": "ea3dafd0c0b9ebd6270c06748ce55cde9586dd26f4c68ebe26d235c4eb5a77d2",
+      "size_bytes": 74329
+    },
+    "figures/figure_connectomes/domain_stories_legend.png": {
+      "sha256": "3f61b8b514adf27671ccaba0a5c8e93ad95dd4af12a2738c1de013bcb8c82f92",
+      "size_bytes": 31628
+    },
+    "figures/figure_connectomes/domain_videogames.png": {
+      "sha256": "783362b08b734844fb155b278773db848f157f043e1222aa109f298281913224",
+      "size_bytes": 74289
+    },
+    "figures/figure_connectomes/domain_videogames_legend.png": {
+      "sha256": "3f61b8b514adf27671ccaba0a5c8e93ad95dd4af12a2738c1de013bcb8c82f92",
+      "size_bytes": 31628
+    },
+    "figures/figure_connectomes/longitudinal.png": {
+      "sha256": "dab006500d5a8eaa5a6185a55506176235c7599d8640958b5daf0f23f27f0b29",
+      "size_bytes": 52859
+    },
+    "figures/figure_connectomes/longitudinal_legend.png": {
+      "sha256": "7e7c202d78a22ec0005d379c40f1e537c54d91897c1f1f9668181e2c7b6dcdc8",
+      "size_bytes": 32173
+    },
+    "figures/figure_connectomes/longitudinal_pearson_histograms.png": {
+      "sha256": "b0b4fc1d7197b982596cbd16fe1cbb7e00bb241fac050d941eb7282f3740bca8",
+      "size_bytes": 192703
+    },
+    "figures/figure_connectomes/network_quality.png": {
+      "sha256": "00a4c32c9c759d6d09b25a699f0b6c6f3298c7152f1a223107d1df776a8fe2ca",
+      "size_bytes": 61570
+    },
+    "figures/figure_connectomes/network_quality_note.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
     },
     "figures/panel_sizes.json": {
-      "sha256": "61c25718cc6f6a0a7f50d6963759b26d48f83fe30eff2a1f9147b198d3cf4341",
-      "size_bytes": 133
+      "sha256": "55f19690aef0d8e4939f3f8fe5c6c3697bb2258929e9aab27b2ac4ac77335c40",
+      "size_bytes": 208
+    },
+    "group_stats/cross_context.tsv": {
+      "sha256": "c92e89505292b633a1cfda6b4d700de42fe1c5f3b18d9ab6b126dd7bc7f01952",
+      "size_bytes": 12094
+    },
+    "group_stats/domain_cross_context.tsv": {
+      "sha256": "6be2a2e55d065be07e7f4f86056364fc44f972c25a516a35a2a37df2f03ca394",
+      "size_bytes": 37501
+    },
+    "group_stats/domain_duration_balance.tsv": {
+      "sha256": "470e5727ce2f51e41e856efa44a29e290fdd4f021aa1bb7136832da493425340",
+      "size_bytes": 1881
+    },
+    "group_stats/domain_pair_histograms.tsv": {
+      "sha256": "983a9a8170aa51b3ec0007a65bf2ae70aa269d4c8ca57358059a0814960e6019",
+      "size_bytes": 1353511
+    },
+    "group_stats/duration_balance.tsv": {
+      "sha256": "74158275df8fe5cc4c6858516328799785d8715677827fc7d00899fcece73f23",
+      "size_bytes": 612
+    },
+    "group_stats/longitudinal_bins.tsv": {
+      "sha256": "1dcb622f9f473f29e9044471e869ec8e2979f0fc8ec01c8365b23be022b45819",
+      "size_bytes": 11962
+    },
+    "group_stats/longitudinal_lag.tsv": {
+      "sha256": "f1d36924accca361d461b4212e0e460ea98b624b0ea0e2b44a4b76621af69ea2",
+      "size_bytes": 49018
+    },
+    "group_stats/network_quality.tsv": {
+      "sha256": "bb0abb04a61b191bfd6ab907c7b91bf6f73b5b785d2177ca3c86f0a577c1caa1",
+      "size_bytes": 1051
+    },
+    "group_stats/pair_histograms.tsv": {
+      "sha256": "ed5d97173e93298d06f0b9bb12df2a74b63f192a4e5cf61e2ee984ee81e769b8",
+      "size_bytes": 826548
+    },
+    "group_stats/session_gate.tsv": {
+      "sha256": "4d7010b0265b5d11f1a356895d9e2b78053708b91d7f67f1aef2f1b9974fe430",
+      "size_bytes": 354
     }
   },
-  "recorded_at": "2026-08-17T15:12:10+00:00",
+  "recorded_at": "2026-08-18T17:35:18+00:00",
   "repository": {
     "branch": "main",
-    "commit": "526324b146d4ca4823e752c3a45ae5ef2dc25b73",
+    "commit": "e5189eb35c61cf8ba5bf1b738ef91f4725c00255",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/cneuromod.all.connectome_stats"

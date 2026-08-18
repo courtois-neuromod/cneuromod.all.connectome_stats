@@ -11,50 +11,51 @@ statistics and a composed multi-panel figure.
 Built on the [`invoke`](https://www.pyinvoke.org/) task runner, with reusable
 tasks from [`airoh`](https://pypi.org/project/airoh/).
 
-> ⚠️ **Status: `run-connectomes` is implemented; `run-group-stats` is still a
-> stub.** The pipeline is wired end to end, the smoke test passes, `fetch`
-> retrieves real data, and `run-connectomes` writes real per-network
-> connectomes. `run-group-stats` still reports what it would do and writes
-> nothing, and the figure panels are placeholders. See **Current state** below.
+> ✅ **Status: implemented end to end.** `fetch` retrieves real data,
+> `run-connectomes` writes real per-network connectomes, and `run-group-stats`
+> computes the two headline analyses into `output_data/group_stats/*.tsv`,
+> plotted by three real montage panels. See **Current state** below.
 
 ---
 
 ## 🔬 What this measures
 
-The question is whether functional brain organization carries a **stable,
-subject-specific component** across extremely heterogeneous cognitive contexts
-and across a longitudinal acquisition spanning roughly five years. CNeuroMod
-gives us six deeply sampled individuals, scanned several times a week across
-many different experiments — very different stimuli, tasks and cognitive
-constraints — at 2 mm isotropic resolution and TR = 1.5 s, already preprocessed
-and denoised upstream.
+CNeuroMod gives us six deeply sampled individuals, scanned several times a
+week across many different experiments — very different stimuli, tasks and
+cognitive constraints — at 2 mm isotropic resolution and TR = 1.5 s, already
+preprocessed and denoised upstream. This project establishes three claims
+about that data as a functional-connectome resource:
 
-The hypothesis is that **conditional dependencies between regions are
-substantially more stable across contexts than ordinary bivariate
-correlations**. That is not a claim that task activity is a contaminant sitting
-on top of some privileged "intrinsic" process — task and unconstrained activity
-are both brain activity. It is narrower: partial correlation conditions out
-fluctuations shared across many regions at once, so it should be less sensitive
-to the large-scale common signal that changing experimental constraints,
-physiology and noise all induce.
+1. **Stable across five years of acquisition** — `friends` sessions compared
+   across seasons; within-subject similarity decays gently with acquisition
+   lag against a clear between-subject floor.
+2. **Captures a variety of functional brain states** — across all datasets,
+   within-subject similarity exceeds between-subject similarity, and same-task
+   pairs exceed different-task pairs, in every network.
+3. **Applies to all networks, with varying quality** — both analyses above,
+   reported per network and related to per-network tSNR.
+
+That is not a claim that task activity is a contaminant sitting on top of some
+privileged "intrinsic" process — task and unconstrained activity are both
+brain activity.
 
 So:
 
-- **Partial correlation is the primary measure** (unregularized empirical
-  inverse covariance), with **Pearson correlation computed on exactly the same
-  time series** as a comparator, plus a Ledoit-Wolf shrinkage variant of the
-  partial correlation to check whether the unregularized inverse is well
-  conditioned. Everything downstream runs identically for all three — the
-  interesting quantity is the *difference* between the partial and Pearson
-  measures.
-- **The session is the unit of analysis**, restricted (at the group-stats
-  stage, not at connectome-computation time) to sessions carrying roughly 30
-  minutes or more of usable data (~1,200 volumes). Runs are z-scored
-  individually and only then concatenated within a session. Run-level
-  estimates are a secondary unit, for working out how much data a stable
-  estimate needs. `run-connectomes` computes both levels for every session and
-  run found — it never filters; that happens downstream, so exclusion
-  thresholds can be varied without recomputing.
+- **Pearson correlation is the measure behind every headline result.** An
+  earlier hypothesis held that partial correlation (conditioning out
+  fluctuations shared across many regions) would be more stable across
+  contexts; the first full run tested it and rejected it — partial
+  correlation's between-subject floor is barely below Pearson's, while its
+  within-subject ceiling collapses, roughly halving the dynamic range. Partial
+  correlation (`partial_ledoitwolf`, Ledoit-Wolf shrinkage) is still computed
+  and stored by `run-connectomes` for reproducibility, but it is not reported.
+  See `CLAUDE.md`, "Why partial correlation was dropped", for the numbers.
+- **The session is the unit of analysis**, gated at the group-stats stage
+  (never at connectome-computation time) to sessions carrying at least 1800 s
+  (30 minutes) of usable data. Runs are z-scored individually and only then
+  concatenated within a session. `run-connectomes` computes a connectome for
+  every session found — it never filters; that happens downstream in
+  `run-group-stats`, so exclusion thresholds can be varied without recomputing.
 - **Estimation is per network, not whole-brain.** The primary parcellation,
   `cneuromod2026` (1134 parcels: cortex + subcortex + cerebellum), is grouped
   into the 7 Yeo cortical networks plus `cerebellum` and `subcortex` — nine
@@ -62,12 +63,10 @@ So:
   the smoke test still exercises, since it needs no S3 credentials on this
   machine.
 
-The headline analyses are within- versus between-subject connectome similarity,
-same-subject/different-task versus different-subject/same-task similarity, and
-subject fingerprinting both leave-one-session-out and leave-one-task-out. With
-only six participants, identification *margin* and *rank* matter more than raw
-accuracy, and inference leans on permutation and participant-level resampling
-rather than treating sessions as independent subjects.
+With only six participants, effects have to replicate across all six
+individuals rather than rest on thousands of edge-wise tests; inference leans
+on permutation tests and participant-level resampling rather than treating
+sessions as independent subjects.
 
 ---
 
@@ -219,7 +218,7 @@ invoke clean-source   # remove fetched source data (never touched by `clean`)
 
 ## 📌 Current state
 
-The plumbing is real; the science is not wired up yet.
+The plumbing and the science are both wired up.
 
 | Piece | State |
 | --- | --- |
@@ -228,9 +227,9 @@ The plumbing is real; the science is not wired up yet.
 | `fetch-qa-figures` | ✅ implemented — symlinks or clones the qa_figures QC tables (no credentials needed) |
 | `fetch-parcel-labels` | ✅ implemented — builds the parcel -> network lookup table (see "The parcel -> network lookup" in `source_data/CONTENT.md`) |
 | `run-connectomes` | ✅ implemented — per-session, per-network Pearson + regularized partial correlation |
-| `run-group-stats` | 🚧 **stub** — will compute similarity and fingerprinting summaries; prints its plan, writes nothing |
+| `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses (Pearson only) into seven tidy TSVs |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
-| `run-notebooks` | ✅ implemented — renders **placeholder** panels |
+| `run-notebooks` | ✅ implemented — renders the three real montage panels |
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
 | `verify`, `clean*` | ✅ implemented |
 
@@ -249,21 +248,19 @@ is credentialed** for now — see "Credentials for a full fetch" above and
   analysis decisions", for why. The code stays parcellation-agnostic;
   `schaefer1000` (7 cortical networks) keeps working and is what `run-smoke`
   uses.
-- Measures, computed identically for both: **partial correlation** with
-  **Ledoit-Wolf shrinkage** (`partial_ledoitwolf`, primary — an established,
-  regularized estimator); and **Pearson correlation** (`pearson`, the
-  comparator). The unregularized empirical inverse was tried and dropped: with
-  short runs, `n_samples` can be smaller than `n_parcels` in the larger
-  networks, making the sample covariance exactly singular. This is a
-  data-quality assessment, not an estimator comparison, so there was no reason
-  to keep an estimator that breaks on this project's own data. Stored as raw
-  float32 coefficients only — Fisher-z is `arctanh` of the raw values, computed
-  where used (amends the original "store both raw and Fisher-z").
+- Measures, computed identically for both by `run-connectomes`: **Pearson
+  correlation** (`pearson`) and **partial correlation with Ledoit-Wolf
+  shrinkage** (`partial_ledoitwolf`). Only Pearson is read by `run-group-stats`
+  (`analysis_measure` in `invoke.yaml`) — partial correlation was tested and
+  rejected as a headline measure; see `CLAUDE.md`, "Why partial correlation was
+  dropped". Stored as raw float32 coefficients only — Fisher-z is `arctanh` of
+  the raw values, computed where used.
 - Unit: `run-connectomes` computes **session-level only** (runs z-scored
   individually then concatenated), for every session found — it never filters.
-  There is no per-run connectome. The ≳30-minute usable-data gate is a
-  `run-group-stats` concern, so exclusion thresholds can be varied without
-  recomputing connectomes (CLAUDE.md, "Record QC, never gate on it").
+  There is no per-run connectome. The usable-data gate
+  (`usable_duration_sec >= 1800`) is a `run-group-stats` concern, so exclusion
+  thresholds can be varied without recomputing connectomes (CLAUDE.md, "Record
+  QC, never gate on it").
 - Estimation: **independently within each network** — the primary analysis never
   inverts a 1000 × 1000+ covariance matrix. A parcel invalid in a given
   session (NaN or constant) is dropped before estimation and its edges are
@@ -271,11 +268,12 @@ is credentialed** for now — see "Credentials for a full fetch" above and
 - Every matrix ships its numerical diagnostics: rank, condition number, minimum
   eigenvalue, number of samples and number of parcels (valid and total).
 
-**Genuinely still open:** the QC criteria that define "usable" data (which
-motion and tSNR thresholds, and how censored volumes count toward the 30
-minutes). The mapping between the QC tables' entities and the timeseries `.h5`
-run keys is now implemented (`analysis/qc_join.py`) as a best-effort join —
-see [`source_data/CONTENT.md`](source_data/CONTENT.md) for its coverage gaps.
+**Genuinely still open:** whether finer-grained usable-data criteria (e.g.
+per-run FD thresholds within a session) are worth adding on top of the single
+session-level `usable_duration_sec >= 1800` gate. The mapping between the QC
+tables' entities and the timeseries `.h5` run keys is implemented
+(`analysis/qc_join.py`) as a best-effort join — see
+[`source_data/CONTENT.md`](source_data/CONTENT.md) for its coverage gaps.
 
 ---
 
@@ -317,7 +315,7 @@ see [`source_data/CONTENT.md`](source_data/CONTENT.md) for its coverage gaps.
 | `fetch-parcel-labels` | Builds `source_data/{parcellation}_networks.tsv`, the parcel -> network lookup table |
 | `run`               | Runs the full pipeline in order; `--force` cleans first  |
 | `run-connectomes`   | Computes per-session, per-network Pearson + regularized partial-correlation connectomes |
-| `run-group-stats`   | Aggregates connectomes into similarity and fingerprinting summaries (**stub**) |
+| `run-group-stats`   | Aggregates connectomes into the cross-context and longitudinal similarity summaries |
 | `run-figure-layout` | Writes the montage's panel geometry to `output_data/figures/panel_sizes.json`; always re-runs |
 | `run-notebooks`     | Executes notebooks and saves panels to `output_data/figures/` |
 | `compose-figure`    | Renders `connectome_figure.svg` to PNG with Inkscape (optional binary) |
@@ -342,7 +340,7 @@ Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 | Folder / File  | Description                              |
 | -------------- | ---------------------------------------- |
 | `analysis/`    | Pure Python analysis logic, called by invoke tasks |
-| `notebooks/`   | Jupyter notebooks for visualization (one per figure, plus `qc_similarity.ipynb` and `qc_friends_seasons.ipynb` — exploratory QC, not montage panels) |
+| `notebooks/`   | `figure_connectomes.ipynb` — reads `output_data/group_stats/*.tsv` and renders the three montage panels plus diagnostic histogram grids |
 | `tests/`       | Unit tests (`pytest`)                    |
 | `source_data/` | Source datasets — see [`source_data/CONTENT.md`](source_data/CONTENT.md) |
 | `output_data/` | Generated results and figures — see [`output_data/CONTENT.md`](output_data/CONTENT.md) |

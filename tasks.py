@@ -410,22 +410,148 @@ def _checksum_file(path):
 
 
 @task(help={
+    "dataset": "Comma-separated dataset names to restrict analysis B to "
+               "(default: every connectome file present).",
     "smoke": "Aggregate only what the smoke run produced.",
 })
-def run_group_stats(c, smoke=False):
+def run_group_stats(c, dataset=None, smoke=False):
     """
-    Aggregate per-subject connectomes into group-level statistics.
-    **Not implemented yet.**
+    Aggregate per-session connectomes into the two headline analyses (CLAUDE.md,
+    "Scientific objective"): cross-context similarity (analysis B, all datasets)
+    and the friends longitudinal drift control (analysis A). Both gated
+    (`usable_duration_sec >= group_stats.min_usable_seconds`) and ungated.
 
-    Reads the per-dataset tables `run-connectomes` writes and produces group
-    summary tables under output_data/group_stats/. Skips when its output
-    already exists.
+    Also computes a robustness-tier check on analysis B: the same
+    within-/between-task contrast restricted one domain at a time to
+    `analysis.group_stats.DOMAIN_DATASETS` (movies, videogames, stories).
+
+    Reads output_data/connectomes/{dataset}_{parcellation}.h5 (`run-connectomes`'s
+    output) and writes ten tidy TSVs under output_data/group_stats/. Skips when
+    cross_context.tsv already exists.
     """
-    output_dir = Path(c.config.get("output_data_dir"))
+    import numpy as np
+    import pandas as pd
 
-    print("TODO: run-group-stats is not implemented yet")
-    print(f"   would write into {output_dir / 'group_stats'}"
-          + (" (smoke subset)" if smoke else ""))
+    from analysis.connectome_store import load_index
+    from analysis.group_stats import (
+        cross_context_summary,
+        domain_cross_context_summary,
+        longitudinal_summary,
+        network_quality,
+        usable_sessions,
+    )
+    from analysis.similarity import discover_connectome_files
+    from analysis.timeseries_layout import parse_labels
+
+    output_dir = Path(c.config.get("output_data_dir")) / "group_stats"
+    out_path = output_dir / "cross_context.tsv"
+    if out_path.exists():
+        print(f"🫧 {out_path} already exists — skipping run-group-stats")
+        return
+
+    parcellation, network_order, _ = _parcellation_config(c, None)
+    if smoke:
+        parcellation = c.config.get("smoke_parcellation", parcellation)
+        parcellation, network_order, _ = _parcellation_config(c, parcellation)
+
+    measure = c.config.get("analysis_measure", "pearson")
+    gate_config = c.config.get("group_stats", {})
+    min_usable_seconds = gate_config.get("min_usable_seconds", 1800)
+    n_bins = gate_config.get("similarity_bins", 60)
+
+    connectome_dir = Path(c.config.get("output_data_dir")) / "connectomes"
+    paths, skipped = discover_connectome_files(connectome_dir, parcellation)
+    for path, reason in skipped:
+        print(f"⚠️  skipping {path.name}: {reason}")
+    names = parse_labels(dataset)
+    if names:
+        paths = [p for p in paths if p.stem.rsplit(f"_{parcellation}", 1)[0] in names]
+    if not paths:
+        print(f"⚠️  No connectome files for parcellation={parcellation} — "
+              "run `invoke run-connectomes` first.")
+        return
+
+    print(f"⏳ analysis B (cross-context): {len(paths)} connectome file(s), "
+          f"gate={min_usable_seconds}s")
+    all_index = pd.concat([load_index(p) for p in paths], ignore_index=True)
+    _, session_gate = usable_sessions(all_index, min_usable_seconds)
+    cross_context_result = cross_context_summary(
+        paths, network_order, measure, min_usable_seconds, n_bins
+    )
+
+    print("⏳ domain-restricted cross-context (movies, videogames, stories)")
+    domain_result = domain_cross_context_summary(
+        paths, parcellation, _cneuromod_dir(c), network_order, measure,
+        min_usable_seconds, n_bins,
+    )
+
+    friends_paths = [p for p in paths if p.stem.startswith("friends_")]
+    if len(friends_paths) == 1:
+        print("⏳ analysis A (friends longitudinal)")
+        longitudinal_result = longitudinal_summary(
+            friends_paths[0], _cneuromod_dir(c), parcellation, network_order, measure,
+            min_usable_seconds, n_bins,
+        )
+    else:
+        print(f"⚠️  no single friends_{parcellation}.h5 found ({len(friends_paths)} "
+              "candidates) — skipping analysis A (longitudinal tables will be empty)")
+        longitudinal_result = None
+
+    tsnr_quality = network_quality(all_index, network_order)
+    cross_bins = cross_context_result["cross_context"]
+    within_cross = cross_bins[
+        (cross_bins["bin"] == "within-subject / within-dataset") & (cross_bins["gate"] == "gated")
+    ][["network", "median", "n_edges_valid", "n_edges_total"]].rename(
+        columns={"median": "within_subject_median_cross_context"}
+    )
+    network_quality_frame = tsnr_quality.merge(within_cross, on="network", how="left")
+
+    if longitudinal_result is not None:
+        long_bins = longitudinal_result["longitudinal_bins"]
+        within_long = long_bins[
+            (long_bins["bin"] == "within-subject / within-season") & (long_bins["gate"] == "gated")
+        ][["network", "median"]].rename(columns={"median": "within_subject_median_longitudinal"})
+        network_quality_frame = network_quality_frame.merge(within_long, on="network", how="left")
+    else:
+        network_quality_frame["within_subject_median_longitudinal"] = np.nan
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    empty_bins = pd.DataFrame(columns=[
+        "bin", "n", "median", "q25", "q75", "mean", "sd",
+        "network", "gate", "measure", "n_edges_valid", "n_edges_total",
+    ])
+    empty_lag = pd.DataFrame(columns=[
+        "lag_value", "n", "median", "q25", "q75", "lag_type",
+        "network", "gate", "measure", "pair_type",
+    ])
+
+    cross_context_result["cross_context"].to_csv(out_path, sep="\t", index=False)
+    histograms = [cross_context_result["histograms"]]
+    if longitudinal_result is not None:
+        longitudinal_result["longitudinal_bins"].to_csv(
+            output_dir / "longitudinal_bins.tsv", sep="\t", index=False)
+        longitudinal_result["longitudinal_lag"].to_csv(
+            output_dir / "longitudinal_lag.tsv", sep="\t", index=False)
+        histograms.append(longitudinal_result["histograms"])
+    else:
+        empty_bins.to_csv(output_dir / "longitudinal_bins.tsv", sep="\t", index=False)
+        empty_lag.to_csv(output_dir / "longitudinal_lag.tsv", sep="\t", index=False)
+
+    network_quality_frame.to_csv(output_dir / "network_quality.tsv", sep="\t", index=False)
+    session_gate.to_csv(output_dir / "session_gate.tsv", sep="\t", index=False)
+    pd.concat(histograms, ignore_index=True).to_csv(
+        output_dir / "pair_histograms.tsv", sep="\t", index=False)
+    cross_context_result["duration_balance"].to_csv(
+        output_dir / "duration_balance.tsv", sep="\t", index=False)
+
+    domain_result["cross_context"].to_csv(
+        output_dir / "domain_cross_context.tsv", sep="\t", index=False)
+    domain_result["histograms"].to_csv(
+        output_dir / "domain_pair_histograms.tsv", sep="\t", index=False)
+    domain_result["duration_balance"].to_csv(
+        output_dir / "domain_duration_balance.tsv", sep="\t", index=False)
+
+    print(f"✅ run-group-stats: wrote 10 tables to {output_dir}")
 
 
 @task
