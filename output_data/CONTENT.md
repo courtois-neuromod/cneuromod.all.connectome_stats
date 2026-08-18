@@ -57,6 +57,24 @@ is implemented — see `connectomes/` below.
   check, not the headline result. Also writes
   `figures/qc_similarity/pair_summary.tsv` (measure × network × bin summary
   stats).
+- `figures/qc_friends_seasons/{measure}_season_bins.png` — tier-3 robustness
+  check (CLAUDE.md, "Tier-3 robustness: friends seasons as a temporal-stability
+  control"), **not** part of the montage and **not** `run-group-stats`: the
+  same 3×3 grid as `qc_similarity`, but restricted to `friends` and split
+  same-/different-subject × same-/different-**season** instead of dataset.
+  Season is re-derived from the source timeseries h5 key names (not stored in
+  the connectome index) and boundary sessions are dropped. Written by
+  `notebooks/qc_friends_seasons.ipynb` from `analysis/friends_seasons.py` and
+  `analysis/similarity.py`. Also writes
+  `figures/qc_friends_seasons/{measure}_season_lag.png` (median similarity vs.
+  season lag and vs. binned session gap — the drift curve — plotted for
+  within- **and** between-subject pairs on the same axes, so a shared,
+  scanner-wide drift would show up as movement in the between-subject curve
+  too, not just the within-subject one),
+  `figures/qc_friends_seasons/season_pair_summary.tsv` (measure × network ×
+  season-bin summary stats) and
+  `figures/qc_friends_seasons/season_lag_summary.tsv` (measure × network ×
+  pair_type × season-lag summary stats).
 - `figures/panel_sizes.json` — the `{panel: (width_mm, height_mm)}` box each
   panel is placed in inside `connectome_figure.svg`, written by
   `invoke run-figure-layout`. Read by the notebook via `airoh.figures.panel_size`

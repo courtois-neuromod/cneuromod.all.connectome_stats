@@ -10,6 +10,7 @@ from analysis.similarity import (
     discover_connectome_files,
     load_stacked_measure,
     pair_bins,
+    pair_frame,
     similarity_matrix,
 )
 
@@ -101,3 +102,49 @@ def test_pair_bins_assigns_all_four_labels_without_double_counting():
     assert labels[1, 2] == "between-subject / between-dataset"
     assert labels[1, 3] == "between-subject / within-dataset"
     assert labels[2, 3] == "within-subject / between-dataset"
+
+
+def test_pair_bins_with_custom_group_column_produces_matching_partition():
+    index_frame = pd.DataFrame({
+        "subject": ["01", "01", "02", "02"],
+        "dataset": ["movie10", "friends", "movie10", "friends"],
+        "season": ["s01", "s02", "s01", "s02"],
+    })
+    dataset_labels, dataset_triu = pair_bins(index_frame, group_column="dataset")
+    season_labels, season_triu = pair_bins(
+        index_frame, group_column="season", group_name="season"
+    )
+
+    assert np.array_equal(dataset_triu, season_triu)
+    assert season_labels[0, 1] == "within-subject / between-season"
+    assert season_labels[0, 2] == "between-subject / within-season"
+    assert season_labels[0, 3] == "between-subject / between-season"
+
+    # Same equality partition on this equivalent frame (dataset and season
+    # vary together), so the two label grids agree edge for edge modulo name.
+    same_partition = (dataset_labels == "within-subject / within-dataset") == (
+        season_labels == "within-subject / within-season"
+    )
+    assert same_partition.all()
+
+
+def test_pair_frame_returns_one_row_per_unordered_pair_with_side_metadata():
+    similarity = np.array([
+        [1.0, 0.5, 0.2],
+        [0.5, 1.0, 0.1],
+        [0.2, 0.1, 1.0],
+    ])
+    index_frame = pd.DataFrame({
+        "subject": ["01", "01", "02"],
+        "session": ["001", "002", "001"],
+    })
+
+    frame = pair_frame(similarity, index_frame)
+
+    assert len(frame) == 3  # 3 choose 2
+    assert set(frame.columns) == {
+        "similarity", "subject_i", "subject_j", "session_i", "session_j",
+    }
+    assert list(frame["similarity"]) == [0.5, 0.2, 0.1]
+    assert list(frame["subject_i"]) == ["01", "01", "01"]
+    assert list(frame["subject_j"]) == ["01", "02", "02"]

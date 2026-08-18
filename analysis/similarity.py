@@ -12,12 +12,18 @@ import pandas as pd
 
 from analysis.connectome_store import load_index, load_measure
 
-PAIR_BINS = [
-    "within-subject / within-dataset",
-    "within-subject / between-dataset",
-    "between-subject / within-dataset",
-    "between-subject / between-dataset",
-]
+
+def pair_bin_labels(group_name="dataset"):
+    """The four `"{within|between}-subject / {within|between}-{group_name}"` labels."""
+    return [
+        f"within-subject / within-{group_name}",
+        f"within-subject / between-{group_name}",
+        f"between-subject / within-{group_name}",
+        f"between-subject / between-{group_name}",
+    ]
+
+
+PAIR_BINS = pair_bin_labels()
 
 
 def discover_connectome_files(connectome_dir, parcellation):
@@ -97,40 +103,44 @@ def similarity_matrix(matrix):
     return (z @ z.T) / n_edges
 
 
-def pair_bins(index_frame):
-    """`(n, n)` bin-label array from `subject`/`dataset` equality, plus the
-    strict upper triangle so each unordered pair is counted once.
+def pair_bins(index_frame, group_column="dataset", group_name=None):
+    """`(n, n)` bin-label array from `subject`/`group_column` equality, plus
+    the strict upper triangle so each unordered pair is counted once.
     """
+    group_name = group_name or group_column
+    labels_for = pair_bin_labels(group_name)
     subject = index_frame["subject"].to_numpy()
-    dataset = index_frame["dataset"].to_numpy()
+    group = index_frame[group_column].to_numpy()
     same_subject = subject[:, None] == subject[None, :]
-    same_dataset = dataset[:, None] == dataset[None, :]
+    same_group = group[:, None] == group[None, :]
 
     n = len(index_frame)
     labels = np.empty((n, n), dtype=object)
-    labels[same_subject & same_dataset] = PAIR_BINS[0]
-    labels[same_subject & ~same_dataset] = PAIR_BINS[1]
-    labels[~same_subject & same_dataset] = PAIR_BINS[2]
-    labels[~same_subject & ~same_dataset] = PAIR_BINS[3]
+    labels[same_subject & same_group] = labels_for[0]
+    labels[same_subject & ~same_group] = labels_for[1]
+    labels[~same_subject & same_group] = labels_for[2]
+    labels[~same_subject & ~same_group] = labels_for[3]
 
     triu_mask = np.triu(np.ones((n, n), dtype=bool), k=1)
     return labels, triu_mask
 
 
-def collect_pair_values(similarity, bins):
+def collect_pair_values(similarity, bins, bin_labels=None):
     """`{bin_label: 1-D array}` of similarity values for the upper-triangle pairs."""
+    bin_labels = bin_labels or PAIR_BINS
     labels, triu_mask = bins
     result = {}
-    for bin_label in PAIR_BINS:
+    for bin_label in bin_labels:
         mask = triu_mask & (labels == bin_label)
         result[bin_label] = similarity[mask]
     return result
 
 
-def summarize_bins(values_by_bin):
-    """`n`, `median`, `q25`, `q75`, `mean`, `sd` per bin, in `PAIR_BINS` order."""
+def summarize_bins(values_by_bin, bin_labels=None):
+    """`n`, `median`, `q25`, `q75`, `mean`, `sd` per bin, in `bin_labels` order."""
+    bin_labels = bin_labels or PAIR_BINS
     rows = []
-    for bin_label in PAIR_BINS:
+    for bin_label in bin_labels:
         values = values_by_bin.get(bin_label, np.array([]))
         rows.append({
             "bin": bin_label,
@@ -142,3 +152,20 @@ def summarize_bins(values_by_bin):
             "sd": np.std(values) if len(values) else np.nan,
         })
     return pd.DataFrame(rows)
+
+
+def pair_frame(similarity, index_frame, columns=("subject", "session")):
+    """Tidy upper-triangle DataFrame: `{col}_i`/`{col}_j` per `columns`, plus `similarity`.
+
+    One row per unordered session pair — the basis for a lag analysis (e.g.
+    similarity vs. `|season_i - season_j|`) that a bin split alone cannot
+    provide.
+    """
+    n = len(index_frame)
+    i_idx, j_idx = np.triu_indices(n, k=1)
+    data = {"similarity": similarity[i_idx, j_idx]}
+    for column in columns:
+        values = index_frame[column].to_numpy()
+        data[f"{column}_i"] = values[i_idx]
+        data[f"{column}_j"] = values[j_idx]
+    return pd.DataFrame(data)

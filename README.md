@@ -342,7 +342,7 @@ Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 | Folder / File  | Description                              |
 | -------------- | ---------------------------------------- |
 | `analysis/`    | Pure Python analysis logic, called by invoke tasks |
-| `notebooks/`   | Jupyter notebooks for visualization (one per figure, plus `qc_similarity.ipynb` — exploratory QC, not a montage panel) |
+| `notebooks/`   | Jupyter notebooks for visualization (one per figure, plus `qc_similarity.ipynb` and `qc_friends_seasons.ipynb` — exploratory QC, not montage panels) |
 | `tests/`       | Unit tests (`pytest`)                    |
 | `source_data/` | Source datasets — see [`source_data/CONTENT.md`](source_data/CONTENT.md) |
 | `output_data/` | Generated results and figures — see [`output_data/CONTENT.md`](output_data/CONTENT.md) |
