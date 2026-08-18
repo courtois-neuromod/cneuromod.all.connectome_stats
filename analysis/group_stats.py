@@ -38,7 +38,7 @@ from analysis.similarity import (
     summarize_bins,
 )
 
-GATES = ("all", "gated")
+GATES = ("all", "gated", "qc_covered", "low_motion")
 
 
 def usable_sessions(index_frame, min_usable_seconds):
@@ -104,10 +104,35 @@ def similarity_histogram(values, bins):
 
 
 def _gate_mask_for(index_frame, min_usable_seconds, gate_name):
+    """Boolean row mask for one `GATES` entry.
+
+    `qc_covered`/`low_motion` delegate the stratum to
+    `analysis.motion_strata` rather than reimplementing it — see CLAUDE.md,
+    "Motion stratification". The meaningful contrast for the headline tables
+    is `low_motion` vs. `qc_covered`, not vs. `gated`: `low_motion`
+    necessarily drops mario/harrypotter (no `fd_mean` coverage), and
+    comparing it against `gated` would confound a motion effect with that
+    change in dataset composition.
+    """
     if gate_name == "all":
         return np.ones(len(index_frame), dtype=bool)
     usable = index_frame["usable_duration_sec"].fillna(index_frame["duration_sec"])
-    return (usable >= min_usable_seconds).to_numpy()
+    gated_mask = (usable >= min_usable_seconds).to_numpy()
+    if gate_name == "gated":
+        return gated_mask
+
+    from analysis.motion_strata import assign_motion_strata, qc_covered_mask
+
+    qc_mask = qc_covered_mask(index_frame, min_usable_seconds)
+    if gate_name == "qc_covered":
+        return qc_mask
+    if gate_name == "low_motion":
+        stratum = np.full(len(index_frame), None, dtype=object)
+        stratum[qc_mask] = assign_motion_strata(
+            index_frame[qc_mask].reset_index(drop=True)
+        )["motion_stratum"].to_numpy()
+        return stratum == "low"
+    raise ValueError(f"Unknown gate {gate_name!r}")
 
 
 def duration_balance(index_frame, min_usable_seconds, group_column="dataset"):

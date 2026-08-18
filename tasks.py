@@ -554,6 +554,94 @@ def run_group_stats(c, dataset=None, smoke=False):
     print(f"✅ run-group-stats: wrote 10 tables to {output_dir}")
 
 
+@task(help={
+    "dataset": "Comma-separated dataset names to restrict analysis to "
+               "(default: every connectome file present).",
+    "smoke": "Aggregate only what the smoke run produced.",
+})
+def run_motion_strata(c, dataset=None, smoke=False):
+    """
+    Robustness-tier check (CLAUDE.md, "Motion stratification"): does
+    connectome similarity depend on head motion, and does claim 2's
+    within-task > between-task ordering survive when motion is held down?
+
+    Splits the QC-covered population (gated AND `fd_mean` present — mario and
+    harrypotter have zero `fd_mean` coverage upstream, so they never enter
+    this analysis) into low/high motion strata, below/above the median
+    `fd_mean` within each (subject, dataset) cell — orthogonal to both by
+    construction, since motion is strongly subject- and dataset-specific. The
+    plain within-subject median split is written alongside it as a secondary
+    `split` value in the same tables. Standalone figure, not placed in the
+    headline montage — see CLAUDE.md.
+
+    Reads output_data/connectomes/{dataset}_{parcellation}.h5 (`run-connectomes`'s
+    output) and writes five tidy TSVs under output_data/motion_strata/. Skips
+    when motion_strata.tsv already exists.
+    """
+    import pandas as pd
+
+    from analysis.connectome_store import load_index
+    from analysis.motion_strata import (
+        motion_balance,
+        motion_permutation,
+        motion_sessions_table,
+        motion_summary,
+    )
+    from analysis.similarity import discover_connectome_files
+    from analysis.timeseries_layout import parse_labels
+
+    output_dir = Path(c.config.get("output_data_dir")) / "motion_strata"
+    out_path = output_dir / "motion_strata.tsv"
+    if out_path.exists():
+        print(f"🫧 {out_path} already exists — skipping run-motion-strata")
+        return
+
+    parcellation, network_order, _ = _parcellation_config(c, None)
+    if smoke:
+        parcellation = c.config.get("smoke_parcellation", parcellation)
+        parcellation, network_order, _ = _parcellation_config(c, parcellation)
+
+    measure = c.config.get("analysis_measure", "pearson")
+    gate_config = c.config.get("group_stats", {})
+    min_usable_seconds = gate_config.get("min_usable_seconds", 1800)
+    n_bins = gate_config.get("similarity_bins", 60)
+    n_permutations = c.config.get("motion_strata", {}).get("n_permutations", 1000)
+
+    connectome_dir = Path(c.config.get("output_data_dir")) / "connectomes"
+    paths, skipped = discover_connectome_files(connectome_dir, parcellation)
+    for path, reason in skipped:
+        print(f"⚠️  skipping {path.name}: {reason}")
+    names = parse_labels(dataset)
+    if names:
+        paths = [p for p in paths if p.stem.rsplit(f"_{parcellation}", 1)[0] in names]
+    if not paths:
+        print(f"⚠️  No connectome files for parcellation={parcellation} — "
+              "run `invoke run-connectomes` first.")
+        return
+
+    print(f"⏳ motion strata: {len(paths)} connectome file(s), gate={min_usable_seconds}s")
+    all_index = pd.concat([load_index(p) for p in paths], ignore_index=True)
+    sessions = motion_sessions_table(all_index, min_usable_seconds)
+    if sessions.empty:
+        print("⚠️  No QC-covered sessions (gated AND fd_mean present) — "
+              "writing empty tables. Likely a smoke run or fd_mean-uncovered datasets only.")
+
+    summary = motion_summary(paths, network_order, measure, min_usable_seconds, n_bins)
+    balance = motion_balance(all_index, min_usable_seconds)
+    permutation = motion_permutation(
+        paths, network_order, measure, min_usable_seconds, n_permutations=n_permutations,
+    )
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    summary["motion_bins"].to_csv(out_path, sep="\t", index=False)
+    summary["histograms"].to_csv(output_dir / "motion_pair_histograms.tsv", sep="\t", index=False)
+    balance.to_csv(output_dir / "motion_balance.tsv", sep="\t", index=False)
+    permutation.to_csv(output_dir / "motion_permutation.tsv", sep="\t", index=False)
+    sessions.to_csv(output_dir / "motion_sessions.tsv", sep="\t", index=False)
+
+    print(f"✅ run-motion-strata: wrote 5 tables to {output_dir}")
+
+
 @task
 def run_figure_layout(c):
     """
@@ -622,7 +710,7 @@ def compose_figure(c):
 })
 def run(c, dataset=None, force=False):
     """
-    Full pipeline: connectomes → group stats → figure layout → notebooks →
+    Full pipeline: connectomes → group stats → motion strata → figure layout → notebooks →
     composed figure.
 
     `run` does NOT pull data: it reads only what `invoke fetch` already
@@ -646,11 +734,12 @@ def run(c, dataset=None, force=False):
         clean(c)
     run_connectomes(c, dataset=dataset)
     run_group_stats(c)
+    run_motion_strata(c)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
-    record_run(c, tasks="run-connectomes,run-group-stats,run-figure-layout,"
-                        "run-notebooks,compose-figure")
+    record_run(c, tasks="run-connectomes,run-group-stats,run-motion-strata,"
+                        "run-figure-layout,run-notebooks,compose-figure")
     print("all analyses completed")
 
 
@@ -685,6 +774,7 @@ def run_smoke(c):
 
     run_connectomes(c, smoke=True)
     run_group_stats(c, smoke=True)
+    run_motion_strata(c, smoke=True)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
@@ -722,6 +812,13 @@ def clean_group_stats(c):
     """Remove the group-level statistics tables."""
     from airoh.utils import clean_folder
     clean_folder(c, "output_data_dir", "group_stats/*")
+
+
+@task
+def clean_motion_strata(c):
+    """Remove the motion-stratified robustness tables."""
+    from airoh.utils import clean_folder
+    clean_folder(c, "output_data_dir", "motion_strata/*")
 
 
 @task
@@ -763,6 +860,7 @@ def clean(c):
     """
     clean_connectomes(c)
     clean_group_stats(c)
+    clean_motion_strata(c)
     clean_figures(c)
     clean_figure(c)
 

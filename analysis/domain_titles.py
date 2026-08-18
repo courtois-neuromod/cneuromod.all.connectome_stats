@@ -56,7 +56,9 @@ def session_titles(cneuromod_root, parcellation, datasets, subjects=None):
             subject = subject_dir.name.removeprefix("sub-")
             if subjects and subject not in subjects:
                 continue
-            h5_paths = sorted(subject_dir.glob("*_timeseries.h5"))
+            # p.exists() follows the symlink target: a broken/unfetched annex
+            # link glob-matches but must not be opened (mirrors connectomes.py).
+            h5_paths = [p for p in sorted(subject_dir.glob("*_timeseries.h5")) if p.exists()]
             if not h5_paths:
                 continue
             entities = list_entities(h5_paths[0])

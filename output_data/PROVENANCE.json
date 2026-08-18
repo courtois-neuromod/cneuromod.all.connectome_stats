@@ -37,7 +37,7 @@
       }
     },
     "manifest_file": "source_data/MANIFEST.json",
-    "manifest_sha256": "4aa54f5d043ee77c20fa7cc4bd0eddd8fe350e8d98f81c02b8dcb47f1bbba9ea"
+    "manifest_sha256": "f4a562537cede16f161351074352eb9ce84785beb8afba6dcca41fd4d2325e13"
   },
   "outputs": {
     "connectome_figure.png": {
@@ -148,55 +148,95 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
+    "figures/figure_motion/motion_balance.png": {
+      "sha256": "bdc435f488182057369bbcc6c49faec4d5ba1409cb1f92b554ca6c731719753f",
+      "size_bytes": 104569
+    },
+    "figures/figure_motion/motion_bins.png": {
+      "sha256": "9f7a378fa562fe070f4e1f78f9aa53fd370a86c805efe38d2c02c15e21112002",
+      "size_bytes": 81764
+    },
+    "figures/figure_motion/motion_bins_legend.png": {
+      "sha256": "201393b0d3929e4fd084d8856793dee234097b7a1420e866f0b4e814222f6518",
+      "size_bytes": 32631
+    },
+    "figures/figure_motion/motion_note.txt": {
+      "sha256": "840ab20db65b3ff6dbac83a49ebc9dae7afef5e7e5615eb8154cd23643aa6cf9",
+      "size_bytes": 534
+    },
+    "figures/figure_motion/motion_permutation.png": {
+      "sha256": "e32b112b466c7f60565068598d670b8baceb78bbf8a71002fde6e89ae04ae258",
+      "size_bytes": 96020
+    },
     "figures/panel_sizes.json": {
       "sha256": "55f19690aef0d8e4939f3f8fe5c6c3697bb2258929e9aab27b2ac4ac77335c40",
       "size_bytes": 208
     },
     "group_stats/cross_context.tsv": {
-      "sha256": "c92e89505292b633a1cfda6b4d700de42fe1c5f3b18d9ab6b126dd7bc7f01952",
-      "size_bytes": 12094
+      "sha256": "aa3db9222c5d33d57d59f1094f8628d0e99beb4e445cf814612f552b128218b6",
+      "size_bytes": 24450
     },
     "group_stats/domain_cross_context.tsv": {
-      "sha256": "6be2a2e55d065be07e7f4f86056364fc44f972c25a516a35a2a37df2f03ca394",
-      "size_bytes": 37501
+      "sha256": "fdb8f0bbc2eb663244955422da08f3198c905567f1a9f230267216520c4f0b25",
+      "size_bytes": 64639
     },
     "group_stats/domain_duration_balance.tsv": {
-      "sha256": "470e5727ce2f51e41e856efa44a29e290fdd4f021aa1bb7136832da493425340",
-      "size_bytes": 1881
+      "sha256": "9a70e89a06c02414921bed55ed247f2427b9fde373b15ec97e2d2b1252106027",
+      "size_bytes": 3367
     },
     "group_stats/domain_pair_histograms.tsv": {
-      "sha256": "983a9a8170aa51b3ec0007a65bf2ae70aa269d4c8ca57358059a0814960e6019",
-      "size_bytes": 1353511
+      "sha256": "0ec4d133d289586c273a12c9baf810a307fead67989d1e8e9c384566c78bfcfd",
+      "size_bytes": 2179701
     },
     "group_stats/duration_balance.tsv": {
-      "sha256": "74158275df8fe5cc4c6858516328799785d8715677827fc7d00899fcece73f23",
-      "size_bytes": 612
+      "sha256": "94e5e3ca1dd01af8c3a7ea8439ddee1221c14d53ff2f4b9b20d6a1887418f1ab",
+      "size_bytes": 1207
     },
     "group_stats/longitudinal_bins.tsv": {
-      "sha256": "1dcb622f9f473f29e9044471e869ec8e2979f0fc8ec01c8365b23be022b45819",
-      "size_bytes": 11962
+      "sha256": "7a67157e54fc6391c49323abda968e163690d00178bc61d69ffa40376557132b",
+      "size_bytes": 24180
     },
     "group_stats/longitudinal_lag.tsv": {
-      "sha256": "f1d36924accca361d461b4212e0e460ea98b624b0ea0e2b44a4b76621af69ea2",
-      "size_bytes": 49018
+      "sha256": "444a4e4651b94f8551bb785152061accf8caf515bd5350e0c01cdc5c75506832",
+      "size_bytes": 83896
     },
     "group_stats/network_quality.tsv": {
       "sha256": "bb0abb04a61b191bfd6ab907c7b91bf6f73b5b785d2177ca3c86f0a577c1caa1",
       "size_bytes": 1051
     },
     "group_stats/pair_histograms.tsv": {
-      "sha256": "ed5d97173e93298d06f0b9bb12df2a74b63f192a4e5cf61e2ee984ee81e769b8",
-      "size_bytes": 826548
+      "sha256": "1c0228d68cb07e32bf98c8ca3d30cdd1ca8e4f09ff04a2fc3d7903a2a6c1adc8",
+      "size_bytes": 1702998
     },
     "group_stats/session_gate.tsv": {
       "sha256": "4d7010b0265b5d11f1a356895d9e2b78053708b91d7f67f1aef2f1b9974fe430",
       "size_bytes": 354
+    },
+    "motion_strata/motion_balance.tsv": {
+      "sha256": "6cb80cf2c6d08d7ee0f141884fc47dcbb141731943675258d28dab754a019cf6",
+      "size_bytes": 806
+    },
+    "motion_strata/motion_pair_histograms.tsv": {
+      "sha256": "a816a31360bfd11f90e614c649e1f523df8d622031312c0a2342e0f6da23dd3b",
+      "size_bytes": 514659
+    },
+    "motion_strata/motion_permutation.tsv": {
+      "sha256": "4460bc84db1616640211123aafe6d3c864c7fe724caa7005a2b4a7472f8779e7",
+      "size_bytes": 488
+    },
+    "motion_strata/motion_sessions.tsv": {
+      "sha256": "a01a02977cde50e69c0a8995a36362a5e32702f844567817f22c5e5683cda994",
+      "size_bytes": 17059
+    },
+    "motion_strata/motion_strata.tsv": {
+      "sha256": "030bf175ff5d8dd45caf05b701793f44d128f9344cb8890448473b7accf70417",
+      "size_bytes": 16041
     }
   },
-  "recorded_at": "2026-08-18T17:35:18+00:00",
+  "recorded_at": "2026-08-18T22:26:46+00:00",
   "repository": {
     "branch": "main",
-    "commit": "e5189eb35c61cf8ba5bf1b738ef91f4725c00255",
+    "commit": "f74041a92adb191be990f7fea81543ae202d5683",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/cneuromod.all.connectome_stats"
@@ -205,6 +245,7 @@
   "tasks": [
     "run-connectomes",
     "run-group-stats",
+    "run-motion-strata",
     "run-figure-layout",
     "run-notebooks",
     "compose-figure"

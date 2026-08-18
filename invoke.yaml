@@ -119,6 +119,10 @@ group_stats:
   min_usable_seconds: 1800
   similarity_bins: 60
 
+# `run-motion-strata` settings (CLAUDE.md, "Motion stratification").
+motion_strata:
+  n_permutations: 1000
+
 # Canonical target for `invoke run-smoke` (overridable with --dataset/--subject).
 # No timeseries dataset is anonymously readable yet (see source_data/CONTENT.md),
 # so the target is not chosen for open access — it is chosen for size. movie10 is

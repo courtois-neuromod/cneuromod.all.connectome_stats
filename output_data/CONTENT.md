@@ -75,6 +75,50 @@ Once the pipeline is run, this folder will contain the following.
     rather than dataset, since `friends`/`movie10` alone would collapse to a
     two-value dataset contrast; `videogames`/`stories` bin by dataset, same
     axis as `cross_context.tsv`, just restricted to fewer datasets.
+- `motion_strata/` — robustness-tier QC (motion) dependence check (CLAUDE.md,
+  "Motion stratification"), written by `invoke run-motion-strata` from
+  `analysis/motion_strata.py`, Pearson only, restricted throughout to the
+  **QC-covered** population (gated **and** `fd_mean` present — `mario` and
+  `harrypotter` have zero `fd_mean` coverage upstream, so they never enter
+  this analysis):
+  - `motion_strata.tsv` — `network × split × bin` -> `n, median, q25, q75,
+    mean, sd, n_sessions`. `split` is `"cell"` (median split within each
+    (subject, dataset) cell — the primary split, orthogonal to both by
+    construction) or `"subject"` (plain within-subject median split, kept as a
+    secondary comparison). `bin` is one of the six `{low-low, low-high,
+    high-high}/{within-task, between-task}` labels, within-subject pairs only.
+  - `motion_pair_histograms.tsv` — precomputed `(network, split, bin,
+    bin_left, bin_right, count)` histograms backing the same six bins.
+  - `motion_balance.tsv` — `bin × split` -> `n_pairs, median_min_duration_sec,
+    median_min_tsnr, n_sessions`: the pairwise-minimum usable-duration **and**
+    tSNR distribution across the six bins, the audit that the motion split is
+    not secretly a duration or a pure-tSNR confound (`fd_mean` vs. `tsnr` is
+    r=-0.68, so tSNR is expected to track the stratum; duration, r=-0.065, is
+    not).
+  - `motion_permutation.tsv` — `network` -> `observed_diff` (`median(low-low) -
+    median(high-high)`, pooled over both task bins), `p_value` (two-sided,
+    `motion_strata.n_permutations` shuffles of `motion_stratum` within each
+    (subject, dataset) cell), `n_subjects_replicating`/`n_subjects_total`
+    (how many of the 6 participants show `median(low-low) >
+    median(high-high)` individually — the six-participants inference rule,
+    CLAUDE.md, "Scientific objective").
+  - `motion_sessions.tsv` — one row per QC-covered session: `dataset, subject,
+    session, fd_mean, tsnr, usable_duration_sec, motion_stratum_cell,
+    motion_stratum_subject` — for auditability.
+- `figures/figure_motion/motion_bins.png`, `motion_bins_legend.png` — the six
+  motion×task bins ("cell" split) × nine networks, grouped bar chart plus its
+  legend strip.
+- `figures/figure_motion/motion_balance.png` — pair-min usable duration and
+  pair-min tSNR per bin, side by side, from `motion_balance.tsv`.
+- `figures/figure_motion/motion_permutation.png` — per-network permutation
+  effect size (bar color marks `p<0.05`) with the per-subject replication
+  count annotated per bar.
+- `figures/figure_motion/motion_note.txt` — the honest-framing caption: this
+  tests *relative* motion differences inside an already low-motion cohort (no
+  session in the gated population reaches `fd_mean > 0.3`), not evidence about
+  high-motion data in general.
+  **Standalone figure — deliberately not placed in `connectome_figure.svg`**;
+  see CLAUDE.md, "Motion stratification".
 - `figures/figure_connectomes/longitudinal.png` — claim 1: within-subject
   Pearson similarity vs. friends season lag, one line per network, against the
   between-subject band.

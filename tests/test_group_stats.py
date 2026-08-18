@@ -7,6 +7,8 @@ import pandas as pd
 from analysis.connectome_store import write_dataset_connectomes
 from analysis.group_stats import (
     DOMAIN_DATASETS,
+    GATES,
+    _gate_mask_for,
     cross_context_summary,
     domain_cross_context_summary,
     duration_balance,
@@ -77,6 +79,38 @@ def test_similarity_histogram_empty_input():
     frame = similarity_histogram(np.array([]), bins=10)
     assert len(frame) == 0
     assert list(frame.columns) == ["bin_left", "bin_right", "count"]
+
+
+def test_gates_include_qc_covered_and_low_motion():
+    assert GATES == ("all", "gated", "qc_covered", "low_motion")
+
+
+def test_gate_mask_for_low_motion_is_subset_of_qc_covered():
+    index_frame = pd.DataFrame({
+        "subject": ["01"] * 8,
+        "dataset": ["friends"] * 8,
+        "usable_duration_sec": [2000.0] * 4 + [100.0] + [2000.0] * 3,
+        "duration_sec": [2000.0] * 8,
+        "fd_mean": [0.05, 0.06, 0.07, 0.08, 0.1, 0.20, 0.21, 0.22],
+    })
+    qc_mask = _gate_mask_for(index_frame, min_usable_seconds=1800, gate_name="qc_covered")
+    low_motion_mask = _gate_mask_for(index_frame, min_usable_seconds=1800, gate_name="low_motion")
+
+    # The 5th row fails the usable-duration gate -> excluded from qc_covered too.
+    assert not qc_mask[4]
+    assert (low_motion_mask <= qc_mask).all()
+    assert low_motion_mask.sum() < qc_mask.sum()
+
+
+def test_gate_mask_for_tolerates_missing_fd_mean_column():
+    index_frame = pd.DataFrame({
+        "subject": ["01", "01"],
+        "dataset": ["friends", "friends"],
+        "usable_duration_sec": [2000.0, 2000.0],
+        "duration_sec": [2000.0, 2000.0],
+    })
+    assert not _gate_mask_for(index_frame, 1800, "qc_covered").any()
+    assert not _gate_mask_for(index_frame, 1800, "low_motion").any()
 
 
 def test_duration_balance_median_is_pairwise_minimum_not_mean():
