@@ -18,21 +18,20 @@ The hypothesis: **conditional statistical dependencies between regions are subst
 
 The headline analyses are within- versus between-subject connectome similarity, same-subject/different-task versus different-subject/same-task similarity, and subject fingerprinting both leave-one-session-out and leave-one-task-out. With only six participants, identification **margin and rank** are the meaningful continuous outcomes — accuracy will sit near ceiling. Inference must not treat sessions as independent subjects: prefer permutation tests, participant-level resampling, and effects replicated across the six individuals over thousands of edge-wise tests.
 
-### Current state: scaffolding
+### Current state: run-connectomes is implemented
 
-The pipeline is wired end to end, `invoke run-smoke` passes, and `fetch` retrieves real data. The remaining **stubs** print their plan and write nothing:
+`invoke run-smoke` passes, `fetch` retrieves real data, and `run-connectomes` computes real per-session, per-network connectomes. The remaining **stubs**:
 
-- `run-connectomes` — not implemented
 - `run-group-stats` — not implemented
 - the notebook panels are placeholders
 
-`fetch-cneuromod`, `fetch-timeseries`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
+`fetch-cneuromod`, `fetch-timeseries`, `fetch-parcel-labels`, `run-connectomes`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
 
 ### The timeseries assets
 
 This project reads parcelled BOLD timeseries. As of **2026-08-17**, 12 `{dataset}/timeseries` submodules are registered in `cneuromod.all`: `floc`, `movie10`, `friends`, `things`, `hcptrt`, `harrypotter`, `mario`, `mario3`, `mariostars`, `petit-prince`, `retinotopy`, `shinobi`. `fetch-timeseries` discovers them via `_list_datasets` rather than reading that list.
 
-Layout:
+Layout (shown for schaefer1000; cneuromod2026 is the same shape under a `cneuromod2026/` directory, with `atlas-cneuromod26` or `atlas-cneuromod2026` in the filename — both spellings occur):
 
 ```
 cneuromod.all/{dataset}/timeseries/timeseries/schaefer1000/sub-0X/
@@ -41,19 +40,29 @@ cneuromod.all/{dataset}/timeseries/timeseries/schaefer1000/sub-0X/
     sub-0X_task-{dataset}_..._label-GMfromTemplate_desc-indivFunc_mask.nii.gz
 ```
 
-**One `.h5` per subject**, holding every session and run as separate 2D `(timepoints, parcels)` arrays keyed `ses-XXX/ses-XXX_task-..._run-N_timeseries`. That is the annex's finest unit, so `--subject` narrows a fetch but there is nothing session-level to request — session selection is a read-time concern for `run-connectomes`.
+**One `.h5` per subject**, holding every session and run as separate 2D `(timepoints, parcels)` arrays keyed `ses-XXX/ses-XXX_task-..._run-N_timeseries` — `run` is optional in the key: `friends` keys carry no `_run-N` segment at all (`analysis/timeseries_reader.py`'s `parse_run_key` handles both). That is the annex's finest unit, so `--subject` narrows a fetch but there is nothing session-level to request — session selection is a read-time concern for `run-connectomes`.
 
-Three other parcellations ship in every repo and are deliberately not fetched: `cneuromod2026` (1134 parcels, adding subcortical and cerebellar), `voxel_mni` and `voxel_native` (voxelwise, much larger).
+There are no HDF5 attributes anywhere in these files — no TR, no parcel names. TR is config (`tr_seconds` in `invoke.yaml`, `1.5`).
+
+`voxel_mni` and `voxel_native` (voxelwise, much larger) also ship in every repo and are deliberately not fetched.
+
+### The parcel -> network lookup
+
+Nothing in the timeseries repos maps parcels to networks — the `_dseg.nii.gz` carries bare integer labels, and there is no LUT, TSV or JSON anywhere in the trees. `fetch-parcel-labels` builds `source_data/{parcellation}_networks.tsv` (columns `index`, `name`, `network`) instead of fetching one, via `analysis/parcel_networks.py`:
+
+- **`schaefer1000`** — `build_schaefer1000_labels()` reads nilearn's bundled `fetch_atlas_schaefer_2018(n_rois=1000, yeo_networks=7)`. No fetch beyond nilearn's own cache; network is the region name's 3rd underscore field (`7Networks_LH_Vis_1` -> `Vis`).
+- **`cneuromod2026`** — `build_cneuromod2026_labels()` reads one already-fetched subject's individualized `_dseg.nii.gz` (from the timeseries repo, **never** `anat/atlases` — see the trap below) and decodes its integer label values. **This decoding rests on a documented, not-yet-verified assumption**: that label values `1..1000` are Schaefer's own cortical numbering (with up to 4 absent — TIMESERIES.md's composition is 996 cortical, not 1000), `1001..1050` are Tian subcortex, and `1051..1138` are Nettekoven cerebellum. No S3 credentials were available while writing this, so a real dseg has not yet been inspected to confirm it. The function asserts the resulting per-network counts against `CNEUROMOD2026_EXPECTED_COUNTS` (from qa_figures: Vis 162, SomMot 194, DorsAttn 122, SalVentAttn 121, Limbic 60, Cont 128, Default 209, cerebellum 88, subcortex 50 = 1134) and **raises rather than writing a silently wrong table** if they disagree — treat that assertion as the check once you have credentials to run it for real.
 
 ### The QC measures asset (qa_figures)
 
-`run-connectomes` and `run-group-stats` will need per-run quality-control
+`run-connectomes` and `run-group-stats` need per-run quality-control
 covariates — head motion and tSNR — for two concrete jobs: deciding which runs
 are usable (and hence whether a session clears the ~30-minute bar that admits it
-to the primary analysis), and checking at the group level whether low-stability
-sessions are systematically lower-quality acquisitions. Every session that
-enters the analysis should carry its motion summary alongside its connectomes,
-so that check is possible after the fact. Those covariates already exist,
+to the primary analysis, a `run-group-stats` decision), and checking at the
+group level whether low-stability sessions are systematically lower-quality
+acquisitions. Every session that enters the analysis carries its motion
+summary alongside its connectomes (joined by `run-connectomes` via
+`analysis/qc_join.py`), so that check is possible after the fact. Those covariates already exist,
 computed, in a second source asset: `cneuromod.all.qa_figures`, wired in
 alongside `cneuromod.all` via `datasets: qa_figures` in `invoke.yaml` and
 `fetch-qa-figures`/`clean-qa-figures` in `tasks.py`.
@@ -71,15 +80,12 @@ over these tables, no invoke context. Coverage is partial (several per-dataset
 tables are empty), so callers must tolerate that; see
 `source_data/CONTENT.md`, "QC measures (qa_figures)" for the exact gaps.
 
-Joining these entities against the timeseries `.h5` run keys is an **open
-item**, deliberately not done in `analysis/qc_measures.py` — the entity
-conventions differ per dataset (blank `run`, task-encoded segments), and that
-mapping belongs with `run-connectomes`, once its method is settled.
+Joining these entities against the timeseries `.h5` run keys is now implemented in `analysis/qc_join.py`, deliberately kept out of `analysis/qc_measures.py` — that module stays a pure table reader. `normalize_entities` strips `sub-`/`ses-` prefixes, zero-pads session to 3 digits, and normalizes `run`; `join_run_qc`/`join_network_tsnr` merge on `dataset, subject, session, task, run` and are **best-effort**: unmatched rows keep NaN and get `qc_matched = False`, never a raised error. Two entity-convention gotchas this join handles, found empirically (not documented upstream): `run` is **not** uniformly blank for movie10/friends as an earlier version of `source_data/CONTENT.md` claimed — qa_figures exports it as a float-like string (`"1.0"`) for some subject/session combinations even within movie10, so `normalize_entities` strips a trailing `.0`; and `fd_prop_gt02/gt05` are blank for **both** movie10 and friends, not just friends.
 
 Two traps to avoid:
 
 - **Do not match on the atlas entity.** Upstream writes `atlas-Schaefer2018` while the repos' own `TIMESERIES.md` documents `atlas-Schaefer18`. `analysis/timeseries_layout.py` matches on the filename *suffix* (`*_timeseries.h5`, `*_dseg.nii.gz`, `*_mask.nii.gz`) precisely so that drift cannot break retrieval.
-- **Do not point the pipeline at `anat/atlases` or at fMRIPrep BOLD.** The parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. Ask the user before changing the retrieval route.
+- **Do not point the pipeline at `anat/atlases` or at fMRIPrep BOLD.** The parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. This was checked explicitly for cneuromod2026's label ordering: `cneuromod_extract_tseries`'s `schaefer1000Tian50Nette128.yaml` config points its `parcellation:` key at `./atlases/...` (the `anat.atlases` submodule) — but the **individualized** `_dseg.nii.gz` this project needs already ships inside each `.timeseries` repo alongside the `.h5` (see "The timeseries assets" above), so `fetch-parcel-labels` reads that, never `anat/atlases`. Ask the user before changing this retrieval route.
 
 ### Timeseries content is credentialed
 
@@ -93,26 +99,29 @@ Consequence for `fetch-timeseries`: **two different tolerances, on purpose.** In
 
 These are decided. Implement them as written; do not reopen them unprompted.
 
-- **Parcellation: `schaefer1000`**, with parcels grouped into the **7 Yeo networks** (~150 parcels each).
-- **Primary measure: partial correlation.** Estimate the sample covariance, invert it to a precision matrix `Θ`, then `ρ_ij = -Θ_ij / sqrt(Θ_ii · Θ_jj)`. The primary estimator is **ordinary sample covariance plus matrix inversion — no graphical lasso, no shrinkage**, unless numerical instability empirically forces it. Regularized estimators are a robustness analysis, not the primary path.
-- **Comparator: Pearson correlation** on exactly the same time series. Everything downstream runs **identically** for both measures — the scientific quantity of interest is the difference between them, so no analysis may exist for one measure only.
-- **Estimate independently within each network.** For a network of `p` parcels, build the `p × p` covariance and invert that. The primary analysis must **never silently attempt to invert a 1000 × 1000 covariance matrix** — it is both computationally and statistically wrong here. Seven within-network matrices per session; cross-network edges are out of the primary analysis. A full regularized 1000-parcel precision matrix is a possible *later* secondary analysis.
-- **Unit of analysis: the session**, restricted to sessions with roughly ≥30 minutes of usable data (~1,200 volumes at TR = 1.5 s, versus ~150 parcels per network — comfortably more observations than variables). Run-level (~10 min) estimates are computed too, but **only as a secondary unit**, to establish how much data a stable estimate needs. Run-level results never replace session-level ones.
-- **Standardize, then concatenate.** Each run's parcel time series is z-scored *within the run* before runs from the same session are concatenated. Never concatenate raw runs — run-specific means and scaling differences would themselves induce correlations.
-- **Store both raw coefficients and Fisher-z** (`atanh`) of the off-diagonal, and record per-matrix numerical diagnostics: rank, condition number, minimum eigenvalue, number of samples, number of parcels. Those diagnostics are what tells us empirically whether unregularized partial correlation is well behaved, so they are part of the output, not debug logging.
+- **Parcellation: `cneuromod2026`** (1134 parcels: cortex + subcortex + cerebellum), **reversing the project's original `schaefer1000`-only choice**, to line up with what the qa_figures QC tables cover. The code stays parcellation-agnostic — the network partition comes from the config-selected `parcellations:` entry in `invoke.yaml` and its labels file — so `schaefer1000` keeps working and is what the smoke test uses (see "Project-specific conventions" below).
+- **Nine networks** for cneuromod2026: the 7 Yeo cortical networks, `cerebellum` (88 parcels), and `subcortex` (all 50 Tian parcels as one network) — this covers all 1134 parcels with no leftovers. `schaefer1000` keeps its 7 cortical networks.
+- **Two measures, computed identically for both:** `pearson` (comparator) and `partial_ledoitwolf` (nilearn's default-shrinkage partial correlation — an established, regularized estimator, and the settled primary measure). The unregularized empirical inverse (`partial_empirical`) was tried and dropped: for run-level data, `n_samples` can be smaller than `n_parcels` in the larger networks (Default has 209 parcels, SomMot 194 for cneuromod2026), making the sample covariance exactly singular — not a robustness edge case but a routine failure. This project assesses dataset quality; it is not a comparison of estimators or a study of how estimate quality scales with duration, so there is no reason to carry an estimator that breaks on exactly the data this pipeline runs on. Graphical lasso is deferred; it could slot in later as a further regularized estimator with no layout change.
+- **Session-level only.** `run-connectomes` writes one connectome per session (runs z-scored, then concatenated — see "Standardize, then concatenate" below) for **every** session found. There is no run-level connectome output; the session is the sole unit of analysis (~1,200 volumes at TR = 1.5 s vs. ~150 parcels per cortical network — comfortably more observations than variables, which is also why `partial_ledoitwolf` is well conditioned at this level even without the shrinkage doing much work). Per-run QC (motion, tSNR) is still read and aggregated up to the session, since qa_figures only tabulates it per run — see "The QC measures asset (qa_figures)" above — but no per-run connectome is computed or stored.
+- **Record QC, never gate on it, at connectome-computation time.** Every session found gets a connectome; all exclusion (FD thresholds, the ~30-minute bar) happens in `run-group-stats`, where it can be varied without recomputing. This keeps "exclusion thresholds must not be tuned against fingerprinting performance" (below) honest.
+- **float32, raw coefficients only.** Fisher-z is `arctanh` of the raw values, computed where used. This **amends** the original "store both raw and Fisher-z" decision.
+- **Estimate independently within each network.** For a network of `p` parcels, build the `p × p` covariance and invert that. The primary analysis must **never silently attempt to invert a 1000+ × 1000+ covariance matrix** — it is both computationally and statistically wrong here. Cross-network edges are out of the primary analysis. A full regularized whole-brain precision matrix is a possible *later* secondary analysis.
+- **Standardize, then concatenate.** Each run's parcel time series is z-scored *within the run* before runs from the same session are concatenated (`analysis/timeseries_reader.py`'s `standardize_run`). Never concatenate raw runs — run-specific means and scaling differences would themselves induce correlations. (Timeseries are already standardized upstream per TIMESERIES.md, so this is a safeguard, not the thing doing the work.)
+- **Fixed edge geometry, always.** Edge slots per network come from the full parcellation partition and never vary. A parcel missing or constant in a given session is dropped before estimation (`analysis/connectome_estimators.py`'s `connectome` function); the resulting smaller matrix is scattered back into the full `p × p` layout with NaN in the affected rows/columns, so every stored vector has the same length and a `n_parcels_valid` diagnostic records what actually contributed. Without this, vectors would differ in length across subjects and could not be stacked. cneuromod2026 uses a **stricter** grey-matter mask (`GMfromFS`, FreeSurfer-derived) than schaefer1000 (`GMfromTemplate`), so subject-specific parcel dropping is *more* likely here, especially for small subcortical/cerebellar parcels — this makes the rule load-bearing, not defensive.
+- **Record per-matrix numerical diagnostics**: `n_samples`, `n_parcels`, `n_parcels_valid`, `rank`, `condition_number`, `min_eigenvalue` — computed for **every** measure including Pearson, from the raw sample covariance regardless of which estimator produced the stored connectome. These are what tell us empirically whether a session's data is well behaved for connectome estimation, so they are part of the output, not debug logging.
 
 ### Still open
 
 Do not settle these unilaterally — raise them with the user:
 
-- **What counts as usable data** — which motion and tSNR thresholds gate a run, and how censored volumes count toward the ~30-minute session criterion. One standing rule: **exclusion thresholds must not be tuned against fingerprinting performance.** Pick them a priori from QC, then report headline results with and without the worst-quality sessions.
-- **The QC-entity ↔ timeseries-run mapping** — joining the qa_figures tables' entities to the `.h5` run keys, described under "The QC measures asset" above.
+- **What counts as usable data** — which motion and tSNR thresholds gate a run, and how censored volumes count toward the ~30-minute session criterion (this is `run-group-stats`'s job, not yet implemented). One standing rule: **exclusion thresholds must not be tuned against fingerprinting performance.** Pick them a priori from QC, then report headline results with and without the worst-quality sessions.
+- **Whether the cneuromod2026 label-ordering assumption in `build_cneuromod2026_labels` is correct.** It is asserted against known per-network counts and raises if wrong, but has not yet been checked against a real dseg (no S3 credentials were available while implementing it) — see "The parcel -> network lookup" above.
 
 ### Project-specific conventions
 
-- **The chunk concept is the dataset.** `run-*` steps take a `--dataset` flag naming one or more top-level cneuromod.all datasets (`floc`, `movie10`, …), and iterate over them. Subject-level slicing exists on `fetch` (`--subject`) and will extend to the run steps when they are implemented. **The chunk is not the statistical unit** — the dataset is how work is *divided*, while the session is what a connectome is *estimated from*. Session- and duration-level selection is a read-time concern inside `run-connectomes` (there is nothing session-level to fetch: one `.h5` holds every session of a subject), so it belongs in `analysis/`, not in a fetch flag.
+- **The chunk concept is the dataset.** `run-*` steps take a `--dataset` flag naming one or more top-level cneuromod.all datasets (`floc`, `movie10`, …), and iterate over them. `run-connectomes` also exposes `--subject` and `--parcellation`. **The chunk is not the statistical unit** — the dataset is how work is *divided*, while the session is what a connectome is *estimated from*. Session-level selection is a read-time concern inside `analysis/connectomes.py` (there is nothing session-level to fetch: one `.h5` holds every session of a subject), so it belongs in `analysis/`, not in a fetch flag.
 - **Datasets are discovered, not hardcoded.** `_list_datasets(c, marker)` in `tasks.py` returns every top-level cneuromod.all directory carrying the given derivative subdataset. It returns an empty list when the superdataset is absent, so the stubs degrade to a message rather than a traceback.
-- **The smoke target is `movie10` / `sub-01`** (`smoke_dataset`, `smoke_subject` in `invoke.yaml`). Since no timeseries dataset is anonymously readable, open access is no longer a selection criterion — the target is chosen for size. `run-smoke` passes `strict=True`, which only makes a failed subdataset *install* fatal; missing content never fails it.
+- **The smoke target is `movie10` / `sub-02` / `schaefer1000`** (`smoke_dataset`, `smoke_subject`, `smoke_parcellation` in `invoke.yaml`). `sub-01`'s schaefer1000 content happens to be an unfetched/broken annex symlink on this machine while `sub-02`'s is present, hence sub-02. `smoke_parcellation` pins schaefer1000 regardless of the configured `parcellation` (cneuromod2026) so the smoke test keeps passing offline with data already on disk. `run-smoke` passes `strict=True`, which only makes a failed subdataset *install* fatal; missing content never fails it.
 - **Never run `git submodule update --init --recursive` or `datalad install -r`** inside `cneuromod.all`. Submodules re-expose their own sub-submodules at differing versions; recursive cloning triggers a massive, redundant retrieval. Use `airoh.datalad.install_subdataset` (`datalad get -n`) to reach a nested subdataset.
 - **CNeuroMod content is partly credentialed.** Retrieval must stay tolerant — warn and skip, never abort — except in the smoke test. A full fetch expects credentials in environment variables; see README.md, "Credentials for a full fetch".
 
@@ -139,8 +148,9 @@ uv run invoke run               # Full pipeline (cached: skips steps whose outpu
 uv run invoke run --force       # Clean everything first, then run from scratch
 uv run invoke run --dataset floc,movie10           # restrict to specific datasets
 uv run invoke run-smoke         # Fast end-to-end check that the plumbing works
-uv run invoke run-connectomes   # Build connectomes per dataset (stub)
+uv run invoke run-connectomes   # Build per-session connectomes per dataset
 uv run invoke run-group-stats   # Aggregate into group statistics (stub)
+uv run invoke fetch-parcel-labels  # Build the parcel -> network lookup table
 uv run invoke run-notebooks     # Execute notebooks, save panels to output_data/figures/
 uv run invoke run-figure-layout # Write the montage's panel geometry to panel_sizes.json (always re-runs)
 uv run invoke compose-figure    # Render connectome_figure.svg to PNG with Inkscape (optional binary)
@@ -358,17 +368,19 @@ called.
 
 **Linting:** `ruff`, configured under `[tool.ruff]` in `pyproject.toml` (line length 100, rules `E`/`F`/`W`/`I`). Run `uv run ruff check .` before committing. Never disable a lint rule without a comment explaining why.
 
-**Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` and currently hold only a placeholder.
+**Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` — `analysis/parcel_networks.py`, `timeseries_reader.py`, `connectome_estimators.py`, `qc_join.py`, `connectome_store.py` and `similarity.py` each have real coverage now, all offline against synthetic fixtures.
 
-**Filling in a stub:** `run-connectomes` and `run-group-stats` are placeholders that print their plan. When implementing one, put the real logic in a new `analysis/` module, keep the task body to argument handling plus the existence check that makes it idempotent, give it a matching `clean-{name}` (both already exist), and replace the corresponding placeholder panel in `notebooks/figure_connectomes.ipynb`. Update `output_data/CONTENT.md` in the same commit — the entries there are currently marked _(pending)_.
+**Filling in a stub:** `run-group-stats` is still a placeholder that prints its plan. When implementing it, put the real logic in a new `analysis/` module, keep the task body to argument handling plus the existence check that makes it idempotent, give it a matching `clean-{name}` (already exists), and replace the corresponding placeholder panel in `notebooks/figure_connectomes.ipynb`. Update `output_data/CONTENT.md` in the same commit — its entry is currently marked _(pending)_. `run-connectomes` (`analysis/connectomes.py`, `connectome_estimators.py`, `connectome_store.py`, `parcel_networks.py`, `timeseries_reader.py`, `qc_join.py`) is a worked example of this pattern to follow.
 
-The contract for each, from **Settled analysis decisions** above: `run-connectomes` reads the parcelled timeseries and writes, per session, seven within-network **partial correlation** matrices and seven **Pearson** matrices — raw and Fisher-z — each accompanied by its numerical diagnostics and the session's QC summary. `run-group-stats` reads those and produces the similarity and fingerprinting summaries.
+The contract for `run-group-stats`, from **Settled analysis decisions** above: read the per-session connectomes `run-connectomes` writes (`output_data/connectomes/{dataset}_{parcellation}.h5`, via `analysis/connectome_store.py`), apply the usable-data gate (still open — see "Still open" above), and produce the similarity and fingerprinting summaries — identically for both measures.
+
+**Exploratory QC, kept deliberately separate:** `analysis/similarity.py` and `notebooks/qc_similarity.ipynb` compute session-pair connectome similarity split into same-/different-subject × same-/different-dataset bins, for every network and both measures. This is mechanically the embryo of the tier-1 primary analysis, but it has no usable-data gate and is not presented as a headline result — it is a sanity check that connectomes look more alike within-subject before `run-group-stats` exists for real. It is explicitly **not** `run-group-stats` and its output (`output_data/figures/qc_similarity/`) is **not** wired into `connectome_figure.svg`.
 
 **Respect the analysis hierarchy; do not flatten it.** Three tiers, and a step belongs to exactly one:
 
 1. **Primary** — session-level, within-network, both measures: within- versus between-subject similarity, same-subject/different-task versus different-subject/same-task, leave-one-session-out and leave-one-task-out fingerprinting, and the per-network replication of all of it.
-2. **Secondary** — reliability as a function of data duration, which is where run-level estimates live.
-3. **Robustness** — regularized precision estimators, removal of the group-average connectome, spatial-distance dependence and neighbouring-parcel exclusion, QC dependence, explicit early-versus-late temporal separation.
+2. **Secondary** — reliability as a function of data duration. Not addressed by a stored run-level connectome (dropped — see "Settled analysis decisions" above); if pursued, it truncates session-concatenated timeseries to a coarse grid of durations, computed on demand for a subset of subjects/datasets rather than exhaustively.
+3. **Robustness** — a further regularized estimator (e.g. graphical lasso) as a check on `partial_ledoitwolf`, removal of the group-average connectome, spatial-distance dependence and neighbouring-parcel exclusion, QC dependence, explicit early-versus-late temporal separation.
 
 A tier-3 analysis does not get promoted into the pipeline's main path because it was interesting to implement, and turning every possible branch into an equally weighted step is the failure mode to avoid here. When adding something, say which tier it is in.
 

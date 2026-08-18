@@ -11,11 +11,11 @@ statistics and a composed multi-panel figure.
 Built on the [`invoke`](https://www.pyinvoke.org/) task runner, with reusable
 tasks from [`airoh`](https://pypi.org/project/airoh/).
 
-> ⚠️ **Status: scaffolding.** The pipeline is wired end to end, the smoke test
-> passes, and `fetch` retrieves real data — but the analysis steps are still
-> **stubs**: `run-connectomes` and `run-group-stats` report what they would do
-> and write nothing. The figure panels are placeholders. See **Current state**
-> below.
+> ⚠️ **Status: `run-connectomes` is implemented; `run-group-stats` is still a
+> stub.** The pipeline is wired end to end, the smoke test passes, `fetch`
+> retrieves real data, and `run-connectomes` writes real per-network
+> connectomes. `run-group-stats` still reports what it would do and writes
+> nothing, and the figure panels are placeholders. See **Current state** below.
 
 ---
 
@@ -40,18 +40,27 @@ physiology and noise all induce.
 
 So:
 
-- **Partial correlation is the primary measure**, with **Pearson correlation
-  computed on exactly the same time series** as a comparator. Everything
-  downstream runs identically for both — the interesting quantity is the
-  *difference* between them.
-- **The session is the unit of analysis**, restricted to sessions carrying
-  roughly 30 minutes or more of usable data (~1,200 volumes). Runs are
-  z-scored individually and only then concatenated within a session. Run-level
+- **Partial correlation is the primary measure** (unregularized empirical
+  inverse covariance), with **Pearson correlation computed on exactly the same
+  time series** as a comparator, plus a Ledoit-Wolf shrinkage variant of the
+  partial correlation to check whether the unregularized inverse is well
+  conditioned. Everything downstream runs identically for all three — the
+  interesting quantity is the *difference* between the partial and Pearson
+  measures.
+- **The session is the unit of analysis**, restricted (at the group-stats
+  stage, not at connectome-computation time) to sessions carrying roughly 30
+  minutes or more of usable data (~1,200 volumes). Runs are z-scored
+  individually and only then concatenated within a session. Run-level
   estimates are a secondary unit, for working out how much data a stable
-  estimate needs.
-- **Estimation is per network, not whole-brain.** `schaefer1000`'s parcels are
-  grouped into the 7 Yeo networks (~150 parcels each), and the precision matrix
-  is estimated independently within each — seven matrices per session.
+  estimate needs. `run-connectomes` computes both levels for every session and
+  run found — it never filters; that happens downstream, so exclusion
+  thresholds can be varied without recomputing.
+- **Estimation is per network, not whole-brain.** The primary parcellation,
+  `cneuromod2026` (1134 parcels: cortex + subcortex + cerebellum), is grouped
+  into the 7 Yeo cortical networks plus `cerebellum` and `subcortex` — nine
+  matrices per entity. `schaefer1000` (its 7 cortical networks only) is what
+  the smoke test still exercises, since it needs no S3 credentials on this
+  machine.
 
 The headline analyses are within- versus between-subject connectome similarity,
 same-subject/different-task versus different-subject/same-task similarity, and
@@ -131,6 +140,14 @@ file *contents* need access. A fetch that came back empty means you lack access
 to that content, not that the pipeline is broken. See
 [`source_data/CONTENT.md`](source_data/CONTENT.md) for the full access notes.
 
+`fetch` also runs `invoke fetch-parcel-labels`, which writes
+`source_data/{parcellation}_networks.tsv` — the parcel-to-network lookup table
+`run-connectomes` needs (neither `.timeseries` repo ships one). For
+`schaefer1000` this needs no credentials (it comes from nilearn). For
+`cneuromod2026` it reads one subject's already-fetched `_dseg.nii.gz`, so it
+warns and does nothing until `fetch-timeseries --parcellation cneuromod2026`
+has pulled that subject's content with real S3 credentials.
+
 ---
 
 ### **Step 3**: Run the full pipeline
@@ -207,9 +224,10 @@ The plumbing is real; the science is not wired up yet.
 | Piece | State |
 | --- | --- |
 | `fetch-cneuromod` | ✅ implemented — symlinks or clones the superdataset |
-| `fetch-timeseries` | ✅ implemented — installs each `{dataset}/timeseries` subdataset and pulls the `schaefer1000` files |
+| `fetch-timeseries` | ✅ implemented — installs each `{dataset}/timeseries` subdataset and pulls the configured parcellation's files |
 | `fetch-qa-figures` | ✅ implemented — symlinks or clones the qa_figures QC tables (no credentials needed) |
-| `run-connectomes` | 🚧 **stub** — will compute per-session, per-network partial and Pearson matrices; prints its plan, writes nothing |
+| `fetch-parcel-labels` | ✅ implemented — builds the parcel -> network lookup table (see "The parcel -> network lookup" in `source_data/CONTENT.md`) |
+| `run-connectomes` | ✅ implemented — per-session, per-network Pearson + regularized partial correlation |
 | `run-group-stats` | 🚧 **stub** — will compute similarity and fingerprinting summaries; prints its plan, writes nothing |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
 | `run-notebooks` | ✅ implemented — renders **placeholder** panels |
@@ -225,21 +243,39 @@ is credentialed** for now — see "Credentials for a full fetch" above and
 
 **The method is settled** — see "What this measures" above. In short:
 
-- Parcellation: **`schaefer1000`**, grouped into the 7 Yeo networks.
-- Measure: **partial correlation** from the sample covariance and its inverse,
-  with **no regularizer** in the primary analysis; **Pearson correlation** on
-  the same time series as the comparator. Both stored raw and Fisher-z.
-- Unit: the **session** (≳30 min usable), runs z-scored individually before
-  being concatenated. Run-level estimates are secondary.
+- Parcellation: **`cneuromod2026`** (1134 parcels), grouped into the 7 Yeo
+  cortical networks plus `cerebellum` and `subcortex`. This reverses the
+  project's original schaefer1000-only choice — see `CLAUDE.md`, "Settled
+  analysis decisions", for why. The code stays parcellation-agnostic;
+  `schaefer1000` (7 cortical networks) keeps working and is what `run-smoke`
+  uses.
+- Measures, computed identically for both: **partial correlation** with
+  **Ledoit-Wolf shrinkage** (`partial_ledoitwolf`, primary — an established,
+  regularized estimator); and **Pearson correlation** (`pearson`, the
+  comparator). The unregularized empirical inverse was tried and dropped: with
+  short runs, `n_samples` can be smaller than `n_parcels` in the larger
+  networks, making the sample covariance exactly singular. This is a
+  data-quality assessment, not an estimator comparison, so there was no reason
+  to keep an estimator that breaks on this project's own data. Stored as raw
+  float32 coefficients only — Fisher-z is `arctanh` of the raw values, computed
+  where used (amends the original "store both raw and Fisher-z").
+- Unit: `run-connectomes` computes **session-level only** (runs z-scored
+  individually then concatenated), for every session found — it never filters.
+  There is no per-run connectome. The ≳30-minute usable-data gate is a
+  `run-group-stats` concern, so exclusion thresholds can be varied without
+  recomputing connectomes (CLAUDE.md, "Record QC, never gate on it").
 - Estimation: **independently within each network** — the primary analysis never
-  inverts a 1000 × 1000 covariance matrix.
+  inverts a 1000 × 1000+ covariance matrix. A parcel invalid in a given
+  session (NaN or constant) is dropped before estimation and its edges are
+  scattered back as NaN, so every stored vector has the same fixed length.
 - Every matrix ships its numerical diagnostics: rank, condition number, minimum
-  eigenvalue, number of samples and number of parcels.
+  eigenvalue, number of samples and number of parcels (valid and total).
 
 **Genuinely still open:** the QC criteria that define "usable" data (which
 motion and tSNR thresholds, and how censored volumes count toward the 30
-minutes), and the mapping between the QC tables' entities and the timeseries
-`.h5` run keys — see [`source_data/CONTENT.md`](source_data/CONTENT.md).
+minutes). The mapping between the QC tables' entities and the timeseries `.h5`
+run keys is now implemented (`analysis/qc_join.py`) as a best-effort join —
+see [`source_data/CONTENT.md`](source_data/CONTENT.md) for its coverage gaps.
 
 ---
 
@@ -274,12 +310,13 @@ minutes), and the mapping between the QC tables' entities and the timeseries
 
 | Task                | Description                                              |
 | ------------------- | -------------------------------------------------------- |
-| `fetch`             | Gets all source data: the superdataset, the timeseries assets, and the qa_figures QC tables |
+| `fetch`             | Gets all source data: the superdataset, the timeseries assets, the qa_figures QC tables, and the parcel labels |
 | `fetch-cneuromod`   | Makes the cneuromod.all superdataset available (symlink via `--source`, else clone) |
-| `fetch-timeseries`  | Retrieves the parcelled `schaefer1000` timeseries; `--dataset`/`--subject` narrow it |
+| `fetch-timeseries`  | Retrieves the parcelled timeseries for the configured (or `--parcellation`) parcellation; `--dataset`/`--subject` narrow it |
 | `fetch-qa-figures`  | Makes the cneuromod.all.qa_figures QC tables available (symlink via `--source`, else clone; no credentials needed) |
+| `fetch-parcel-labels` | Builds `source_data/{parcellation}_networks.tsv`, the parcel -> network lookup table |
 | `run`               | Runs the full pipeline in order; `--force` cleans first  |
-| `run-connectomes`   | Builds per-session, per-network partial and Pearson connectomes (**stub**) |
+| `run-connectomes`   | Computes per-session, per-network Pearson + regularized partial-correlation connectomes |
 | `run-group-stats`   | Aggregates connectomes into similarity and fingerprinting summaries (**stub**) |
 | `run-figure-layout` | Writes the montage's panel geometry to `output_data/figures/panel_sizes.json`; always re-runs |
 | `run-notebooks`     | Executes notebooks and saves panels to `output_data/figures/` |
@@ -294,6 +331,7 @@ minutes), and the mapping between the QC tables' entities and the timeseries
 | `clean-source`      | Removes all fetched source data; routes to each `clean-{name}` |
 | `clean-cneuromod`   | Removes the fetched cneuromod.all superdataset           |
 | `clean-qa-figures`  | Removes the fetched cneuromod.all.qa_figures checkout    |
+| `clean-parcel-labels` | Removes the built `{parcellation}_networks.tsv` labels files |
 
 Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 
@@ -304,7 +342,7 @@ Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 | Folder / File  | Description                              |
 | -------------- | ---------------------------------------- |
 | `analysis/`    | Pure Python analysis logic, called by invoke tasks |
-| `notebooks/`   | Jupyter notebooks for visualization (one per figure) |
+| `notebooks/`   | Jupyter notebooks for visualization (one per figure, plus `qc_similarity.ipynb` — exploratory QC, not a montage panel) |
 | `tests/`       | Unit tests (`pytest`)                    |
 | `source_data/` | Source datasets — see [`source_data/CONTENT.md`](source_data/CONTENT.md) |
 | `output_data/` | Generated results and figures — see [`output_data/CONTENT.md`](output_data/CONTENT.md) |

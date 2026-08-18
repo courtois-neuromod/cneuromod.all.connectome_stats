@@ -12,6 +12,9 @@ dependencies = [
     "pandas>=1.3",
     "numpy>=1.24",
     "h5py>=3.8",
+    "nilearn>=0.10",
+    "scikit-learn>=1.3",
+    "nibabel>=5.0",
     "ruff",
     "pytest",
 ]

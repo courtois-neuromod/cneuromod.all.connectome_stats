@@ -138,8 +138,10 @@ def fetch_qa_figures(c, source=None):
                "fetch to.",
     "strict": "Raise if a timeseries subdataset fails to install. Content "
               "retrieval stays tolerant either way.",
+    "parcellation": "Which parcellation's files to fetch (default: the "
+                    "configured `parcellation`).",
 })
-def fetch_timeseries(c, dataset=None, subject=None, strict=False):
+def fetch_timeseries(c, dataset=None, subject=None, strict=False, parcellation=None):
     """
     Retrieve the parcelled BOLD timeseries assets for the configured
     `parcellation`.
@@ -166,7 +168,7 @@ def fetch_timeseries(c, dataset=None, subject=None, strict=False):
 
     root = _cneuromod_dir(c)
     marker = c.config.get("timeseries_marker", "timeseries")
-    parcellation = c.config.get("parcellation")
+    parcellation = parcellation or c.config.get("parcellation")
     source_dir = Path(c.config.get("source_data_dir"))
 
     names = _select_datasets(c, dataset, smoke=False)
@@ -226,6 +228,7 @@ def fetch(c, source=None, qa_figures_source=None, dataset=None, subject=None, st
     fetch_cneuromod(c, source=source)
     fetch_timeseries(c, dataset=dataset, subject=subject, strict=strict)
     fetch_qa_figures(c, source=qa_figures_source)
+    fetch_parcel_labels(c)
     record_sources(c)
     print("✅ fetch complete.")
 
@@ -233,27 +236,177 @@ def fetch(c, source=None, qa_figures_source=None, dataset=None, subject=None, st
 # --------------------------------------------------------------------------- #
 # Analysis steps (chunk = dataset)
 # --------------------------------------------------------------------------- #
+def _parcellation_config(c, parcellation=None):
+    """Resolve a parcellation's network order and labels-file path from `invoke.yaml`."""
+    parcellation = parcellation or c.config.get("parcellation")
+    entry = c.config.get("parcellations", {}).get(parcellation)
+    if entry is None:
+        raise ValueError(f"No `parcellations.{parcellation}` entry in invoke.yaml")
+    return parcellation, entry["network_order"], Path(entry["labels_file"])
+
+
+@task(help={
+    "source": "Path to an existing labels TSV to symlink/copy instead of "
+              "building one (columns: index, name, network).",
+    "parcellation": "Which parcellation to build labels for (default: the "
+                    "configured `parcellation`).",
+    "subject": "cneuromod2026 only: which subject's dseg.nii.gz to read the "
+              "label values from (default: the smoke subject).",
+    "dataset": "cneuromod2026 only: which dataset's dseg.nii.gz to read "
+              "(default: the smoke dataset).",
+})
+def fetch_parcel_labels(c, source=None, parcellation=None, subject=None, dataset=None):
+    """
+    Write `source_data/{parcellation}_networks.tsv`: the parcel -> network
+    lookup table `run-connectomes` needs, since none ships in the timeseries
+    repos (see CLAUDE.md, "The parcel->network lookup").
+
+    schaefer1000: built from nilearn's bundled Schaefer-2018 atlas (7 Yeo
+    cortical networks), no fetch beyond nilearn's own cache.
+
+    cneuromod2026: built by reading one already-fetched subject's individualized
+    `_dseg.nii.gz` from the timeseries repo (never `anat/atlases`) and decoding
+    its integer label values under a documented assumption — see
+    `analysis.parcel_networks.build_cneuromod2026_labels`. Requires
+    `invoke fetch-timeseries --dataset ... --parcellation cneuromod2026` to
+    have already pulled that subject's content.
+    """
+    from analysis.parcel_networks import build_cneuromod2026_labels, build_schaefer1000_labels
+    from analysis.timeseries_layout import parcellation_subdir
+
+    parcellation = parcellation or c.config.get("parcellation")
+    entry = c.config.get("parcellations", {}).get(parcellation)
+    if entry is None:
+        raise ValueError(f"No `parcellations.{parcellation}` entry in invoke.yaml")
+    labels_path = Path(entry["labels_file"])
+
+    if labels_path.exists() and source is None:
+        print(f"🫧 {labels_path} already exists — nothing to do")
+        return
+
+    if source is not None:
+        from airoh.acquisition import fetch_data
+        fetch_data(c, labels_path, source=source)
+        print(f"🔗 Linked {labels_path} from {source}")
+        return
+
+    labels_path.parent.mkdir(parents=True, exist_ok=True)
+    if parcellation == "schaefer1000":
+        labels = build_schaefer1000_labels()
+    else:
+        dataset = dataset or c.config.get("smoke_dataset", "movie10")
+        subject = f"sub-{(subject or c.config.get('smoke_subject', '02')).removeprefix('sub-')}"
+        root = _cneuromod_dir(c)
+        subdir = root / dataset / "timeseries" / parcellation_subdir(parcellation) / subject
+        dseg_files = sorted(subdir.glob("*_dseg.nii.gz"))
+        if not dseg_files:
+            print(f"⚠️  No dseg found at {subdir} — run `invoke fetch-timeseries "
+                  f"--dataset {dataset} --subject {subject.removeprefix('sub-')} "
+                  f"--parcellation {parcellation}` first (needs S3 credentials).")
+            return
+        labels = build_cneuromod2026_labels(dseg_files[0])
+
+    labels.to_csv(labels_path, sep="\t", index=False)
+    print(f"📝 Wrote {labels_path}: {len(labels)} parcels, "
+          f"{labels['network'].nunique()} networks")
+
+
+@task
+def clean_parcel_labels(c):
+    """Remove every built `{parcellation}_networks.tsv` labels file."""
+    for entry in c.config.get("parcellations", {}).values():
+        path = Path(entry["labels_file"])
+        if path.exists():
+            path.unlink()
+            print(f"🧹 Removed {path}")
+
+
 @task(help={
     "dataset": "Comma-separated dataset names to process (default: all with a "
                "timeseries subdataset).",
-    "smoke": "Process only the smoke dataset (fast end-to-end check).",
+    "subject": "Comma-separated subject labels to restrict to.",
+    "parcellation": "Which parcellation to read (default: the configured "
+                    "`parcellation`).",
+    "smoke": "Process only the smoke dataset/subject (fast end-to-end check).",
 })
-def run_connectomes(c, dataset=None, smoke=False):
+def run_connectomes(c, dataset=None, subject=None, parcellation=None, smoke=False):
     """
-    Compute a connectome per subject and run from the parcelled timeseries.
-    **Not implemented yet.**
+    Compute per-network, per-session connectomes (Pearson + regularized
+    partial correlation) for the selected dataset(s).
 
-    Reads only files already on disk — retrieval is `invoke fetch`'s job, so
-    this step never calls `datalad get`. The intended output is one table per
-    dataset under output_data/connectomes/, and the step will skip any dataset
-    whose output already exists (existence-based caching, see CLAUDE.md).
+    Reads only files already on disk — retrieval is `invoke fetch`'s job, this
+    step never calls `datalad get`. Writes one `output_data/connectomes/
+    {dataset}_{parcellation}.h5` per dataset (see analysis/connectome_store.py
+    for the layout) and skips any dataset whose file already exists.
     """
-    output_dir = Path(c.config.get("output_data_dir"))
+    from analysis.connectome_store import write_dataset_connectomes
+    from analysis.connectomes import build_dataset_connectomes
+    from analysis.parcel_networks import load_parcel_labels
+    from analysis.timeseries_layout import parse_labels
+
+    output_dir = Path(c.config.get("output_data_dir")) / "connectomes"
     names = _select_datasets(c, dataset, smoke)
+    if not names:
+        print("⚠️  No dataset carries a timeseries subdataset — run `invoke fetch-cneuromod` first.")
+        return
 
-    print("TODO: run-connectomes is not implemented yet")
-    print(f"   would write into {output_dir / 'connectomes'}")
-    print(f"   for dataset(s): {', '.join(names) if names else '(none available)'}")
+    parcellation, network_order, labels_path = _parcellation_config(c, parcellation)
+    if smoke:
+        parcellation = c.config.get("smoke_parcellation", parcellation)
+        parcellation, network_order, labels_path = _parcellation_config(c, parcellation)
+    if not labels_path.exists():
+        print(f"⚠️  {labels_path} not found — run `invoke fetch-parcel-labels "
+              f"--parcellation {parcellation}` first.")
+        return
+    labels = load_parcel_labels(labels_path)
+
+    subjects = parse_labels(subject, prefix="sub-")
+    if smoke and not subjects:
+        subjects = [f"sub-{c.config.get('smoke_subject', '01')}"]
+    measures = c.config.get("connectome_measures") or [
+        "pearson", "partial_ledoitwolf",
+    ]
+    tr_seconds = c.config.get("tr_seconds", 1.5)
+    qa_root = _qa_figures_dir(c)
+    if not qa_root.is_dir():
+        qa_root = None
+
+    def _report_subject(subject, subject_index, n_subjects, n_sessions):
+        print(f"   sub-{subject} ({subject_index}/{n_subjects}): "
+              f"{n_sessions} session(s)", flush=True)
+
+    for name in names:
+        out_path = output_dir / f"{name}_{parcellation}.h5"
+        if out_path.exists():
+            print(f"🫧 {out_path} already exists — skipping {name}")
+            continue
+
+        print(f"⏳ {name}: computing connectomes...")
+        result = build_dataset_connectomes(
+            cneuromod_root=_cneuromod_dir(c), dataset=name, parcellation=parcellation,
+            network_order=network_order, labels=labels, measures=measures,
+            tr_seconds=tr_seconds, qa_root=qa_root, subjects=subjects or None,
+            on_subject_done=_report_subject,
+        )
+        if result is None:
+            print(f"⚠️  {name}: no '{parcellation}' timeseries on disk — "
+                  f"run `invoke fetch-timeseries --dataset {name} "
+                  f"--parcellation {parcellation}` first.")
+            continue
+
+        index_frame, networks, edges, measure_arrays, diagnostic_arrays = result
+        write_dataset_connectomes(
+            out_path, index_frame, networks, edges, measure_arrays, diagnostic_arrays,
+            parcellation=parcellation, tr_seconds=tr_seconds,
+            labels_checksum=_checksum_file(labels_path),
+        )
+        print(f"✅ {name}: {len(index_frame)} sessions "
+              f"-> {out_path} ({out_path.stat().st_size / 1e6:.1f} MB)")
+
+
+def _checksum_file(path):
+    import hashlib
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 @task(help={
@@ -390,10 +543,20 @@ def run_smoke(c):
     broken. Annexed content stays tolerant even here, because no timeseries
     dataset is anonymously readable yet — see source_data/CONTENT.md.
     """
+    from airoh.provenance import record_sources
+
     smoke_dataset = c.config.get("smoke_dataset", "movie10")
     smoke_subject = c.config.get("smoke_subject", "01")
+    smoke_parcellation = c.config.get("smoke_parcellation", c.config.get("parcellation"))
 
-    fetch(c, dataset=smoke_dataset, subject=smoke_subject, strict=True)
+    fetch_cneuromod(c)
+    fetch_timeseries(c, dataset=smoke_dataset, subject=smoke_subject, strict=True,
+                      parcellation=smoke_parcellation)
+    fetch_qa_figures(c)
+    fetch_parcel_labels(c, parcellation=smoke_parcellation, dataset=smoke_dataset,
+                         subject=smoke_subject)
+    record_sources(c)
+
     run_connectomes(c, smoke=True)
     run_group_stats(c, smoke=True)
     run_figure_layout(c)
@@ -523,3 +686,4 @@ def clean_source(c):
     """Remove all source data assets. Body calls each clean-{name} task."""
     clean_cneuromod(c)
     clean_qa_figures(c)
+    clean_parcel_labels(c)

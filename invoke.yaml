@@ -67,20 +67,56 @@ datasets:
 # carrying the marker directory below.
 timeseries_marker: timeseries
 
-# Which parcellation's timeseries to read. Each *.timeseries repo ships
-# schaefer1000, cneuromod2026, voxel_mni and voxel_native, each with its own
-# `_dseg.nii.gz` parcellation and grey-matter mask alongside the `.h5`.
-# This project uses schaefer1000 only: 1000 cortical parcels in MNI space, small
-# enough that the whole multi-dataset fetch stays tractable (~7 MB per subject).
-parcellation: schaefer1000
+# Which parcellation's timeseries `run-connectomes` reads. Each *.timeseries
+# repo ships schaefer1000, cneuromod2026, voxel_mni and voxel_native, each with
+# its own `_dseg.nii.gz` parcellation and grey-matter mask alongside the `.h5`.
+#
+# cneuromod2026 (1134 parcels: cortex + subcortex + cerebellum) is primary as
+# of 2026-08-17 — it lines up with what the qa_figures QC tables cover. This
+# reverses the project's original schaefer1000-only choice; see CLAUDE.md,
+# "Settled analysis decisions", for why. The code stays parcellation-agnostic
+# (see `parcellations:` below), so schaefer1000 keeps working — it is what the
+# smoke test still uses, since no timeseries dataset is anonymously readable
+# and cneuromod2026 needs a real S3-credentialed fetch first.
+parcellation: cneuromod2026
+
+# Per-parcellation network partition. `network_order` is authoritative
+# ordering for h5 storage; `labels_file` is written by `fetch-parcel-labels`
+# (analysis/parcel_networks.py) — a parcel -> network lookup table that ships
+# in neither *.timeseries repo, so it has to be built, not fetched verbatim.
+parcellations:
+  schaefer1000:
+    labels_file: source_data/schaefer1000_networks.tsv
+    network_order: [Vis, SomMot, DorsAttn, SalVentAttn, Limbic, Cont, Default]
+  cneuromod2026:
+    labels_file: source_data/cneuromod2026_networks.tsv
+    network_order:
+      [Vis, SomMot, DorsAttn, SalVentAttn, Limbic, Cont, Default,
+       cerebellum, subcortex]
+
+# TR is not recorded anywhere in the timeseries .h5 files (no HDF5 attributes
+# at all), so it is config.
+tr_seconds: 1.5
+
+# The two connectome measures `run-connectomes` computes for every network,
+# identically (CLAUDE.md, "Settled analysis decisions"). partial_ledoitwolf
+# (nilearn's default-shrinkage partial correlation, an established regularized
+# estimator) is the primary measure; pearson is the comparator.
+connectome_measures: [pearson, partial_ledoitwolf]
 
 # Canonical target for `invoke run-smoke` (overridable with --dataset/--subject).
 # No timeseries dataset is anonymously readable yet (see source_data/CONTENT.md),
 # so the target is not chosen for open access — it is chosen for size. movie10 is
 # a small, long-standing dataset; the smoke test fetches one subject and fails
 # only if the subdataset *tree* cannot be installed, which needs no credentials.
+# sub-01's schaefer1000 content happens to be an unfetched/broken annex link on
+# this machine while sub-02's is present, hence sub-02.
 smoke_dataset: movie10
-smoke_subject: "01"
+smoke_subject: "02"
+# The smoke test pins schaefer1000 regardless of the `parcellation` above, so
+# it keeps passing offline with data already on disk while cneuromod2026 is
+# still being fetched (it needs S3 credentials this environment lacks).
+smoke_parcellation: schaefer1000
 
 # provenance records
 #
@@ -118,14 +154,21 @@ verify:
     # this project (the parcellations ship inside the timeseries repos). The
     # docs name it to say so.
     - anat/atlases
+    - atlases
+    # Prose naming the cneuromod2026 parcellation and the upstream config file
+    # that (misleadingly) points at anat/atlases for it — see CLAUDE.md, "Do
+    # not point the pipeline at anat/atlases". Not paths in this repo.
+    - cneuromod2026
+    - schaefer1000Tian50Nette128.yaml
+    # source_data/{parcellation}_networks.tsv, built by fetch-parcel-labels —
+    # not present until that task has run.
+    - cneuromod2026_networks.tsv
     # The timeseries repos' own documentation, cited by CLAUDE.md for the
     # atlas-entity naming drift. Lives upstream, not in this repo.
     - TIMESERIES.md
-    # Outputs of the stubbed analysis steps: documented as _(pending)_ in
-    # output_data/CONTENT.md, and created once those steps are implemented.
-    - output_data/connectomes
+    # Output of the still-stubbed run-group-stats step: documented as
+    # _(pending)_ in output_data/CONTENT.md, created once it is implemented.
     - output_data/group_stats
-    - connectomes
     - group_stats
     # A path *inside* the qa_figures checkout (source_data/cneuromod.all.qa_figures/
     # output_data/tables), only present after `invoke fetch-qa-figures`. Named in
