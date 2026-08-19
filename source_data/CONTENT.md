@@ -122,6 +122,19 @@ upstream credentialed-content gap, not a bug here. As of **2026-08-17**: 17 of
 available_datasets` reports only the non-empty tables, and the loaders skip
 empty ones rather than raising.
 
+**The `atlas_tsnr` gap is load-bearing for the analysis, not just tidiness.**
+The three populated tables — `things`, `retinotopy`, `floc` — are exactly the
+three datasets the `usable_duration_sec >= 1800` gate removes entirely
+(CLAUDE.md, "Settled analysis decisions"). So although `run-connectomes` joins
+per-network tSNR onto every session index as `tsnr_{network}`, those columns
+are non-NaN for **0 of the 246 QC-covered sessions**. Any per-network tSNR
+analysis — including a per-network version of `run-tsnr-strata` — is
+impossible until the naturalistic datasets' `atlas_tsnr` tables are populated
+upstream. `run-tsnr-strata` therefore uses the whole-brain `tsnr` scalar only,
+and `group_stats.network_quality` reports per-network tSNR from those three
+gate-excluded datasets purely as context. Nothing in this repository can close
+this gap; it needs an upstream qa_figures export.
+
 `analysis/qc_join.py` joins these entities against the timeseries `.h5` run
 keys (`ses-XXX/ses-XXX_task-..._run-N_timeseries`), normalizing both sides
 (prefix stripping, session zero-padding, the `run` float-string quirk above)

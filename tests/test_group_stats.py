@@ -82,7 +82,7 @@ def test_similarity_histogram_empty_input():
 
 
 def test_gates_include_qc_covered_and_low_motion():
-    assert GATES == ("all", "gated", "qc_covered", "low_motion")
+    assert GATES == ("all", "gated", "qc_covered", "low_motion", "high_tsnr")
 
 
 def test_gate_mask_for_low_motion_is_subset_of_qc_covered():

@@ -26,7 +26,7 @@
       "git": {
         "branch": "main",
         "commit": "09d1acd46d3720938e84c547104f2c7c2a11bd0b",
-        "dirty": false,
+        "dirty": true,
         "remote": "git@github.com:courtois-neuromod/cneuromod.all.qa_figures.git",
         "toplevel": "/home/pbellec/git/cneuromod.all.qa_figures"
       },
@@ -39,6 +39,6 @@
       "size_bytes": null
     }
   },
-  "recorded_at": "2026-08-18T22:15:14+00:00",
+  "recorded_at": "2026-08-19T00:04:15+00:00",
   "schema": "airoh/manifest/1"
 }

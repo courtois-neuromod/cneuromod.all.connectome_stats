@@ -37,7 +37,7 @@
       }
     },
     "manifest_file": "source_data/MANIFEST.json",
-    "manifest_sha256": "f4a562537cede16f161351074352eb9ce84785beb8afba6dcca41fd4d2325e13"
+    "manifest_sha256": "af57305d47b508b21d11454f4f464474ba8c81cd24ac300de06e2d2a13af639a"
   },
   "outputs": {
     "connectome_figure.png": {
@@ -161,52 +161,76 @@
       "size_bytes": 32631
     },
     "figures/figure_motion/motion_note.txt": {
-      "sha256": "840ab20db65b3ff6dbac83a49ebc9dae7afef5e7e5615eb8154cd23643aa6cf9",
-      "size_bytes": 534
+      "sha256": "e33f7bac0cd5d983fd81a52025f31a31a3634cb487223010d7e81acf90539e7c",
+      "size_bytes": 669
     },
     "figures/figure_motion/motion_permutation.png": {
       "sha256": "e32b112b466c7f60565068598d670b8baceb78bbf8a71002fde6e89ae04ae258",
       "size_bytes": 96020
+    },
+    "figures/figure_tsnr/tsnr_balance.png": {
+      "sha256": "57a3d3f7312b60aa4d2e6fd069e4fb55eb9ba60e8525f2d1416f93b4f8a4d3d8",
+      "size_bytes": 271026
+    },
+    "figures/figure_tsnr/tsnr_bins.png": {
+      "sha256": "138d1aa121cd88f61fd9414e113a9f00759915bae9ae3d5e7f3697420bc50c44",
+      "size_bytes": 134257
+    },
+    "figures/figure_tsnr/tsnr_bins_legend.png": {
+      "sha256": "7425797ab8d6e0a0437aa02f91a56b0bf61d5552d812d730c6008d58bdeb1d2a",
+      "size_bytes": 32630
+    },
+    "figures/figure_tsnr/tsnr_note.txt": {
+      "sha256": "10932f3fcd80c18ad4073fb6422f0074f1abf3abf30b8df23bb1be2646843695",
+      "size_bytes": 1027
+    },
+    "figures/figure_tsnr/tsnr_permutation.png": {
+      "sha256": "0b4fb1e406968212027d2bfb1db5ce3355ef9e28d11ac535a5359b843ccb6ece",
+      "size_bytes": 120395
+    },
+    "figures/figure_tsnr/tsnr_permutation_legend.png": {
+      "sha256": "02325a7b2c27650c45727e1c6dd253baf0dbd1f8e9a26829b8c53a0343105e25",
+      "size_bytes": 11644
     },
     "figures/panel_sizes.json": {
       "sha256": "55f19690aef0d8e4939f3f8fe5c6c3697bb2258929e9aab27b2ac4ac77335c40",
       "size_bytes": 208
     },
     "group_stats/cross_context.tsv": {
-      "sha256": "aa3db9222c5d33d57d59f1094f8628d0e99beb4e445cf814612f552b128218b6",
-      "size_bytes": 24450
+      "sha256": "83a9c653e9af0274a37d79ebb06a9c49fe5e1aa55c550c4b10d43c22d197969a",
+      "size_bytes": 30566
     },
     "group_stats/domain_cross_context.tsv": {
-      "sha256": "fdb8f0bbc2eb663244955422da08f3198c905567f1a9f230267216520c4f0b25",
-      "size_bytes": 64639
+      "sha256": "87038311d474a4caaf9f6c12e22187491055b366c989bd8cd97234c89f89d81c",
+      "size_bytes": 75755
     },
     "group_stats/domain_duration_balance.tsv": {
-      "sha256": "9a70e89a06c02414921bed55ed247f2427b9fde373b15ec97e2d2b1252106027",
-      "size_bytes": 3367
+      "sha256": "7ce9cb6ae05e68c5bb9083841d08917c813fe2d2743ba3fc9479d59f7e6e4554",
+      "size_bytes": 3958
     },
     "group_stats/domain_pair_histograms.tsv": {
-      "sha256": "0ec4d133d289586c273a12c9baf810a307fead67989d1e8e9c384566c78bfcfd",
-      "size_bytes": 2179701
+      "sha256": "aaace14d2921807a7ed0a98a1ead2f038c840a2193267d18aa558252ec04d224",
+      "size_bytes": 2530141
     },
     "group_stats/duration_balance.tsv": {
-      "sha256": "94e5e3ca1dd01af8c3a7ea8439ddee1221c14d53ff2f4b9b20d6a1887418f1ab",
-      "size_bytes": 1207
+      "sha256": "e100dd4fd7f943bf862af6e036265388c8e87e03795bd42e5306994165e092f4",
+      "size_bytes": 1497
     },
     "group_stats/longitudinal_bins.tsv": {
-      "sha256": "7a67157e54fc6391c49323abda968e163690d00178bc61d69ffa40376557132b",
-      "size_bytes": 24180
+      "sha256": "963fba96127b8eab9a155b3c6f01fc520bb4a3e8a6b0c63bf2f51767262e5103",
+      "size_bytes": 30242
     },
     "group_stats/longitudinal_lag.tsv": {
-      "sha256": "444a4e4651b94f8551bb785152061accf8caf515bd5350e0c01cdc5c75506832",
-      "size_bytes": 83896
+      "sha256": "8f26a1a2fa34da8a27e2c0b4e7c03f1778fa1f2812daaaae1b485739f1784d06",
+      "size_bytes": 101153
     },
     "group_stats/network_quality.tsv": {
       "sha256": "bb0abb04a61b191bfd6ab907c7b91bf6f73b5b785d2177ca3c86f0a577c1caa1",
       "size_bytes": 1051
     },
     "group_stats/pair_histograms.tsv": {
-      "sha256": "1c0228d68cb07e32bf98c8ca3d30cdd1ca8e4f09ff04a2fc3d7903a2a6c1adc8",
-      "size_bytes": 1702998
+      "sha256": "8f4ed206101a6f9ab08fef70bb9af6c17f1e53f5114f71c8fe4b8db26298e2b4",
+      "size_bytes": 2136650
     },
     "group_stats/session_gate.tsv": {
       "sha256": "4d7010b0265b5d11f1a356895d9e2b78053708b91d7f67f1aef2f1b9974fe430",
@@ -231,12 +255,32 @@
     "motion_strata/motion_strata.tsv": {
       "sha256": "030bf175ff5d8dd45caf05b701793f44d128f9344cb8890448473b7accf70417",
       "size_bytes": 16041
+    },
+    "tsnr_strata/tsnr_balance.tsv": {
+      "sha256": "f7a94077bfd30a1624dcfa117aa334c26d2fef3679797717e478a454aac68334",
+      "size_bytes": 2241
+    },
+    "tsnr_strata/tsnr_pair_histograms.tsv": {
+      "sha256": "a77982271558301c03753861c2b1c5845d28063dcccc3650aa7eacdf4a4a2d6f",
+      "size_bytes": 1107030
+    },
+    "tsnr_strata/tsnr_permutation.tsv": {
+      "sha256": "222dd0b5705386f9b0560f29872b840941c3444a2a236eb467aa4d4b908ae42a",
+      "size_bytes": 1046
+    },
+    "tsnr_strata/tsnr_sessions.tsv": {
+      "sha256": "a347e673f1c366481fe8785b4b97168cae167205ddbe7972cfb81fb3f9bfbaa2",
+      "size_bytes": 19279
+    },
+    "tsnr_strata/tsnr_strata.tsv": {
+      "sha256": "2dac02cc26183e8066ffb3ad8609d69e7e6882393bb09e6d83e9e044c32151be",
+      "size_bytes": 33763
     }
   },
-  "recorded_at": "2026-08-18T22:26:46+00:00",
+  "recorded_at": "2026-08-19T00:16:22+00:00",
   "repository": {
     "branch": "main",
-    "commit": "f74041a92adb191be990f7fea81543ae202d5683",
+    "commit": "8f8c74a6ca491dffc2980d4930288623ed6d28bc",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/cneuromod.all.connectome_stats"
@@ -246,6 +290,7 @@
     "run-connectomes",
     "run-group-stats",
     "run-motion-strata",
+    "run-tsnr-strata",
     "run-figure-layout",
     "run-notebooks",
     "compose-figure"

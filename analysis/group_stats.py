@@ -38,7 +38,7 @@ from analysis.similarity import (
     summarize_bins,
 )
 
-GATES = ("all", "gated", "qc_covered", "low_motion")
+GATES = ("all", "gated", "qc_covered", "low_motion", "high_tsnr")
 
 
 def usable_sessions(index_frame, min_usable_seconds):
@@ -106,13 +106,16 @@ def similarity_histogram(values, bins):
 def _gate_mask_for(index_frame, min_usable_seconds, gate_name):
     """Boolean row mask for one `GATES` entry.
 
-    `qc_covered`/`low_motion` delegate the stratum to
-    `analysis.motion_strata` rather than reimplementing it — see CLAUDE.md,
-    "Motion stratification". The meaningful contrast for the headline tables
-    is `low_motion` vs. `qc_covered`, not vs. `gated`: `low_motion`
-    necessarily drops mario/harrypotter (no `fd_mean` coverage), and
-    comparing it against `gated` would confound a motion effect with that
-    change in dataset composition.
+    `qc_covered`/`low_motion`/`high_tsnr` delegate the stratum to
+    `analysis.motion_strata`/`analysis.tsnr_strata` rather than
+    reimplementing it — see CLAUDE.md, "Motion stratification" and "tSNR
+    stratification". The meaningful contrast for the headline tables is
+    `low_motion`/`high_tsnr` vs. `qc_covered`, not vs. `gated`: both
+    necessarily drop mario/harrypotter (no QC coverage), and comparing them
+    against `gated` would confound an acquisition-quality effect with that
+    change in dataset composition. `high_tsnr` uses the `raw` tSNR
+    definition, whose stratum is 72% concordant with `low_motion` — the two
+    gates are coupled, not independent checks.
     """
     if gate_name == "all":
         return np.ones(len(index_frame), dtype=bool)
@@ -122,17 +125,24 @@ def _gate_mask_for(index_frame, min_usable_seconds, gate_name):
         return gated_mask
 
     from analysis.motion_strata import assign_motion_strata, qc_covered_mask
+    from analysis.tsnr_strata import assign_tsnr_strata
 
     qc_mask = qc_covered_mask(index_frame, min_usable_seconds)
     if gate_name == "qc_covered":
         return qc_mask
-    if gate_name == "low_motion":
-        stratum = np.full(len(index_frame), None, dtype=object)
-        stratum[qc_mask] = assign_motion_strata(
-            index_frame[qc_mask].reset_index(drop=True)
-        )["motion_stratum"].to_numpy()
-        return stratum == "low"
-    raise ValueError(f"Unknown gate {gate_name!r}")
+
+    strata_for = {
+        "low_motion": (assign_motion_strata, "motion_stratum", "low"),
+        "high_tsnr": (assign_tsnr_strata, "tsnr_stratum", "high"),
+    }
+    if gate_name not in strata_for:
+        raise ValueError(f"Unknown gate {gate_name!r}")
+    assign, stratum_column, keep = strata_for[gate_name]
+    stratum = np.full(len(index_frame), None, dtype=object)
+    stratum[qc_mask] = assign(
+        index_frame[qc_mask].reset_index(drop=True)
+    )[stratum_column].to_numpy()
+    return stratum == keep
 
 
 def duration_balance(index_frame, min_usable_seconds, group_column="dataset"):

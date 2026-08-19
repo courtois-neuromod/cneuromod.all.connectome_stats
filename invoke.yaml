@@ -123,6 +123,12 @@ group_stats:
 motion_strata:
   n_permutations: 1000
 
+# `run-tsnr-strata` settings (CLAUDE.md, "tSNR stratification"). Same shape as
+# motion_strata above — the two robustness checks share one parameterized core
+# (analysis/quality_strata.py) and therefore one set of knobs.
+tsnr_strata:
+  n_permutations: 1000
+
 # Canonical target for `invoke run-smoke` (overridable with --dataset/--subject).
 # No timeseries dataset is anonymously readable yet (see source_data/CONTENT.md),
 # so the target is not chosen for open access — it is chosen for size. movie10 is
@@ -191,6 +197,10 @@ verify:
     - output_data/tables
     # Prose from CONTENT.md describing qa_figures column/table naming, not paths.
     - fd_prop_gt02/gt05
+    # A path *inside* the qa_figures checkout, like output_data/tables above.
+    # Named in prose because its emptiness is what rules out a per-network tSNR
+    # analysis — see CLAUDE.md, "tSNR stratification".
+    - tables/atlas_tsnr
     - friends.tsv
   # Largest file git may track before the check fails (default 10 MB).
   max_tracked_bytes: 10485760

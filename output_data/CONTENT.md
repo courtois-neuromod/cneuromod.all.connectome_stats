@@ -107,18 +107,76 @@ Once the pipeline is run, this folder will contain the following.
     motion_stratum_subject` — for auditability.
 - `figures/figure_motion/motion_bins.png`, `motion_bins_legend.png` — the six
   motion×task bins ("cell" split) × nine networks, grouped bar chart plus its
-  legend strip.
-- `figures/figure_motion/motion_balance.png` — pair-min usable duration and
-  pair-min tSNR per bin, side by side, from `motion_balance.tsv`.
-- `figures/figure_motion/motion_permutation.png` — per-network permutation
-  effect size (bar color marks `p<0.05`) with the per-subject replication
-  count annotated per bar.
-- `figures/figure_motion/motion_note.txt` — the honest-framing caption: this
-  tests *relative* motion differences inside an already low-motion cohort (no
-  session in the gated population reaches `fd_mean > 0.3`), not evidence about
-  high-motion data in general.
+  legend strip, within-task bins grouped together and between-task bins
+  grouped together (task outer, motion-pairing inner). This is the sole panel
+  `figure_motion.ipynb` renders — the headline correlation (similarity)
+  result. The duration/tSNR balance audit (`motion_balance.tsv`) and the
+  permutation-test effect sizes (`motion_permutation.tsv`) are still computed
+  by `run-motion-strata` but are reported as text (key stats and ranges), not
+  as figure panels.
   **Standalone figure — deliberately not placed in `connectome_figure.svg`**;
   see CLAUDE.md, "Motion stratification".
+- `tsnr_strata/` — robustness-tier QC (tSNR) dependence check (CLAUDE.md,
+  "tSNR stratification"), written by `invoke run-tsnr-strata` from
+  `analysis/tsnr_strata.py`, Pearson only, over the **same** QC-covered
+  population as `motion_strata/` (gated **and** `fd_mean` present — the
+  population definition is deliberately shared, so the two axes are directly
+  comparable). Every table carries a `stratum_def` column alongside `split`:
+  `"raw"` (median split on `tsnr`) or `"fd_residual"` (median split on `tsnr`
+  residualized on `fd_mean` within the same cell — near-independent of the
+  motion stratum, where `raw` is 72% concordant with it). Whole-brain `tsnr`
+  only: the per-network `tsnr_{network}` columns are non-NaN for none of the
+  covered sessions, because `atlas_tsnr` is populated upstream only for the
+  three datasets the gate removes (see `source_data/CONTENT.md`).
+  - `tsnr_strata.tsv` — `network × stratum_def × split × bin` -> `n, median,
+    q25, q75, mean, sd, n_sessions`. `bin` is one of the six `{high-high,
+    low-high, low-low}/{within-task, between-task}` labels — good-good first,
+    since high tSNR is the good end — within-subject pairs only.
+  - `tsnr_pair_histograms.tsv` — precomputed `(network, stratum_def, split,
+    bin, bin_left, bin_right, count)` histograms backing the same six bins.
+  - `tsnr_balance.tsv` — `bin × stratum_def × split` -> `n_pairs,
+    median_min_duration_sec, median_min_tsnr, median_max_fd_mean,
+    n_sessions`. Duration is the confound the 1800 s gate exists for
+    (`tsnr` vs. usable duration is r=0.04 per session): the strata are
+    balanced within the within-task bin (1.02x under `raw`) but not the
+    between-task bin (1.15x under `raw`, 1.06x under `fd_residual`) — a gap
+    that would raise high-high similarity, i.e. it points against the observed
+    negative effect rather than explaining it. `median_max_fd_mean` is the
+    motion coupling, and comparing the two `stratum_def` values shows how much
+    of it residualizing removes (0.107→0.131 across bins for `raw`,
+    0.116→0.128 for `fd_residual` — shrunk, never eliminated).
+  - `tsnr_permutation.tsv` — `network × stratum_def` -> `observed_diff`
+    (`median(high-high) - median(low-low)`, pooled over both task bins — the
+    same "better quality is positive" sign convention as the motion table),
+    `p_value` (two-sided, `tsnr_strata.n_permutations` shuffles of
+    `tsnr_stratum` within each (subject, dataset) cell),
+    `n_subjects_replicating`/`n_subjects_total` (how many of the 6
+    participants show `median(high-high) > median(low-low)` individually —
+    note this counts the *positive* direction, so where `observed_diff` is
+    negative the count agreeing with the pooled sign is the complement).
+  - `tsnr_sessions.tsv` — one row per QC-covered session: `dataset, subject,
+    session, fd_mean, tsnr, usable_duration_sec`, plus
+    `tsnr_stratum_{cell,subject}_{raw,fd_residual}` — for auditability.
+- `figures/figure_tsnr/tsnr_bins_raw.png` — the six tSNR×task bins ("cell"
+  split) × nine networks under the `raw` definition (median split on `tsnr`
+  itself), within-task bins grouped together and between-task bins grouped
+  together (task outer, tSNR-pairing inner). This is the **primary, reported**
+  panel `figure_tsnr.ipynb` renders — the headline correlation (similarity)
+  result.
+- `figures/figure_tsnr/tsnr_bins_fd_residual.png` — same layout, under the
+  `fd_residual` definition (median split on `tsnr` residualized on `fd_mean`
+  within cell). tSNR and `fd_mean` correlate at r=-0.68 — related, but not
+  equivalent — so this is a **sensitivity-analysis** panel checking whether
+  the `raw` result holds once head motion is regressed out, not a second
+  headline result to report on its own.
+- `figures/figure_tsnr/tsnr_bins_legend.png` — legend strip shared by both
+  panels above, since the six bins are identical.
+  The duration/tSNR/motion balance audit (`tsnr_balance.tsv`) and the
+  permutation-test effect sizes (`tsnr_permutation.tsv`) are still computed by
+  `run-tsnr-strata` but are reported as text (key stats and ranges), not as
+  figure panels.
+  **Standalone figures — deliberately not placed in `connectome_figure.svg`**;
+  see CLAUDE.md, "tSNR stratification".
 - `figures/figure_connectomes/longitudinal.png` — claim 1: within-subject
   Pearson similarity vs. friends season lag, one line per network, against the
   between-subject band.

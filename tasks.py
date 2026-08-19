@@ -642,6 +642,96 @@ def run_motion_strata(c, dataset=None, smoke=False):
     print(f"✅ run-motion-strata: wrote 5 tables to {output_dir}")
 
 
+@task(help={
+    "dataset": "Comma-separated dataset names to restrict analysis to "
+               "(default: every connectome file present).",
+    "smoke": "Aggregate only what the smoke run produced.",
+})
+def run_tsnr_strata(c, dataset=None, smoke=False):
+    """
+    Robustness-tier check (CLAUDE.md, "tSNR stratification"): does connectome
+    similarity depend on acquisition signal quality, and does claim 2's
+    within-task > between-task ordering survive when tSNR is held high?
+
+    The companion to `run-motion-strata` on the other QC axis, over the same
+    QC-covered population (gated AND `fd_mean` present). Splits it into
+    low/high tSNR strata, below/above the median within each (subject,
+    dataset) cell, under two definitions carried side by side in a
+    `stratum_def` column: `raw` tSNR, and `fd_residual` — tSNR residualized on
+    `fd_mean` within the same cell, which is what separates a signal-quality
+    effect from the motion effect the two axes share (r=-0.68). Whole-brain
+    tSNR only: `atlas_tsnr` is empty upstream for every gated dataset, so the
+    per-network columns are non-NaN for none of the covered sessions.
+    Standalone figure, not placed in the headline montage — see CLAUDE.md.
+
+    Reads output_data/connectomes/{dataset}_{parcellation}.h5 (`run-connectomes`'s
+    output) and writes five tidy TSVs under output_data/tsnr_strata/. Skips
+    when tsnr_strata.tsv already exists.
+    """
+    import pandas as pd
+
+    from analysis.connectome_store import load_index
+    from analysis.similarity import discover_connectome_files
+    from analysis.timeseries_layout import parse_labels
+    from analysis.tsnr_strata import (
+        tsnr_balance,
+        tsnr_permutation,
+        tsnr_sessions_table,
+        tsnr_summary,
+    )
+
+    output_dir = Path(c.config.get("output_data_dir")) / "tsnr_strata"
+    out_path = output_dir / "tsnr_strata.tsv"
+    if out_path.exists():
+        print(f"🫧 {out_path} already exists — skipping run-tsnr-strata")
+        return
+
+    parcellation, network_order, _ = _parcellation_config(c, None)
+    if smoke:
+        parcellation = c.config.get("smoke_parcellation", parcellation)
+        parcellation, network_order, _ = _parcellation_config(c, parcellation)
+
+    measure = c.config.get("analysis_measure", "pearson")
+    gate_config = c.config.get("group_stats", {})
+    min_usable_seconds = gate_config.get("min_usable_seconds", 1800)
+    n_bins = gate_config.get("similarity_bins", 60)
+    n_permutations = c.config.get("tsnr_strata", {}).get("n_permutations", 1000)
+
+    connectome_dir = Path(c.config.get("output_data_dir")) / "connectomes"
+    paths, skipped = discover_connectome_files(connectome_dir, parcellation)
+    for path, reason in skipped:
+        print(f"⚠️  skipping {path.name}: {reason}")
+    names = parse_labels(dataset)
+    if names:
+        paths = [p for p in paths if p.stem.rsplit(f"_{parcellation}", 1)[0] in names]
+    if not paths:
+        print(f"⚠️  No connectome files for parcellation={parcellation} — "
+              "run `invoke run-connectomes` first.")
+        return
+
+    print(f"⏳ tSNR strata: {len(paths)} connectome file(s), gate={min_usable_seconds}s")
+    all_index = pd.concat([load_index(p) for p in paths], ignore_index=True)
+    sessions = tsnr_sessions_table(all_index, min_usable_seconds)
+    if sessions.empty:
+        print("⚠️  No QC-covered sessions (gated AND fd_mean present) — "
+              "writing empty tables. Likely a smoke run or QC-uncovered datasets only.")
+
+    summary = tsnr_summary(paths, network_order, measure, min_usable_seconds, n_bins)
+    balance = tsnr_balance(all_index, min_usable_seconds)
+    permutation = tsnr_permutation(
+        paths, network_order, measure, min_usable_seconds, n_permutations=n_permutations,
+    )
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    summary["tsnr_bins"].to_csv(out_path, sep="\t", index=False)
+    summary["histograms"].to_csv(output_dir / "tsnr_pair_histograms.tsv", sep="\t", index=False)
+    balance.to_csv(output_dir / "tsnr_balance.tsv", sep="\t", index=False)
+    permutation.to_csv(output_dir / "tsnr_permutation.tsv", sep="\t", index=False)
+    sessions.to_csv(output_dir / "tsnr_sessions.tsv", sep="\t", index=False)
+
+    print(f"✅ run-tsnr-strata: wrote 5 tables to {output_dir}")
+
+
 @task
 def run_figure_layout(c):
     """
@@ -735,11 +825,12 @@ def run(c, dataset=None, force=False):
     run_connectomes(c, dataset=dataset)
     run_group_stats(c)
     run_motion_strata(c)
+    run_tsnr_strata(c)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
     record_run(c, tasks="run-connectomes,run-group-stats,run-motion-strata,"
-                        "run-figure-layout,run-notebooks,compose-figure")
+                        "run-tsnr-strata,run-figure-layout,run-notebooks,compose-figure")
     print("all analyses completed")
 
 
@@ -775,6 +866,7 @@ def run_smoke(c):
     run_connectomes(c, smoke=True)
     run_group_stats(c, smoke=True)
     run_motion_strata(c, smoke=True)
+    run_tsnr_strata(c, smoke=True)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
@@ -822,6 +914,13 @@ def clean_motion_strata(c):
 
 
 @task
+def clean_tsnr_strata(c):
+    """Remove the tSNR-stratified robustness tables."""
+    from airoh.utils import clean_folder
+    clean_folder(c, "output_data_dir", "tsnr_strata/*")
+
+
+@task
 def clean_figures(c):
     """
     Remove the figures dir (per-notebook panels, the "already ran" sentinels,
@@ -861,6 +960,7 @@ def clean(c):
     clean_connectomes(c)
     clean_group_stats(c)
     clean_motion_strata(c)
+    clean_tsnr_strata(c)
     clean_figures(c)
     clean_figure(c)
 
