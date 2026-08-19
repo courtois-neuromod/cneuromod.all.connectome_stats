@@ -14,7 +14,7 @@ tasks from [`airoh`](https://pypi.org/project/airoh/).
 > ✅ **Status: implemented end to end.** `fetch` retrieves real data,
 > `run-connectomes` writes real per-network connectomes, and `run-group-stats`
 > computes the two headline analyses into `output_data/group_stats/*.tsv`,
-> plotted by three real montage panels. `run-motion-strata` and
+> plotted by seven real montage panels (three headline, three domain, one glass-brain network key). `run-motion-strata` and
 > `run-tsnr-strata` add two robustness-tier QC-dependence checks — head motion
 > and temporal SNR — into `output_data/motion_strata/*.tsv` and
 > `output_data/tsnr_strata/*.tsv`, each plotted standalone. See **Current
@@ -230,12 +230,13 @@ The plumbing and the science are both wired up.
 | `fetch-timeseries` | ✅ implemented — installs each `{dataset}/timeseries` subdataset and pulls the configured parcellation's files |
 | `fetch-qa-figures` | ✅ implemented — symlinks or clones the qa_figures QC tables (no credentials needed) |
 | `fetch-parcel-labels` | ✅ implemented — builds the parcel -> network lookup table (see "The parcel -> network lookup" in `source_data/CONTENT.md`) |
+| `fetch-atlas` | ✅ implemented — retrieves the MNI group atlas the montage's glass-brain network key is drawn from (display only) |
 | `run-connectomes` | ✅ implemented — per-session, per-network Pearson + regularized partial correlation |
 | `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses plus the domain-restricted robustness check (Pearson only) into ten tidy TSVs |
 | `run-motion-strata` | ✅ implemented — robustness-tier motion-stratified similarity check into five tidy TSVs |
 | `run-tsnr-strata` | ✅ implemented — robustness-tier tSNR-stratified similarity check into five tidy TSVs (raw and motion-residualized strata) |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
-| `run-notebooks` | ✅ implemented — renders the three real montage panels plus the standalone motion- and tSNR-stratification panels |
+| `run-notebooks` | ✅ implemented — renders the seven real montage panels plus the standalone motion- and tSNR-stratification panels |
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
 | `verify`, `clean*` | ✅ implemented |
 
@@ -319,6 +320,7 @@ tables' entities and the timeseries `.h5` run keys is implemented
 | `fetch-timeseries`  | Retrieves the parcelled timeseries for the configured (or `--parcellation`) parcellation; `--dataset`/`--subject` narrow it |
 | `fetch-qa-figures`  | Makes the cneuromod.all.qa_figures QC tables available (symlink via `--source`, else clone; no credentials needed) |
 | `fetch-parcel-labels` | Builds `source_data/{parcellation}_networks.tsv`, the parcel -> network lookup table |
+| `fetch-atlas`       | Retrieves the MNI group atlas used to draw the montage's glass-brain network key (display only) |
 | `run`               | Runs the full pipeline in order; `--force` cleans first  |
 | `run-connectomes`   | Computes per-session, per-network Pearson + regularized partial-correlation connectomes |
 | `run-group-stats`   | Aggregates connectomes into the cross-context and longitudinal similarity summaries |
@@ -350,7 +352,7 @@ Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 | Folder / File  | Description                              |
 | -------------- | ---------------------------------------- |
 | `analysis/`    | Pure Python analysis logic, called by invoke tasks |
-| `notebooks/`   | `figure_connectomes.ipynb` — reads `output_data/group_stats/*.tsv` and renders the three montage panels plus diagnostic histogram grids. `figure_motion.ipynb` — reads `output_data/motion_strata/*.tsv` and renders the standalone motion-stratification panels. `figure_tsnr.ipynb` — reads `output_data/tsnr_strata/*.tsv` and renders the standalone tSNR-stratification panels |
+| `notebooks/`   | `figure_connectomes.ipynb` — reads `output_data/group_stats/*.tsv` and renders the seven montage panels (including the glass-brain network key) plus their legend strips and diagnostic histogram grids. `figure_motion.ipynb` — reads `output_data/motion_strata/*.tsv` and renders the standalone motion-stratification panels. `figure_tsnr.ipynb` — reads `output_data/tsnr_strata/*.tsv` and renders the standalone tSNR-stratification panels |
 | `tests/`       | Unit tests (`pytest`)                    |
 | `source_data/` | Source datasets — see [`source_data/CONTENT.md`](source_data/CONTENT.md) |
 | `output_data/` | Generated results and figures — see [`output_data/CONTENT.md`](output_data/CONTENT.md) |

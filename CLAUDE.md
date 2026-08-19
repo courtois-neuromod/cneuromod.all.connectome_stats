@@ -99,7 +99,7 @@ Joining these entities against the timeseries `.h5` run keys is now implemented 
 Two traps to avoid:
 
 - **Do not match on the atlas entity.** Upstream writes `atlas-Schaefer2018` while the repos' own `TIMESERIES.md` documents `atlas-Schaefer18`. `analysis/timeseries_layout.py` matches on the filename *suffix* (`*_timeseries.h5`, `*_dseg.nii.gz`, `*_mask.nii.gz`) precisely so that drift cannot break retrieval.
-- **Do not point the pipeline at `anat/atlases` or at fMRIPrep BOLD.** The parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. This was checked explicitly for cneuromod2026's label ordering: `cneuromod_extract_tseries`'s `schaefer1000Tian50Nette128.yaml` config points its `parcellation:` key at `./atlases/...` (the `anat.atlases` submodule) — but the **individualized** `_dseg.nii.gz` this project needs already ships inside each `.timeseries` repo alongside the `.h5` (see "The timeseries assets" above), so `fetch-parcel-labels` reads that, never `anat/atlases`. Ask the user before changing this retrieval route.
+- **Do not point the pipeline at `anat/atlases` or at fMRIPrep BOLD.** The parcellations ship *inside* the timeseries repos, which is the whole reason this project reads them. This was checked explicitly for cneuromod2026's label ordering: `cneuromod_extract_tseries`'s `schaefer1000Tian50Nette128.yaml` config points its `parcellation:` key at `./atlases/...` (the `anat.atlases` submodule) — but the **individualized** `_dseg.nii.gz` this project needs already ships inside each `.timeseries` repo alongside the `.h5` (see "The timeseries assets" above), so `fetch-parcel-labels` reads that, never `anat/atlases`. Ask the user before changing this retrieval route. **One narrow, user-approved exception exists**, and only one: `analysis/atlas_maps.py` (fetched by `fetch-atlas`) reads the MNI group atlas from `anat/atlases` **for display only** — the nine glass-brain tiles that key the montage's network colours. A glass brain needs a group-space map, and the individualized dseg is in each subject's own functional space, so it cannot serve. Nothing in the analysis path reads those masks, and the parcel -> network lookup is untouched.
 
 ### Timeseries content is credentialed
 
@@ -290,6 +290,50 @@ in `connectome_figure.svg` like any other element and sized through
 otherwise be drawn onto a panel (e.g. panel 3's tSNR-coverage caveat) is written
 to a plain text file beside it, to become a caption. Keep this split when adding a panel:
 `save_legend` in `figure_connectomes.ipynb` is the helper.
+
+**The montage is two rows, and type is sized once.** `connectome_figure.svg` is
+195 x 152 mm: row 1 holds the three headline panels A-C with their legend
+strips beneath, row 2 the three domain panels D-F sharing a single legend (the
+three `domain_*_legend.png` are identical, so only `domain_movies_legend.png`
+is placed). Panel letters, panel titles, and the strap that says row 2 is a
+robustness check on B rather than a fourth claim are all typeset in the SVG,
+never drawn onto a panel. Because a placed panel is only ~2 in wide,
+matplotlib's 10 pt defaults overflow it — the y-axis label alone came out
+taller than the figure and was clipped — so `figure_connectomes.ipynb` sets the
+montage's type scale once in `plt.rcParams` in its setup cell (6 pt body, 5 pt
+ticks). Change it there, not per call.
+
+**Two truncated axes, both marked.** Panel A's curves live in ~0.83-0.96 while
+the between-subject floor sits near 0.57, so it is drawn as two stacked axes
+with the gap removed rather than one continuous axis wasting ~40% of the panel;
+the four bar panels (B, D, E, F) start at 0.4, since nothing falls below ~0.42
+and a 0-based axis squashes the within-/between-task contrast that is the
+result. Both breaks are drawn on the frame (`mark_truncated_axis` in
+`figure_connectomes.ipynb`) — truncate the axis, but never silently.
+
+**One network palette, learned once.** `NETWORK_COLORS` in
+`figure_connectomes.ipynb` maps each network to a tab10 colour, and every panel
+that shows networks uses it: panel A's lines, panel C's points, and a
+network-coloured bubble beside each x tick of the four bar panels
+(`add_network_color_bubbles`). Panel A's legend strip is therefore the montage's
+single network key — no panel repeats it. Keep new per-network panels on the
+same mapping rather than picking fresh colours. The palette itself is the
+canonical Yeo-7 literature one, copied from the `GROUP_COLORS` table in
+`cneuromod.all.qa_figures` (its own notebooks' shared figure-style module, with
+its darkened Limbic, which is otherwise
+near-invisible on a white glass brain) plus two off-palette hues for
+cerebellum and subcortex, so the same network reads the same colour across
+both projects' figures.
+
+**Panel G, the glass-brain network key.** `network_maps.png` is nine sagittal
+glass brains stacked down the left edge of the montage, spanning its full
+height, one per network, each filled with its `NETWORK_COLORS` entry and named
+beside it. It is why no panel needs a nine-network legend: panel A's legend
+strip carries only the between-subject band, panel C labels its points in
+their network colour, and the bar panels carry a coloured bubble at each x
+tick. The masks come from the MNI group atlas via `analysis/atlas_maps.py`
+(see the `anat/atlases` exception above); if that content is missing the
+notebook prints a warning and omits the panel rather than failing.
 
 `run-figure-layout` is a deliberate exception to the existence-based caching described above: it always re-runs, because it is cheap and a box resized in Inkscape must take effect on the very next `invoke run`, not only after a `clean`.
 

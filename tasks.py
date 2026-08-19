@@ -130,6 +130,37 @@ def fetch_qa_figures(c, source=None):
     install_dataset(c, "qa_figures", source=source)
 
 
+@task
+def fetch_atlas(c):
+    """
+    Retrieve the MNI group atlas the montage's glass-brain network key is drawn
+    from (`anat/atlases`, display only).
+
+    This is the single place in the project that touches `anat/atlases`, a
+    deliberate exception to the rule in CLAUDE.md, "The parcel -> network
+    lookup". It exists because a glass brain needs a group-space map, while the
+    individualized `_dseg.nii.gz` the parcel -> network lookup reads is in each
+    subject's own functional space. That lookup is unaffected: it still reads
+    the timeseries repos, never this file. See `analysis/atlas_maps.py`.
+
+    Tolerant like every other content fetch — warns and skips if the annexed
+    dseg cannot be retrieved, in which case the notebook simply omits the
+    glass-brain key panel.
+    """
+    from airoh.datalad import get_data
+
+    from analysis.atlas_maps import atlas_paths
+
+    dseg_path, labels_path = atlas_paths(_cneuromod_dir(c))
+    if dseg_path.is_file() and labels_path.is_file():
+        print(f"🫧 {dseg_path.name} already present — nothing to fetch")
+        return
+
+    root = _cneuromod_dir(c)
+    for path in (dseg_path, labels_path):
+        get_data(c, "cneuromod_all", path=str(path.relative_to(root)), strict=False)
+
+
 @task(help={
     "dataset": "Comma-separated cneuromod.all dataset names to restrict the "
                "fetch to (default: every dataset carrying a timeseries "
@@ -227,6 +258,7 @@ def fetch(c, source=None, qa_figures_source=None, dataset=None, subject=None, st
 
     fetch_cneuromod(c, source=source)
     fetch_timeseries(c, dataset=dataset, subject=subject, strict=strict)
+    fetch_atlas(c)
     fetch_qa_figures(c, source=qa_figures_source)
     fetch_parcel_labels(c)
     record_sources(c)

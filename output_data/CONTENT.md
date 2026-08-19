@@ -177,6 +177,15 @@ Once the pipeline is run, this folder will contain the following.
   figure panels.
   **Standalone figures — deliberately not placed in `connectome_figure.svg`**;
   see CLAUDE.md, "tSNR stratification".
+- `figures/figure_connectomes/network_maps.png` — the montage's network key:
+  nine sagittal glass brains, one per network, each filled with its
+  `NETWORK_COLORS` entry and named beside it, spanning the full page height
+  down the left edge. Every other panel inherits those colours (panel A's
+  lines, panel C's points and labels, the bar panels' x-tick bubbles), which is
+  why none of them repeats a nine-network legend. Drawn from the MNI group
+  atlas via `analysis/atlas_maps.py` — display only, and the sole place this
+  project reads `anat/atlases` (CLAUDE.md, "The parcel -> network lookup").
+  Omitted with a warning when that atlas content is not retrieved.
 - `figures/figure_connectomes/longitudinal.png` — claim 1: within-subject
   Pearson similarity vs. friends season lag, one line per network, against the
   between-subject band.
@@ -196,7 +205,8 @@ Once the pipeline is run, this folder will contain the following.
   `cross_context_legend.png`, `domain_movies_legend.png`,
   `domain_videogames_legend.png` and `domain_stories_legend.png` — the legends
   for the panels above, each a standalone horizontal strip holding nothing but
-  the key. The panels themselves are drawn bare (no legend, no title): both are
+  the key. `longitudinal_legend.png` holds a single entry (the between-subject
+  band) — its nine networks are keyed by `network_maps.png` instead. The panels themselves are drawn bare (no legend, no title): both are
   montage-level furniture that crowds the data inside a panel-sized canvas, so
   they are placed once in `connectome_figure.svg` instead. The strips are
   montage elements like any other — linked by relative path and sized through
@@ -216,6 +226,11 @@ Once the pipeline is run, this folder will contain the following.
   truth for panel layout. A pipeline **source**, not an output, despite living
   here: its `<image>` links are relative paths that resolve from this directory.
   See `CLAUDE.md`, "Figures: the Inkscape montage pattern".
+- `connectome_figure_caption.md` — hand-written caption for the montage, kept
+  beside the hand-authored SVG rather than in a manuscript so the numbers it
+  quotes stay next to the tables they came from. Not produced by any pipeline
+  step, and not regenerated: every figure quoted in it was read from
+  `group_stats/*.tsv` by hand, so re-check it after a rerun on different data.
 - `connectome_figure.png` — the composed montage, rendered from
   `connectome_figure.svg` by `invoke compose-figure` via the Inkscape CLI
   (skipped with a warning if Inkscape isn't installed).
