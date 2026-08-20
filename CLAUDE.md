@@ -292,10 +292,15 @@ to a plain text file beside it, to become a caption. Keep this split when adding
 `save_legend` in `figure_connectomes.ipynb` is the helper.
 
 **The montage is two rows, and type is sized once.** `connectome_figure.svg` is
-195 x 152 mm: row 1 holds the three headline panels A-C with their legend
+188.3 x 122.6 mm: row 1 holds the three headline panels A-C with their legend
 strips beneath, row 2 the three domain panels D-F sharing a single legend (the
 three `domain_*_legend.png` are identical, so only `domain_movies_legend.png`
-is placed). Panel letters, panel titles, and the strap that says row 2 is a
+is placed). **Row 1's three panels are one shape**, 48.33 x 43.33 mm on a 7.5
+mm gap — panel B's original 58:52 proportions, applied to all three at the
+width that fits the row, at the user's request. Keep them equal when
+re-laying the montage: A's broken axis, B's bars and C's scatter are read
+against each other, and three different frames make that comparison harder
+than it needs to be. Panel letters, panel titles, and the strap that says row 2 is a
 robustness check on B rather than a fourth claim are all typeset in the SVG,
 never drawn onto a panel. Because a placed panel is only ~2 in wide,
 matplotlib's 10 pt defaults overflow it — the y-axis label alone came out
@@ -334,6 +339,17 @@ their network colour, and the bar panels carry a coloured bubble at each x
 tick. The masks come from the MNI group atlas via `analysis/atlas_maps.py`
 (see the `anat/atlases` exception above); if that content is missing the
 notebook prints a warning and omits the panel rather than failing.
+
+The tiles are stacked in **decreasing panel-A stability** — the mean over
+season lags of the gated within-subject median similarity, descending (Vis,
+Default, DorsAttn, Cont, cerebellum, SalVentAttn, SomMot, subcortex, Limbic as
+of 2026-08-19) — so the key doubles as a ranking of which networks carry the
+most stable connectomes. `stability_ordered_networks()` in
+`figure_connectomes.ipynb` derives it from `longitudinal_lag.tsv`, falling back
+to `NETWORK_ORDER` if that table is empty and sorting any network friends does
+not cover to the end. **Only panel G is reordered.** Every other panel keeps
+`NETWORK_ORDER`, whose fixed anatomical grouping is what lets a reader compare
+the same x position across panels B, D, E and F.
 
 `run-figure-layout` is a deliberate exception to the existence-based caching described above: it always re-runs, because it is cheap and a box resized in Inkscape must take effect on the very next `invoke run`, not only after a `clean`.
 
