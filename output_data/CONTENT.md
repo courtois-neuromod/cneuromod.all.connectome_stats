@@ -62,8 +62,11 @@ Once the pipeline is run, this folder will contain the following.
     across the same four cross-context bins as `cross_context.tsv`, computed
     with `analysis/group_stats.py`'s `duration_balance`. This is the audit
     behind the 1800 s gate — see CLAUDE.md, "Settled analysis decisions": at
-    `gate="all"` the within-task bins run ~1.6x the between-task bins; at
-    `gate="gated"` they're within ~4% of each other.
+    `gate="all"` the within-task bins run ~1.7x the between-task bins; at
+    `gate="gated"` the gap narrows to ~1.20x but no longer closes, since the
+    six datasets added on 2026-09-04 entered the analysis. Read this table
+    alongside `cross_context.tsv` rather than assuming the gate made the
+    contrast duration-clean.
   - `domain_cross_context.tsv`, `domain_pair_histograms.tsv`,
     `domain_duration_balance.tsv` — a robustness-tier check on analysis B
     (CLAUDE.md, "Domain-restricted cross-context figures"): the same shapes as

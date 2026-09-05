@@ -34,11 +34,14 @@ decisions". `run-smoke` still targets `schaefer1000` (see `smoke_parcellation`
 in `invoke.yaml`), since it is already fetched on this machine and needs no
 S3 credentials, while `cneuromod2026` does.
 
-12 `{dataset}/timeseries` submodules are registered in `cneuromod.all`: `floc`,
-`movie10`, `friends`, `things`, `hcptrt`, `harrypotter`, `mario`, `mario3`,
-`mariostars`, `petit-prince`, `retinotopy` and `shinobi`. The fetch
-**discovers** them — it processes every dataset carrying a `timeseries`
-directory, so a thirteenth needs no code change.
+19 `{dataset}/timeseries` submodules are registered in `cneuromod.all`: `floc`, `movie10`, `friends`, `things`, `hcptrt`, `harrypotter`, `mario`,
+`mario3`, `mariostars`, `petit-prince`, `retinotopy`, `shinobi`, `gamepad`,
+`langlocalizer`, `multfs`, `mutemusic`, `narratives`, `ood` and `triplets`. The fetch **discovers** them — it processes every dataset carrying a
+`timeseries` directory, so a twentieth needs no code change. The seven
+registered on 2026-09-04 (`gamepad`, `langlocalizer`, `multfs`, `mutemusic`,
+`narratives`, `ood`, `triplets`) are un-installed mountpoints here: no content
+has been fetched for them, so they contribute to no result and every `run-*`
+step warns and skips them.
 
 Layout, per dataset (schaefer1000 shown; cneuromod2026 is the same shape under
 a `cneuromod2026/` parcellation directory, with `atlas-cneuromod26` or
@@ -127,7 +130,7 @@ The three populated tables — `things`, `retinotopy`, `floc` — are exactly th
 three datasets the `usable_duration_sec >= 1800` gate removes entirely
 (CLAUDE.md, "Settled analysis decisions"). So although `run-connectomes` joins
 per-network tSNR onto every session index as `tsnr_{network}`, those columns
-are non-NaN for **0 of the 246 QC-covered sessions**. Any per-network tSNR
+are non-NaN for **0 of the 304 QC-covered sessions**. Any per-network tSNR
 analysis — including a per-network version of `run-tsnr-strata` — is
 impossible until the naturalistic datasets' `atlas_tsnr` tables are populated
 upstream. `run-tsnr-strata` therefore uses the whole-brain `tsnr` scalar only,

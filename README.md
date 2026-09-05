@@ -240,10 +240,12 @@ The plumbing and the science are both wired up.
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
 | `verify`, `clean*` | ✅ implemented |
 
-**The timeseries submodules have landed.** 12 `{dataset}/timeseries` submodules
+**The timeseries submodules have landed.** 19 `{dataset}/timeseries` submodules
 are now registered in `cneuromod.all` (`floc`, `movie10`, `friends`, `things`,
 `hcptrt`, `harrypotter`, `mario`, `mario3`, `mariostars`, `petit-prince`,
-`retinotopy`, `shinobi`), so `fetch-timeseries` has a real body. Their **content
+`retinotopy`, `shinobi`, and — added 2026-09-04, no content fetched here yet —
+`gamepad`, `langlocalizer`, `multfs`, `mutemusic`, `narratives`, `ood`,
+`triplets`), so `fetch-timeseries` has a real body. Their **content
 is credentialed** for now — see "Credentials for a full fetch" above and
 [`source_data/CONTENT.md`](source_data/CONTENT.md).
 

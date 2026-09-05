@@ -1,5 +1,5 @@
 {
-  "command": "/home/pbellec/cneuromod.all.connectome_stats/.venv/bin/invoke run",
+  "command": "/home/pbellec/git/cneuromod.all.connectome_stats/.venv/bin/invoke run",
   "environment": {
     "lockfiles": {
       "uv.lock": "ef65d0ef5e0c88db577306534c05feaaf9d87954df700a3de41297d6afbb73ae"
@@ -20,13 +20,13 @@
       "ruff": "0.16.3",
       "scikit-learn": "1.8.0"
     },
-    "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
     "python": "3.14.0"
   },
   "inputs": {
     "assets": {
       "cneuromod_all": {
-        "commit": "02ab5a0f848613c78ed5d38def297168f83b2a98",
+        "commit": "f162264f6aa81b0096e13df4b114780608e957a0",
         "resolved_path": "/home/pbellec/git/cneuromod.all",
         "sha256": null
       },
@@ -37,16 +37,16 @@
       }
     },
     "manifest_file": "source_data/MANIFEST.json",
-    "manifest_sha256": "af57305d47b508b21d11454f4f464474ba8c81cd24ac300de06e2d2a13af639a"
+    "manifest_sha256": "d769992a1800fd34d01b18da45f441c3f76f282492ac97c03bcd1deea83e6a73"
   },
   "outputs": {
     "connectome_figure.png": {
-      "sha256": "ebf0bf388de3798967f07f3e246edcadc37df6d07a8c6d525aba26db83b6337f",
-      "size_bytes": 854715
+      "sha256": "cdc7fad388092deabb01c717b323cf8d07f15370b9f5d868f10b299c966f7468",
+      "size_bytes": 822246
     },
     "connectome_figure.svg": {
-      "sha256": "64757ffb087d0fd4b13f4c77096aadf955098dfd9a0e640159ddb686bf6d7aee",
-      "size_bytes": 6665
+      "sha256": "b24000c9e3af6510a6ddb10a50e525d2eb161b182fc701062f02e8f22851c14a",
+      "size_bytes": 6726
     },
     "connectome_figure_caption.md": {
       "sha256": "2f2372006e003d12d0aa4373c071ecb8a0b8101d8280923d751b6d22ea569577",
@@ -60,6 +60,10 @@
       "sha256": null,
       "size_bytes": 223687748
     },
+    "connectomes/gamepad_cneuromod2026.h5": {
+      "sha256": "d45deb4eb0c22f705b1d43a02c1f2c23db6333fbd1848255fc10d6da8f377d7a",
+      "size_bytes": 12031768
+    },
     "connectomes/harrypotter_cneuromod2026.h5": {
       "sha256": "ae2f836d5ed1b39588edb6fd83ed6e2802ce692bf3db555fb0587b5558d80396",
       "size_bytes": 4046536
@@ -67,6 +71,10 @@
     "connectomes/hcptrt_cneuromod2026.h5": {
       "sha256": "8ce8dc931e9875543eaf7851c4108a43d058325b74d9e952dc0bd5ea37442d46",
       "size_bytes": 41318176
+    },
+    "connectomes/langlocalizer_cneuromod2026.h5": {
+      "sha256": "fee191d6e1129d77e73fd6947c5fc4a99ed3430dcf4ac0215e6ac08e38ea2063",
+      "size_bytes": 8704408
     },
     "connectomes/mario_cneuromod2026.h5": {
       "sha256": "d3b62700bd9ca70ce882d2b5d4dec842d551477c92daa3664795be3ec0c052d1",
@@ -79,6 +87,18 @@
     "connectomes/movie10_schaefer1000.h5": {
       "sha256": "2a915eb85ff55a4c125d4a0b85b7493639f8b4b6a6d6b27298567de7599e6675",
       "size_bytes": 8249616
+    },
+    "connectomes/multfs_cneuromod2026.h5": {
+      "sha256": "5bd860c205d7047f465b3344a85d43ce70b6ee39c10a0a8517badf155021103b",
+      "size_bytes": 53965484
+    },
+    "connectomes/mutemusic_cneuromod2026.h5": {
+      "sha256": "f6816c52e8e29381af1225e790b499af220ccf488ec005013a9b8b2a3e3aef00",
+      "size_bytes": 16028360
+    },
+    "connectomes/narratives_cneuromod2026.h5": {
+      "sha256": "47a0caf4cab0f1c5617d26e55e6615389462eb4dcc755675e719928fa991034b",
+      "size_bytes": 40652792
     },
     "connectomes/petit-prince_cneuromod2026.h5": {
       "sha256": "ad3ef84a35269f8dfe131aaa4fd541809918a97d69945e929ccbce7e7479765b",
@@ -96,17 +116,21 @@
       "sha256": "3ba6b379f3b6de74326438bc068092389b986944b2349520cb2b783e85b9a2e4",
       "size_bytes": 94564016
     },
+    "connectomes/triplets_cneuromod2026.h5": {
+      "sha256": "6aff46249d68b6aeb1a4b4112f67baaaa54c657d8046432ecc9cc8d01f9d4a4d",
+      "size_bytes": 70605140
+    },
     "figures/figure_connectomes/cross_context.png": {
-      "sha256": "a7f45678ca5df98808a85bb7fcf2f4a7b8c73a44e13e83a15712cd7cee193dad",
-      "size_bytes": 44218
+      "sha256": "fa0969c4e0c7d31444ccb09f231e5806553141d7b1c0133611ba134e4abaf663",
+      "size_bytes": 42046
     },
     "figures/figure_connectomes/cross_context_legend.png": {
-      "sha256": "1ee6eb0795cad901d43b058594178aeab81780a88b15778cfcdea70ac4bbcf44",
-      "size_bytes": 24759
+      "sha256": "68728035cd1c0ae195e4062c09cf47fb55796b7cec3706073d42b2e28624f4c0",
+      "size_bytes": 24733
     },
     "figures/figure_connectomes/cross_context_pearson_histograms.png": {
-      "sha256": "d43488ac5cf871d7d3be297c7a76ad860ee4f704a2967c4c95b2ceff94cb2ede",
-      "size_bytes": 215500
+      "sha256": "be0096f9655a5ea21893dab40fca97d1ad54efb3db40d606d17a7bbfd3219ee7",
+      "size_bytes": 217066
     },
     "figures/figure_connectomes/domain_movies.png": {
       "sha256": "c0b195401d7510f36143c666971c8055e7eb1db4ffafd8a932fb77d4c62f7b7d",
@@ -133,56 +157,56 @@
       "size_bytes": 26544
     },
     "figures/figure_connectomes/longitudinal.png": {
-      "sha256": "ada2252f20203f45516acb707baff5dc8c8bb55120adeed95dfda8a4bd6a548f",
-      "size_bytes": 60931
+      "sha256": "6cb61a8a39ef391d6b98ddf53d4725ab0b0c0eed262d06115c1a407899504470",
+      "size_bytes": 55120
     },
     "figures/figure_connectomes/longitudinal_legend.png": {
-      "sha256": "8519531960126b452d31f6c64a45d0275979229b0cf50891d49023fee796db51",
-      "size_bytes": 5379
+      "sha256": "cb0b0b7e48dbd1bcc1d5506f4dd36b748056a1fbd25308e3496e3a4e0d7aba0c",
+      "size_bytes": 5396
     },
     "figures/figure_connectomes/longitudinal_pearson_histograms.png": {
       "sha256": "2919d8e315f6a140066cf09bcd601d56eb61519009aef160829a62af58213ff0",
       "size_bytes": 183742
     },
     "figures/figure_connectomes/network_maps.png": {
-      "sha256": "2647af18fdd9b2e19cab4554737958ab91cbb39bd43810b5ec4c88e7252050a8",
-      "size_bytes": 216935
+      "sha256": "23c4e8d4ada6a9a0fcbdceccce361174916748373b9b598b26269a18a59237be",
+      "size_bytes": 201907
     },
     "figures/figure_connectomes/network_quality.png": {
-      "sha256": "c6ea9633e165aa0ab072c291b564a17265ef4fae0f8acd2397a4a56b13f3b7f8",
-      "size_bytes": 41692
+      "sha256": "b68d26871cb7e4325a8369df99a88a9ca3649305a23e8633249a3be5714b739a",
+      "size_bytes": 41896
     },
     "figures/figure_connectomes/network_quality_note.txt": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
     "figures/figure_motion/motion_bins.png": {
-      "sha256": "38c7d6e6e11ba77a90f315d30154fb007032847931a2af97cf0c9920eeef6deb",
-      "size_bytes": 81636
+      "sha256": "2629a2378e774ffee795b9ae082d00bcfac6222d653b01a6555268ff64f992e0",
+      "size_bytes": 81575
     },
     "figures/figure_motion/motion_bins_legend.png": {
       "sha256": "d6ee7b3bced3d8486c15f473780b41c63094f0634800bc065f7c2149ee6e8655",
       "size_bytes": 33205
     },
     "figures/figure_tsnr/tsnr_bins_fd_residual.png": {
-      "sha256": "86d8f1cead1161084d52f4f2f95fa7d0d3e96b159a44dfe164d2d21fa812deff",
-      "size_bytes": 97411
+      "sha256": "7d74d7c8dd18e9f4d1cd81a62ef0d362e32e98d0d7cc6488571bf14cf856b0ce",
+      "size_bytes": 95775
     },
     "figures/figure_tsnr/tsnr_bins_legend.png": {
       "sha256": "1505a7416b5336dea6467c5092b80aff93948004386deced78833feb2b2ad7e1",
       "size_bytes": 33194
     },
     "figures/figure_tsnr/tsnr_bins_raw.png": {
-      "sha256": "fb7f3a1321b0e46ccf380f6a38f530f4c3c4763bd200dcdf8794e02c0f8fc2fd",
-      "size_bytes": 84975
+      "sha256": "a01ef34a7e1b2d0ba387582e4a656b7fea7b503809984447e7751ff93bdf1553",
+      "size_bytes": 84862
     },
     "figures/panel_sizes.json": {
-      "sha256": "bcb74f9a8fab5d9950e06f515e710cb99907bf175ef9ff6a2877ee8189904612",
-      "size_bytes": 718
+      "sha256": "625aa99b350024c415415e43101e19509763cf8aa7354db440b96138e7fc07cd",
+      "size_bytes": 759
     },
     "group_stats/cross_context.tsv": {
-      "sha256": "83a9c653e9af0274a37d79ebb06a9c49fe5e1aa55c550c4b10d43c22d197969a",
-      "size_bytes": 30566
+      "sha256": "0f1d6546ffa380b2d329403ec19daf23ea55936cd7d5136029d725e261f57949",
+      "size_bytes": 30577
     },
     "group_stats/domain_cross_context.tsv": {
       "sha256": "87038311d474a4caaf9f6c12e22187491055b366c989bd8cd97234c89f89d81c",
@@ -197,8 +221,8 @@
       "size_bytes": 2530141
     },
     "group_stats/duration_balance.tsv": {
-      "sha256": "e100dd4fd7f943bf862af6e036265388c8e87e03795bd42e5306994165e092f4",
-      "size_bytes": 1497
+      "sha256": "8dfa816ba7405e828d8d1ef7141c60596b71895603292668677720ee618447e4",
+      "size_bytes": 1503
     },
     "group_stats/longitudinal_bins.tsv": {
       "sha256": "963fba96127b8eab9a155b3c6f01fc520bb4a3e8a6b0c63bf2f51767262e5103",
@@ -209,65 +233,65 @@
       "size_bytes": 101153
     },
     "group_stats/network_quality.tsv": {
-      "sha256": "bb0abb04a61b191bfd6ab907c7b91bf6f73b5b785d2177ca3c86f0a577c1caa1",
-      "size_bytes": 1051
+      "sha256": "2ac70080ee704fed6b5153500315098f312f9ac28c61ed2f8298735c802f0d77",
+      "size_bytes": 1052
     },
     "group_stats/pair_histograms.tsv": {
-      "sha256": "8f4ed206101a6f9ab08fef70bb9af6c17f1e53f5114f71c8fe4b8db26298e2b4",
-      "size_bytes": 2136650
+      "sha256": "3cb730b3a3312ab4f1976c7fdbabbf78d73440a4235485773336ba6200ff9b06",
+      "size_bytes": 2137137
     },
     "group_stats/session_gate.tsv": {
-      "sha256": "4d7010b0265b5d11f1a356895d9e2b78053708b91d7f67f1aef2f1b9974fe430",
-      "size_bytes": 354
+      "sha256": "0cc491a73f6a7f76d47c34aceedc1bdade2c170506046bab3d4573d3a823d8f3",
+      "size_bytes": 544
     },
     "motion_strata/motion_balance.tsv": {
-      "sha256": "6cb80cf2c6d08d7ee0f141884fc47dcbb141731943675258d28dab754a019cf6",
-      "size_bytes": 806
+      "sha256": "b7ff5363cd2816ffad8b453d497c37b0412d1528c84d1549b257a7a64e742cd6",
+      "size_bytes": 811
     },
     "motion_strata/motion_pair_histograms.tsv": {
-      "sha256": "a816a31360bfd11f90e614c649e1f523df8d622031312c0a2342e0f6da23dd3b",
-      "size_bytes": 514659
+      "sha256": "af141e0ccd0d7ade4316d6ad0157a3a166913fc1dbd9ce4615668317511daddb",
+      "size_bytes": 514913
     },
     "motion_strata/motion_permutation.tsv": {
-      "sha256": "4460bc84db1616640211123aafe6d3c864c7fe724caa7005a2b4a7472f8779e7",
-      "size_bytes": 488
+      "sha256": "488f2c06ac17076f0a4201de3ee31b1552e7e80ced64bfcacd440c5cef550c4b",
+      "size_bytes": 486
     },
     "motion_strata/motion_sessions.tsv": {
-      "sha256": "a01a02977cde50e69c0a8995a36362a5e32702f844567817f22c5e5683cda994",
-      "size_bytes": 17059
+      "sha256": "f0c71b114550d635d421fbf830b5891385df534210b773daeee684ec136165c0",
+      "size_bytes": 21117
     },
     "motion_strata/motion_strata.tsv": {
-      "sha256": "030bf175ff5d8dd45caf05b701793f44d128f9344cb8890448473b7accf70417",
-      "size_bytes": 16041
+      "sha256": "86d5d6937a194e1a268ea569486f21598d4e7e4d11665becaf4d4ee96cd285c2",
+      "size_bytes": 16076
     },
     "tsnr_strata/tsnr_balance.tsv": {
-      "sha256": "f7a94077bfd30a1624dcfa117aa334c26d2fef3679797717e478a454aac68334",
-      "size_bytes": 2241
+      "sha256": "594b8e06dc42b1c7820d82fbb1c27e4ff3c91988f16c046c5f9c63c1df849380",
+      "size_bytes": 2248
     },
     "tsnr_strata/tsnr_pair_histograms.tsv": {
-      "sha256": "a77982271558301c03753861c2b1c5845d28063dcccc3650aa7eacdf4a4a2d6f",
-      "size_bytes": 1107030
+      "sha256": "1ac01c11d70a7a2a0ff2a9425115aee33e7a14e02756b6bed10d0f022e4d1fc8",
+      "size_bytes": 1107547
     },
     "tsnr_strata/tsnr_permutation.tsv": {
-      "sha256": "222dd0b5705386f9b0560f29872b840941c3444a2a236eb467aa4d4b908ae42a",
-      "size_bytes": 1046
+      "sha256": "1ee1825ea2e37fd84d58c7a5aa6cdf56cb2b360a0aefad6e58704177fc4ef681",
+      "size_bytes": 1048
     },
     "tsnr_strata/tsnr_sessions.tsv": {
-      "sha256": "a347e673f1c366481fe8785b4b97168cae167205ddbe7972cfb81fb3f9bfbaa2",
-      "size_bytes": 19279
+      "sha256": "d2e6b190c0949e491fea3aa4c97d58e135af9b46dc45c665ed981e146b7663e7",
+      "size_bytes": 23811
     },
     "tsnr_strata/tsnr_strata.tsv": {
-      "sha256": "2dac02cc26183e8066ffb3ad8609d69e7e6882393bb09e6d83e9e044c32151be",
-      "size_bytes": 33763
+      "sha256": "673502e7a7198aba8fd9cc29a88758e6944e097a61e156ca06c471d0bde3c118",
+      "size_bytes": 33833
     }
   },
-  "recorded_at": "2026-08-19T03:40:32+00:00",
+  "recorded_at": "2026-09-05T16:53:41+00:00",
   "repository": {
     "branch": "main",
-    "commit": "5b048faf237231ef94f64a2579a151c9c11d4c8f",
+    "commit": "0fa947c0bca28e3ce5b0fadae0754fd490e4eaf0",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
-    "toplevel": "/home/pbellec/cneuromod.all.connectome_stats"
+    "toplevel": "/home/pbellec/git/cneuromod.all.connectome_stats"
   },
   "schema": "airoh/provenance/1",
   "tasks": [

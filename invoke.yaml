@@ -60,11 +60,12 @@ datasets:
 # Which derivative subdataset of each cneuromod.all dataset holds the parcelled
 # BOLD timeseries this project reads.
 #
-# As of 2026-08-17, 12 `{dataset}/timeseries` submodules are registered in
+# As of 2026-09-05, 19 `{dataset}/timeseries` submodules are registered in
 # cneuromod.all: floc, movie10, friends, things, hcptrt, harrypotter, mario,
-# mario3, mariostars, petit-prince, retinotopy and shinobi. `fetch-timeseries`
-# discovers them rather than reading this list — it fetches every dataset
-# carrying the marker directory below.
+# mario3, mariostars, petit-prince, retinotopy, shinobi, gamepad, langlocalizer,
+# multfs, mutemusic, narratives, ood and triplets. `fetch-timeseries` discovers
+# them rather than reading this list — it fetches every dataset carrying the
+# marker directory below.
 timeseries_marker: timeseries
 
 # Which parcellation's timeseries `run-connectomes` reads. Each *.timeseries

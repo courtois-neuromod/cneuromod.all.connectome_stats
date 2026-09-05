@@ -5,15 +5,15 @@
       "declared_source": "../git/cneuromod.all",
       "exists": true,
       "git": {
-        "branch": "issue11_automate_dataset_info",
-        "commit": "02ab5a0f848613c78ed5d38def297168f83b2a98",
+        "branch": "main",
+        "commit": "f162264f6aa81b0096e13df4b114780608e957a0",
         "dirty": true,
         "remote": "git@github.com:courtois-neuromod/cneuromod.all.git",
         "toplevel": "/home/pbellec/git/cneuromod.all"
       },
       "is_symlink": true,
       "mode": "symlink",
-      "mtime": "2026-08-17T14:17:34+00:00",
+      "mtime": "2026-09-05T15:49:35+00:00",
       "path": "source_data/cneuromod.all",
       "resolved_path": "/home/pbellec/git/cneuromod.all",
       "sha256": null,
@@ -39,6 +39,6 @@
       "size_bytes": null
     }
   },
-  "recorded_at": "2026-08-19T00:04:15+00:00",
+  "recorded_at": "2026-09-05T16:27:42+00:00",
   "schema": "airoh/manifest/1"
 }
