@@ -26,7 +26,7 @@ tasks from [`airoh`](https://pypi.org/project/airoh/).
 
 CNeuroMod gives us six deeply sampled individuals, scanned several times a
 week across many different experiments — very different stimuli, tasks and
-cognitive constraints — at 2 mm isotropic resolution and TR = 1.5 s, already
+cognitive constraints — at 2 mm isotropic resolution and TR = 1.49 s, already
 preprocessed and denoised upstream. This project establishes three claims
 about that data as a functional-connectome resource:
 
@@ -235,6 +235,7 @@ The plumbing and the science are both wired up.
 | `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses plus the domain-restricted robustness check (Pearson only) into ten tidy TSVs |
 | `run-motion-strata` | ✅ implemented — robustness-tier motion-stratified similarity check into five tidy TSVs |
 | `run-tsnr-strata` | ✅ implemented — robustness-tier tSNR-stratified similarity check into five tidy TSVs (raw and motion-residualized strata) |
+| `run-inventory` | ✅ implemented — asset coverage inventory (raw BIDS, timeseries, QC, connectomes) into five tidy TSVs; infrastructure, not an analysis tier |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
 | `run-notebooks` | ✅ implemented — renders the seven real montage panels plus the standalone motion- and tSNR-stratification panels |
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
@@ -328,6 +329,7 @@ tables' entities and the timeseries `.h5` run keys is implemented
 | `run-group-stats`   | Aggregates connectomes into the cross-context and longitudinal similarity summaries |
 | `run-motion-strata` | Robustness-tier check: connectome similarity vs. head-motion stratum |
 | `run-tsnr-strata`   | Robustness-tier check: connectome similarity vs. tSNR stratum, raw and residualized on motion |
+| `run-inventory`     | Asset coverage inventory: raw BIDS vs. timeseries vs. QC vs. connectomes, per run/session/subject/dataset |
 | `run-figure-layout` | Writes the montage's panel geometry to `output_data/figures/panel_sizes.json`; always re-runs |
 | `run-notebooks`     | Executes notebooks and saves panels to `output_data/figures/` |
 | `compose-figure`    | Renders `connectome_figure.svg` to PNG with Inkscape (optional binary) |
@@ -338,6 +340,7 @@ tables' entities and the timeseries `.h5` run keys is implemented
 | `clean-group-stats` | Removes the group-level statistics tables                |
 | `clean-motion-strata` | Removes the motion-stratified robustness tables         |
 | `clean-tsnr-strata` | Removes the tSNR-stratified robustness tables           |
+| `clean-inventory`   | Removes the asset coverage inventory tables              |
 | `clean-figures`     | Removes the figures dir (panels, notebook sentinels, panel_sizes.json) |
 | `clean-figure`      | Removes the composed montage PNG (never the hand-authored SVG) |
 | `clean-source`      | Removes all fetched source data; routes to each `clean-{name}` |

@@ -20,7 +20,7 @@ from analysis.timeseries_layout import parcellation_subdir
 from analysis.timeseries_reader import list_entities, load_run, session_runs, standardize_run
 
 
-def _subject_dirs(cneuromod_root, dataset, parcellation, subjects=None):
+def subject_dirs(cneuromod_root, dataset, parcellation, subjects=None):
     base = cneuromod_root / dataset / "timeseries" / parcellation_subdir(parcellation)
     if not base.is_dir():
         return base, []
@@ -58,8 +58,8 @@ def build_dataset_connectomes(
     when the dataset has no `.h5` content on disk yet, or none of it has been
     fetched (caller should point at `invoke fetch-timeseries`).
     """
-    _base, subject_dirs = _subject_dirs(cneuromod_root, dataset, parcellation, subjects)
-    if not subject_dirs:
+    _base, dirs = subject_dirs(cneuromod_root, dataset, parcellation, subjects)
+    if not dirs:
         return None
 
     networks = network_parcels(labels, network_order)
@@ -69,9 +69,9 @@ def build_dataset_connectomes(
     qc_run_rows = []
     measure_vectors = {m: {n: [] for n in networks} for m in measures}
     diag_vectors = {m: {n: [] for n in networks} for m in measures}
-    n_subjects = len(subject_dirs)
+    n_subjects = len(dirs)
 
-    for subject_index, subject_dir in enumerate(subject_dirs, start=1):
+    for subject_index, subject_dir in enumerate(dirs, start=1):
         subject = subject_dir.name.removeprefix("sub-")
         h5_files = [p for p in sorted(subject_dir.glob("*_timeseries.h5")) if p.exists()]
         if not h5_files:

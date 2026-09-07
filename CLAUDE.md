@@ -10,7 +10,7 @@ Built on the [`invoke`](https://www.pyinvoke.org/) task runner. The `airoh` pip 
 
 ### Scientific objective
 
-The project establishes three claims about CNeuroMod's data quality as a functional-connectome resource, using functional connectomes built from six deeply sampled individuals, scanned several times per week across many distinct experiments (very different stimuli, tasks and cognitive constraints), at 2 mm isotropic and TR = 1.5 s, preprocessed and denoised upstream. Runs are typically ~10 minutes; sessions hold several runs, ~30–60 minutes total.
+The project establishes three claims about CNeuroMod's data quality as a functional-connectome resource, using functional connectomes built from six deeply sampled individuals, scanned several times per week across many distinct experiments (very different stimuli, tasks and cognitive constraints), at 2 mm isotropic and TR = 1.49 s, preprocessed and denoised upstream. Runs are typically ~10 minutes; sessions hold several runs, ~30–60 minutes total.
 
 1. **Stable across five years of acquisition.** `friends` sessions compared across the six locally available seasons — the most task-homogeneous dataset available, so the between-season contrast isolates drift (scanner, subject state, elapsed time; session ordinal is the only available time axis, there are no acquisition dates) from cognitive context. Season lives in the source h5 key's task entity (`s01e02a` -> `s01`), not the stored connectome index (which collapses multi-run sessions' `task` to `"multi"`), so `analysis/friends_seasons.py` re-derives it from source h5 key names only, never by recomputing connectomes; sessions straddling a season boundary are dropped. Within-subject similarity decays gently with season lag against a clear between-subject floor.
 2. **Captures a variety of functional brain states.** Across all datasets, within-subject/within-task similarity exceeds within-subject/between-task, which exceeds between-subject/within-task, which exceeds between-subject/between-task — in every network.
@@ -56,7 +56,7 @@ cneuromod.all/{dataset}/timeseries/timeseries/schaefer1000/sub-0X/
 
 **One `.h5` per subject**, holding every session and run as separate 2D `(timepoints, parcels)` arrays keyed `ses-XXX/ses-XXX_task-..._run-N_timeseries` — `run` is optional in the key: `friends` keys carry no `_run-N` segment at all (`analysis/timeseries_reader.py`'s `parse_run_key` handles both). That is the annex's finest unit, so `--subject` narrows a fetch but there is nothing session-level to request — session selection is a read-time concern for `run-connectomes`.
 
-There are no HDF5 attributes anywhere in these files — no TR, no parcel names. TR is config (`tr_seconds` in `invoke.yaml`, `1.5`).
+There are no HDF5 attributes anywhere in these files — no TR, no parcel names. TR is config (`tr_seconds` in `invoke.yaml`, `1.49`).
 
 `voxel_mni` and `voxel_native` (voxelwise, much larger) also ship in every repo and are deliberately not fetched.
 
@@ -116,7 +116,7 @@ These are decided. Implement them as written; do not reopen them unprompted.
 - **Parcellation: `cneuromod2026`** (1134 parcels: cortex + subcortex + cerebellum), **reversing the project's original `schaefer1000`-only choice**, to line up with what the qa_figures QC tables cover. The code stays parcellation-agnostic — the network partition comes from the config-selected `parcellations:` entry in `invoke.yaml` and its labels file — so `schaefer1000` keeps working and is what the smoke test uses (see "Project-specific conventions" below).
 - **Nine networks** for cneuromod2026: the 7 Yeo cortical networks, `cerebellum` (88 parcels), and `subcortex` (all 50 Tian parcels as one network) — this covers all 1134 parcels with no leftovers. `schaefer1000` keeps its 7 cortical networks.
 - **Pearson only for results; `partial_ledoitwolf` computed and stored, not reported.** `run-connectomes` still computes both measures identically for every network — `pearson` and `partial_ledoitwolf` (nilearn's default-shrinkage partial correlation) — via `connectome_measures` in `invoke.yaml`, but `run-group-stats` reads only `analysis_measure: pearson`. See "Why partial correlation was dropped" above for the numbers behind this. The unregularized empirical inverse (`partial_empirical`) was tried earlier and dropped for a separate reason: for run-level data, `n_samples` can be smaller than `n_parcels` in the larger networks (Default has 209 parcels, SomMot 194 for cneuromod2026), making the sample covariance exactly singular — a routine failure, not an edge case.
-- **Session-level only.** `run-connectomes` writes one connectome per session (runs z-scored, then concatenated — see "Standardize, then concatenate" below) for **every** session found. There is no run-level connectome output; the session is the sole unit of analysis (~1,200 volumes at TR = 1.5 s vs. ~150 parcels per cortical network — comfortably more observations than variables). Per-run QC (motion, tSNR) is still read and aggregated up to the session, since qa_figures only tabulates it per run — see "The QC measures asset (qa_figures)" above — but no per-run connectome is computed or stored.
+- **Session-level only.** `run-connectomes` writes one connectome per session (runs z-scored, then concatenated — see "Standardize, then concatenate" below) for **every** session found. There is no run-level connectome output; the session is the sole unit of analysis (~1,200 volumes at TR = 1.49 s vs. ~150 parcels per cortical network — comfortably more observations than variables). Per-run QC (motion, tSNR) is still read and aggregated up to the session, since qa_figures only tabulates it per run — see "The QC measures asset (qa_figures)" above — but no per-run connectome is computed or stored.
 - **Record QC, never gate on it, at connectome-computation time.** Every session found gets a connectome; all exclusion happens in `run-group-stats`, where it can be varied without recomputing. This keeps "exclusion thresholds must not be tuned against similarity contrasts" (below) honest.
 - **Usable-data gate: `usable_duration_sec >= 1800` (30 minutes), everywhere.** Chosen a priori from QC, not tuned against similarity contrasts — but not on duration alone either. `run-group-stats`'s cross-context contrast (claim 2) compares within-dataset against between-dataset session pairs, and pair *duration* is itself a confound there: at the earlier 600 s gate, median pair min-duration was ~2661–2692 s for the two within-task bins versus ~1701–1706 s for the two between-task bins — a ~1.6x imbalance that similarity rises with, independent of any task effect. Raising the gate to 1800 s narrowed that gap sharply. **It no longer closes it, as of 2026-09-05**: with the six datasets added on 2026-09-04 in the analysis, the gated bins are ~2772/2778 s for the two within-task bins against ~2307/2327 s for the two between-task bins — a ~1.20x imbalance, up from the ~4% (~2668–2784 s) the gate achieved over the original 11 datasets. Part of claim 2's between-task drop is therefore again a duration effect, and the gate alone no longer neutralizes it. Report the medians in `duration_balance.tsv` alongside the contrast; do not present the 1800 s gate as having made this contrast duration-clean. This is a threshold chosen from an acquisition/design property (pair duration composition), computed with no reference to similarity values — not the forbidden kind of tuning. `run-group-stats` writes this comparison to `duration_balance.tsv` for both gates. The cost: `floc` (0/18 sessions survive), `retinotopy` (0/23), `things` (0/141), `gamepad` (0/17), `langlocalizer` (0/12) and `triplets` (0/105) leave claim 2 entirely — six of the sixteen task contexts, and the ones least like the naturalistic datasets — so claim 2 spans 10 contexts (`friends, harrypotter, hcptrt, mario, movie10, multfs, mutemusic, narratives, petit-prince, shinobi`). All 6 subjects are retained. At 1800 s, 659 of 1126 sessions survive. `run-group-stats` still reports every headline table both gated and ungated (`gate="all"` in every TSV) as the standing sensitivity comparison.
 - **float32, raw coefficients only.** Fisher-z is `arctanh` of the raw values, computed where used. This **amends** the original "store both raw and Fisher-z" decision.
@@ -182,6 +182,99 @@ The motion coupling is visible and only partly removable: `median_max_fd_mean` r
 **Result, as of 2026-09-05** (recomputed over 659 gated / 304 QC-covered sessions after the six datasets added on 2026-09-04 entered the analysis). Claim 2's within-task > between-task ordering holds in **27/27** network x stratum-pairing cells under both definitions, and the four-bin ordering holds in all 9 networks under the `high_tsnr` gate. The stratum effect itself is negligible and **predominantly negative** — higher tSNR gives very slightly *lower* similarity: max |observed_diff| is 0.010 (`raw`) and 0.014 (`fd_residual`), against a within-task/between-task gap of ~0.15-0.4. **No network reaches p<0.05 under either definition** (0 of 9 for both), where the smaller 2026-08-18 population had 1 of 9 under `raw` and 4 of 9 under `fd_residual` — those marginal p-values did not survive more data, which is what the per-subject replication rule already implied. **Per-subject replication does not support any of it either**: at best 4 of 6 subjects agree with the pooled sign in any network. By this project's six-participant inference rule (see "Scientific objective"), that is a null, and the pooled p-values must not be reported as a finding without it. Note `n_subjects_replicating` counts the *positive* direction (`median(high-high) > median(low-low)`), so where `observed_diff` is negative the count agreeing with the pooled sign is the complement — `figure_tsnr.ipynb` computes and annotates that complement rather than the raw column.
 
 **Honest framing**, to carry into any text reporting these numbers: this tests whether *relative* tSNR differences inside a uniformly well-behaved cohort move connectome similarity. A null is informative about these data; it is not evidence about low-SNR data in general.
+
+### Asset coverage inventory (`run-inventory`)
+
+**Infrastructure, not an analysis tier.** It makes no scientific claim and
+feeds no figure — it answers "what has been acquired vs. what this pipeline
+actually consumed" across the four assets `run-connectomes` and
+`run-group-stats` depend on: raw BIDS, timeseries `.h5`, qa_figures QC, and
+this project's own connectome outputs. `output_data/connectomes/` can hold 16
+datasets while 19 `{dataset}/timeseries` submodules are registered, and
+nothing else in the pipeline reports that gap — `run-inventory` exists so
+asset drift is a table you read (`inventory_gaps.tsv`) rather than a discovery
+you stumble into.
+
+Every `{dataset}/bids` tree is an installed, un-annexed git tree, so the raw
+side is fully derivable **offline**: `*_bold.json` sidecars are plain git
+blobs, readable without a single `datalad get`. `analysis/bids_inventory.py`
+reads it, mirroring `cneuromod.all.statistics`'s analysis/statistics.py
+module (`_run_key`, `_collect_run_map`, `_parse_run_info`) rather than re-deriving
+it — that repo answers a related but coarser question (its finest
+granularity is `(dataset, subject)`; it has no access to this repo's
+connectomes or to qa_figures) but its raw-BIDS reading logic was proven
+against this exact data first.
+
+**The four sources disagree about entity formatting**, and resolving that is
+the substance of `analysis/asset_inventory.py`, not the plumbing around it:
+raw run is zero-padded (`run-01`) or absent entirely (movie10 embeds the run
+number in the task name instead — `task-wolf07`, no `_run-` segment — while
+other movie10 sessions do carry one, a convention that varies *within* one
+dataset); the h5 canonicalizes run per its own convention (bare `run-1`, or
+none at all for cneuromod2026, which matches raw's own "no run entity" case);
+qa_figures exports run as a float-like string (`"1.0"`) for some rows. Session
+is worse: harrypotter's raw layout has no `ses-` component at all (a bare
+sub-01/func tree, not sub-01/ses-XXX/func), while its timeseries `.h5`
+nonetheless synthesizes `ses-001` for every run.
+
+`analysis/bids_inventory.py`'s `canonical_run` normalizes a run label to a bare
+integer string (`""` when absent), layered *on top of*
+`analysis/qc_join.py`'s `normalize_entities` rather than folded into it — that
+function is load-bearing for `run-connectomes`'s output, and changing it
+(e.g. to strip leading zeros) would silently perturb an existing, verified
+table. `analysis/asset_inventory.py`'s `_tiered_join` then matches each raw run
+against the timeseries/QC side across three tiers, in order: `exact`
+(`dataset, subject, session, task, run`), `no_run` (drop `run`, keyed on the
+other four — the movie10 case), `no_session` (drop `session`, keyed on
+`dataset, subject, task, run` — the harrypotter case). A tier only claims a
+row when the join key is unique on *both* sides at that tier; otherwise the
+row falls through to the next, looser tier (or stays `unmatched`) rather than
+guessing. Every row of `run_inventory.tsv` records which tier matched in
+`match_level` — a weak join is visible, never mistaken for a missing asset.
+This is the same best-effort, warn-don't-guess posture `qc_join` already
+takes for the QC join alone.
+
+**Verified against an independent source.** `run_inventory.tsv` grouped by
+dataset reproduces `total_runs` in the cneuromod.all.statistics repo's own
+output_data/fmri_stats.tsv exactly for every one of its 20 datasets (`friends`
+1898, `movie10` 366, ...), computed by that repo's own, independently-written
+reader. The three known
+gaps this table is meant to surface all reproduce on real data: `mario3`,
+`mariostars`, `ood` show `timeseries_content_missing` (their `.h5` files are
+registered annex symlinks with 0 content fetched); `emotion-videos`,
+`langlocalizer`, `mario` show `qc_table_empty`; `atlas_tsnr_populated` is true
+only for `floc`, `retinotopy`, `things`.
+
+Dataset universe: every top-level `cneuromod.all` directory carrying a `bids`
+and/or timeseries-marker mountpoint (`analysis.asset_inventory.dataset_universe`),
+excluding `anat` — a structural-only tree, out of scope for the same reason
+`anat/atlases` is (see "The QC measures asset" above's two traps). This is
+wider than the 19 registered `{dataset}/timeseries` submodules on purpose: a
+dataset with `bids` installed but no `timeseries` mountpoint at all
+(`emotion-videos`, `hearing`, `mario_eeg`) is itself a gap worth surfacing,
+not a reason to exclude it.
+
+Outputs, all under `output_data/inventory/`, none gated on the usable-duration
+threshold (that is `run-group-stats`'s decision, reused here only to compute
+`passes_gate` per session for context): `run_inventory.tsv` (one row per
+unique raw BIDS run), `session_inventory.tsv`, `subject_coverage.tsv`,
+`dataset_coverage.tsv` (per-dataset asset-level booleans), and
+`inventory_gaps.tsv` — the one to read first.
+
+**Explicitly out of scope**: the subsampling / duration-imbalance report this
+step's `n_volumes`/`duration_sec` columns will eventually feed. This step
+computes those columns; it draws no conclusions about balance.
+
+**One thing this table caught and settled**: raw sidecars report
+`RepetitionTime: 1.49`, not the `1.5` `invoke.yaml`'s `tr_seconds` and this
+file used to say — `run_inventory.tsv` records each run's own sidecar
+`tr_seconds` rather than assuming the config value, which is what surfaced the
+0.7% discrepancy in black and white. Confirmed against the user and corrected:
+`tr_seconds` is now `1.49`, matching `cneuromod.all.statistics`'s own
+`EXPECTED_TR`. Connectomes computed before this fix used `1.5`; their
+`duration_sec`/`usable_duration_sec` are ~0.7% off and should be recomputed
+(`invoke clean-connectomes && invoke run`) rather than trusted alongside new
+runs.
 
 ### Still open
 
@@ -522,7 +615,7 @@ called.
 
 **Linting:** `ruff`, configured under `[tool.ruff]` in `pyproject.toml` (line length 100, rules `E`/`F`/`W`/`I`). Run `uv run ruff check .` before committing. Never disable a lint rule without a comment explaining why.
 
-**Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` — `analysis/parcel_networks.py`, `timeseries_reader.py`, `connectome_estimators.py`, `qc_join.py`, `connectome_store.py`, `similarity.py`, `friends_seasons.py`, `group_stats.py`, `domain_titles.py`, `quality_strata.py`, `motion_strata.py` and `tsnr_strata.py` each have real coverage now, all offline against synthetic fixtures.
+**Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` — `analysis/parcel_networks.py`, `timeseries_reader.py`, `connectome_estimators.py`, `qc_join.py`, `connectome_store.py`, `similarity.py`, `friends_seasons.py`, `group_stats.py`, `domain_titles.py`, `quality_strata.py`, `motion_strata.py`, `tsnr_strata.py`, `bids_inventory.py`, `asset_inventory.py` and `inventory_summary.py` each have real coverage now, all offline against synthetic fixtures.
 
 **`run-group-stats` as the worked example for a new analysis step:** `analysis/group_stats.py` reads the per-session connectomes `run-connectomes` writes (`output_data/connectomes/{dataset}_{parcellation}.h5`, via `analysis/connectome_store.py`), applies the usable-data gate (`usable_duration_sec >= group_stats.min_usable_seconds` in `invoke.yaml`, see "Settled analysis decisions" above), and produces the two headline analyses — cross-context (all datasets) and longitudinal (`friends` only) — plus the domain-restricted robustness check (see "Domain-restricted cross-context figures" above) for `analysis_measure` (Pearson), gated and ungated, into ten tidy TSVs under `output_data/group_stats/`. `notebooks/figure_connectomes.ipynb` reads those TSVs and plots only; it does no similarity computation itself. Follow this same pattern for a new `run-{name}` step: real logic in a new `analysis/` module, the task body kept to argument handling plus the existence check that makes it idempotent, a matching `clean-{name}`, and a notebook that only plots.
 
@@ -532,6 +625,8 @@ called.
 2. **Robustness** — checks on the primary result: a further regularized estimator (e.g. graphical lasso) as a check on `partial_ledoitwolf`, removal of the group-average connectome, spatial-distance dependence and neighbouring-parcel exclusion, QC dependence on motion and on tSNR — both implemented, see "Motion stratification" and "tSNR stratification" above — explicit early-versus-late temporal separation, a duration-matched sensitivity check on the cross-context/duration confound (similarity rises with session duration, which varies ~7x across datasets — median usable seconds range from floc 434 to harrypotter 5044 — so part of the between-task drop in claim 2 is a duration effect; report median duration alongside every per-dataset number rather than introducing a duration-correction model), and the domain-restricted cross-context comparisons (movies/videogames/stories — see "Domain-restricted cross-context figures" above), the one robustness check whose panels are placed in the headline montage rather than kept standalone.
 
 A robustness analysis does not get promoted into the pipeline's main path because it was interesting to implement, and turning every possible branch into an equally weighted step is the failure mode to avoid here. When adding something, say which tier it is in.
+
+A step can also sit outside this hierarchy entirely: `run-inventory` (see "Asset coverage inventory" above) is **infrastructure**, not Primary or Robustness — it makes no scientific claim and feeds no figure, so say that explicitly rather than filing it under either tier.
 
 **Adding a new analysis step:** add a function to `analysis/`, add a `run-{name}` task and a matching `clean-{name}` task in `tasks.py`, call both from the bodies of the top-level `run` and `clean` tasks (see the `pre=` warning above — a body call, not `pre=`), and create or extend a notebook in `notebooks/` for visualization.
 

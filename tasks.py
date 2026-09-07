@@ -398,7 +398,7 @@ def run_connectomes(c, dataset=None, subject=None, parcellation=None, smoke=Fals
     measures = c.config.get("connectome_measures") or [
         "pearson", "partial_ledoitwolf",
     ]
-    tr_seconds = c.config.get("tr_seconds", 1.5)
+    tr_seconds = c.config.get("tr_seconds", 1.49)
     qa_root = _qa_figures_dir(c)
     if not qa_root.is_dir():
         qa_root = None
@@ -764,6 +764,109 @@ def run_tsnr_strata(c, dataset=None, smoke=False):
     print(f"✅ run-tsnr-strata: wrote 5 tables to {output_dir}")
 
 
+@task(help={
+    "dataset": "Comma-separated dataset names to restrict to (default: every "
+               "dataset carrying a `bids` and/or timeseries mountpoint).",
+    "parcellation": "Which parcellation's timeseries/connectome coverage to "
+                    "check (default: the configured `parcellation`).",
+    "skip_durations": "Skip reading BIDS sidecar JSONs (the only slow part — "
+                      "thousands of small files); n_volumes/duration are left blank.",
+    "smoke": "Restrict to the smoke dataset only.",
+})
+def run_inventory(c, dataset=None, parcellation=None, skip_durations=False, smoke=False):
+    """
+    Asset coverage inventory: what has been acquired vs. what this pipeline
+    actually consumed, across the four assets it depends on — raw BIDS,
+    timeseries `.h5`, qa_figures QC, and this project's own connectome
+    outputs.
+
+    Infrastructure, not an analysis tier (CLAUDE.md, "Asset coverage
+    inventory"): it makes no claim and feeds no figure. Reads only what is
+    already installed/fetched — raw `{dataset}/bids` trees are plain git
+    trees, so this needs no `datalad get` for the raw side.
+
+    Writes five tidy TSVs under output_data/inventory/. Skips when
+    run_inventory.tsv already exists.
+    """
+    from analysis.asset_inventory import build_run_inventory, dataset_universe
+    from analysis.inventory_summary import (
+        inventory_gaps,
+        summarize_datasets,
+        summarize_sessions,
+        summarize_subjects,
+    )
+    from analysis.timeseries_layout import parse_labels
+
+    output_dir = Path(c.config.get("output_data_dir")) / "inventory"
+    out_path = output_dir / "run_inventory.tsv"
+    if out_path.exists():
+        print(f"🫧 {out_path} already exists — skipping run-inventory")
+        return
+
+    parcellation, _network_order, _ = _parcellation_config(c, parcellation)
+    if smoke:
+        parcellation = c.config.get("smoke_parcellation", parcellation)
+        parcellation, _network_order, _ = _parcellation_config(c, parcellation)
+
+    cneuromod_root = _cneuromod_dir(c)
+    qa_root = _qa_figures_dir(c)
+    if not qa_root.is_dir():
+        qa_root = None
+
+    names = parse_labels(dataset)
+    if not names:
+        names = [c.config.get("smoke_dataset", "movie10")] if smoke else \
+            dataset_universe(cneuromod_root, c.config.get("timeseries_marker", "timeseries"))
+    if not names:
+        print("⚠️  No dataset found under the cneuromod.all superdataset — "
+              "run `invoke fetch-cneuromod` first.")
+        return
+
+    print(f"⏳ run-inventory: scanning {len(names)} dataset(s)...")
+    run_inv, status_rows = build_run_inventory(
+        cneuromod_root, qa_root, names, parcellation, skip_durations=skip_durations,
+    )
+
+    connectome_dir = Path(c.config.get("output_data_dir")) / "connectomes"
+    connectome_index = _connectome_index_for(connectome_dir, parcellation, names)
+
+    min_usable_seconds = c.config.get("group_stats", {}).get("min_usable_seconds", 1800)
+    sessions = summarize_sessions(run_inv, connectome_index, min_usable_seconds)
+    subjects = summarize_subjects(run_inv)
+    dataset_coverage = summarize_datasets(
+        run_inv, status_rows, connectome_dir=connectome_dir,
+        parcellation=parcellation, qa_root=qa_root,
+    )
+    gaps = inventory_gaps(run_inv, dataset_coverage)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    run_inv.to_csv(out_path, sep="\t", index=False)
+    sessions.to_csv(output_dir / "session_inventory.tsv", sep="\t", index=False)
+    subjects.to_csv(output_dir / "subject_coverage.tsv", sep="\t", index=False)
+    dataset_coverage.to_csv(output_dir / "dataset_coverage.tsv", sep="\t", index=False)
+    gaps.to_csv(output_dir / "inventory_gaps.tsv", sep="\t", index=False)
+
+    print(f"✅ run-inventory: wrote 5 tables to {output_dir}")
+
+
+def _connectome_index_for(connectome_dir, parcellation, names):
+    """Concatenate `/index` across every connectome file for `names`, or an
+    empty DataFrame when none are present — `run-inventory` must still work
+    before `run-connectomes` has ever run."""
+    import pandas as pd
+
+    from analysis.connectome_store import load_index
+    from analysis.similarity import discover_connectome_files
+
+    if not connectome_dir.is_dir():
+        return pd.DataFrame()
+    paths, _skipped = discover_connectome_files(connectome_dir, parcellation)
+    paths = [p for p in paths if p.stem.rsplit(f"_{parcellation}", 1)[0] in names]
+    if not paths:
+        return pd.DataFrame()
+    return pd.concat([load_index(p) for p in paths], ignore_index=True)
+
+
 @task
 def run_figure_layout(c):
     """
@@ -832,8 +935,8 @@ def compose_figure(c):
 })
 def run(c, dataset=None, force=False):
     """
-    Full pipeline: connectomes → group stats → motion strata → figure layout → notebooks →
-    composed figure.
+    Full pipeline: connectomes → group stats → motion strata → tSNR strata →
+    asset inventory → figure layout → notebooks → composed figure.
 
     `run` does NOT pull data: it reads only what `invoke fetch` already
     retrieved, and no step calls `datalad get`. **Run `invoke fetch` first.**
@@ -858,11 +961,13 @@ def run(c, dataset=None, force=False):
     run_group_stats(c)
     run_motion_strata(c)
     run_tsnr_strata(c)
+    run_inventory(c, dataset=dataset)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
     record_run(c, tasks="run-connectomes,run-group-stats,run-motion-strata,"
-                        "run-tsnr-strata,run-figure-layout,run-notebooks,compose-figure")
+                        "run-tsnr-strata,run-inventory,run-figure-layout,"
+                        "run-notebooks,compose-figure")
     print("all analyses completed")
 
 
@@ -899,6 +1004,7 @@ def run_smoke(c):
     run_group_stats(c, smoke=True)
     run_motion_strata(c, smoke=True)
     run_tsnr_strata(c, smoke=True)
+    run_inventory(c, smoke=True)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
@@ -953,6 +1059,13 @@ def clean_tsnr_strata(c):
 
 
 @task
+def clean_inventory(c):
+    """Remove the asset coverage inventory tables."""
+    from airoh.utils import clean_folder
+    clean_folder(c, "output_data_dir", "inventory/*")
+
+
+@task
 def clean_figures(c):
     """
     Remove the figures dir (per-notebook panels, the "already ran" sentinels,
@@ -993,6 +1106,7 @@ def clean(c):
     clean_group_stats(c)
     clean_motion_strata(c)
     clean_tsnr_strata(c)
+    clean_inventory(c)
     clean_figures(c)
     clean_figure(c)
 

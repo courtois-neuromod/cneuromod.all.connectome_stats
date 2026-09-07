@@ -180,6 +180,42 @@ Once the pipeline is run, this folder will contain the following.
   figure panels.
   **Standalone figures — deliberately not placed in `connectome_figure.svg`**;
   see CLAUDE.md, "tSNR stratification".
+- `inventory/` — asset coverage inventory (CLAUDE.md, "Asset coverage
+  inventory"), written by `invoke run-inventory` from
+  `analysis/asset_inventory.py`. **Infrastructure, not an analysis tier**: it
+  makes no scientific claim and feeds no figure — it answers "what has been
+  acquired vs. what this pipeline consumed" across raw BIDS, timeseries `.h5`,
+  qa_figures QC and this project's own connectome outputs.
+  - `run_inventory.tsv` *(sentinel)* — one row per unique raw BIDS run:
+    `dataset, subject, session, task, run, n_volumes, tr_seconds,
+    duration_sec, in_timeseries, in_qc, match_level`. `tr_seconds` is read
+    from each run's own sidecar, not assumed from config — raw sidecars
+    report 1.49s where `invoke.yaml`'s `tr_seconds` says 1.5s (CLAUDE.md,
+    "One thing flagged, not settled"). `match_level` is `exact`, `no_run`,
+    `no_session` or `unmatched` — which tier resolved the join against the
+    timeseries side (CLAUDE.md has the three-tier hazard list in full).
+    `n_volumes`/`tr_seconds`/`duration_sec` are blank when `--skip-durations`
+    was passed.
+  - `session_inventory.tsv` — per `(dataset, subject, session)`: `n_raw_runs,
+    n_timeseries_runs, n_qc_runs, raw_duration_sec, has_connectome,
+    usable_duration_sec, passes_gate` (the latter two only populated when a
+    matching `run-connectomes` output exists for the configured
+    parcellation; `passes_gate` reuses `group_stats.min_usable_seconds`,
+    for context only — this step gates nothing).
+  - `subject_coverage.tsv` — per `(dataset, subject)` rollup: `n_sessions,
+    n_raw_runs, n_timeseries_runs, n_qc_runs, raw_duration_sec`.
+  - `dataset_coverage.tsv` — per dataset: `bids_installed,
+    timeseries_registered, timeseries_content_subjects, qc_table_populated,
+    atlas_tsnr_populated, connectome_file_present`. The dataset universe is
+    every top-level `cneuromod.all` directory carrying a `bids` and/or
+    timeseries mountpoint, excluding `anat` (structural-only) — wider than
+    the 19 registered `{dataset}/timeseries` submodules on purpose, so a
+    dataset with no timeseries mountpoint at all (`emotion-videos`,
+    `hearing`, `mario_eeg`) still shows up as a gap.
+  - `inventory_gaps.tsv` — **the table to read first**: only the rows where an
+    expected asset is absent, `dataset, subject, session, reason`, where
+    `reason` is one of `timeseries_content_missing`, `qc_table_empty`,
+    `atlas_tsnr_empty`, `no_connectome_file` or `unmatched_entities`.
 - `figures/figure_connectomes/network_maps.png` — the montage's network key:
   nine sagittal glass brains, one per network, each filled with its
   `NETWORK_COLORS` entry and named beside it, spanning the full page height

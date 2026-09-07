@@ -244,6 +244,26 @@
       "sha256": "0cc491a73f6a7f76d47c34aceedc1bdade2c170506046bab3d4573d3a823d8f3",
       "size_bytes": 544
     },
+    "inventory/dataset_coverage.tsv": {
+      "sha256": "96ec046dd4adef5865fc8640576e84d4fbe83b8e3a0f574ca41743e34d7b516d",
+      "size_bytes": 884
+    },
+    "inventory/inventory_gaps.tsv": {
+      "sha256": "72997dbaa98c897d25edac930e99783806c7407d404e11ce7fdf867fbd01568b",
+      "size_bytes": 37892
+    },
+    "inventory/run_inventory.tsv": {
+      "sha256": "081dfc0a72bee3ce87f926437e0ee354154d48950fd9a8ae2f992fdd2ab525f5",
+      "size_bytes": 401776
+    },
+    "inventory/session_inventory.tsv": {
+      "sha256": "2ff6d8df5bf1b76b71bb28332e8a4b8d751564883e73fa33835ea1d8b3a869a8",
+      "size_bytes": 67875
+    },
+    "inventory/subject_coverage.tsv": {
+      "sha256": "ccccf646bcfec1aa931433e0e2421e2608ffcf27bc54a7b3b1851e0f3e076008",
+      "size_bytes": 3267
+    },
     "motion_strata/motion_balance.tsv": {
       "sha256": "b7ff5363cd2816ffad8b453d497c37b0412d1528c84d1549b257a7a64e742cd6",
       "size_bytes": 811
@@ -285,10 +305,10 @@
       "size_bytes": 33833
     }
   },
-  "recorded_at": "2026-09-05T16:53:41+00:00",
+  "recorded_at": "2026-09-07T18:46:22+00:00",
   "repository": {
     "branch": "main",
-    "commit": "0fa947c0bca28e3ce5b0fadae0754fd490e4eaf0",
+    "commit": "61f3218850df2e83961a84f961659ed992370eb8",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/git/cneuromod.all.connectome_stats"
@@ -299,6 +319,7 @@
     "run-group-stats",
     "run-motion-strata",
     "run-tsnr-strata",
+    "run-inventory",
     "run-figure-layout",
     "run-notebooks",
     "compose-figure"

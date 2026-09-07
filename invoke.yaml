@@ -96,8 +96,10 @@ parcellations:
        cerebellum, subcortex]
 
 # TR is not recorded anywhere in the timeseries .h5 files (no HDF5 attributes
-# at all), so it is config.
-tr_seconds: 1.5
+# at all), so it is config. 1.49s, not 1.5s — confirmed against raw BIDS
+# sidecars (RepetitionTime) via `invoke run-inventory`'s run_inventory.tsv,
+# and against cneuromod.all.statistics's own EXPECTED_TR.
+tr_seconds: 1.49
 
 # The two connectome measures `run-connectomes` computes for every network,
 # identically. Both are stored so the comparison stays reproducible, but only
