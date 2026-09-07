@@ -236,6 +236,7 @@ The plumbing and the science are both wired up.
 | `run-motion-strata` | ✅ implemented — robustness-tier motion-stratified similarity check into five tidy TSVs |
 | `run-tsnr-strata` | ✅ implemented — robustness-tier tSNR-stratified similarity check into five tidy TSVs (raw and motion-residualized strata) |
 | `run-inventory` | ✅ implemented — asset coverage inventory (raw BIDS, timeseries, QC, connectomes) into five tidy TSVs; infrastructure, not an analysis tier |
+| `run-inventory-dashboard` | ✅ implemented — renders those five TSVs as one self-contained HTML page; always re-runs |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
 | `run-notebooks` | ✅ implemented — renders the seven real montage panels plus the standalone motion- and tSNR-stratification panels |
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
@@ -330,6 +331,7 @@ tables' entities and the timeseries `.h5` run keys is implemented
 | `run-motion-strata` | Robustness-tier check: connectome similarity vs. head-motion stratum |
 | `run-tsnr-strata`   | Robustness-tier check: connectome similarity vs. tSNR stratum, raw and residualized on motion |
 | `run-inventory`     | Asset coverage inventory: raw BIDS vs. timeseries vs. QC vs. connectomes, per run/session/subject/dataset |
+| `run-inventory-dashboard` | Renders the inventory tables as one offline HTML page, `output_data/inventory/inventory_dashboard.html`; always re-runs |
 | `run-figure-layout` | Writes the montage's panel geometry to `output_data/figures/panel_sizes.json`; always re-runs |
 | `run-notebooks`     | Executes notebooks and saves panels to `output_data/figures/` |
 | `compose-figure`    | Renders `connectome_figure.svg` to PNG with Inkscape (optional binary) |
@@ -341,6 +343,7 @@ tables' entities and the timeseries `.h5` run keys is implemented
 | `clean-motion-strata` | Removes the motion-stratified robustness tables         |
 | `clean-tsnr-strata` | Removes the tSNR-stratified robustness tables           |
 | `clean-inventory`   | Removes the asset coverage inventory tables              |
+| `clean-inventory-dashboard` | Removes the rendered inventory dashboard page  |
 | `clean-figures`     | Removes the figures dir (panels, notebook sentinels, panel_sizes.json) |
 | `clean-figure`      | Removes the composed montage PNG (never the hand-authored SVG) |
 | `clean-source`      | Removes all fetched source data; routes to each `clean-{name}` |

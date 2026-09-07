@@ -39,7 +39,7 @@ Partial correlation's between-subject floor is barely below Pearson's, while its
 
 `invoke run-smoke` passes, `fetch` retrieves real data, `run-connectomes` computes real per-session, per-network connectomes, and `run-group-stats` computes the two headline analyses plus a domain-restricted robustness check on claim 2 (`analysis/group_stats.py`) into `output_data/group_stats/*.tsv`, plotted by the six real montage panels in `notebooks/figure_connectomes.ipynb` — see "Domain-restricted cross-context figures" below. `run-motion-strata` and `run-tsnr-strata` compute two robustness-tier QC-dependence checks — head motion and temporal SNR — into `output_data/motion_strata/*.tsv` and `output_data/tsnr_strata/*.tsv`, plotted standalone by `notebooks/figure_motion.ipynb` and `notebooks/figure_tsnr.ipynb` — see "Motion stratification" and "tSNR stratification" below. Both are thin configuration over one parameterized core, `analysis/quality_strata.py`.
 
-`fetch-cneuromod`, `fetch-timeseries`, `fetch-parcel-labels`, `run-connectomes`, `run-group-stats`, `run-motion-strata`, `run-tsnr-strata`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
+`fetch-cneuromod`, `fetch-timeseries`, `fetch-parcel-labels`, `run-connectomes`, `run-group-stats`, `run-motion-strata`, `run-tsnr-strata`, `run-inventory`, `run-inventory-dashboard`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
 
 ### The timeseries assets
 
@@ -261,6 +261,17 @@ unique raw BIDS run), `session_inventory.tsv`, `subject_coverage.tsv`,
 `dataset_coverage.tsv` (per-dataset asset-level booleans), and
 `inventory_gaps.tsv` — the one to read first.
 
+`run-inventory-dashboard` (`analysis/inventory_dashboard.py`) renders those
+five tables as one self-contained page, `inventory_dashboard.html`: headline
+counts, a dataset x asset status grid, a raw -> timeseries -> QC coverage bar
+per dataset, the `match_level` breakdown, and the gaps collapsed by `reason`.
+It **computes nothing new** — every number on it is already in a TSV beside it
+— and it carries its own CSS, loading nothing external, so it opens offline.
+Like `run-figure-layout` it **always re-runs, never skipped**: it is cheap, and
+a page that disagreed with the tables next to it would be worse than no page.
+It is infrastructure, like `run-inventory` itself, and stays out of
+`connectome_figure.svg` — it is not a figure.
+
 **Explicitly out of scope**: the subsampling / duration-imbalance report this
 step's `n_volumes`/`duration_sec` columns will eventually feed. This step
 computes those columns; it draws no conclusions about balance.
@@ -318,6 +329,8 @@ uv run invoke run-smoke         # Fast end-to-end check that the plumbing works
 uv run invoke run-connectomes   # Build per-session connectomes per dataset
 uv run invoke run-group-stats   # Aggregate into group statistics
 uv run invoke run-motion-strata # Robustness-tier motion-stratified similarity check
+uv run invoke run-inventory     # Asset coverage inventory (raw BIDS vs. timeseries vs. QC vs. connectomes)
+uv run invoke run-inventory-dashboard  # Render those tables as one offline HTML page (always re-runs)
 uv run invoke fetch-parcel-labels  # Build the parcel -> network lookup table
 uv run invoke run-notebooks     # Execute notebooks, save panels to output_data/figures/
 uv run invoke run-figure-layout # Write the montage's panel geometry to panel_sizes.json (always re-runs)
@@ -626,7 +639,7 @@ called.
 
 A robustness analysis does not get promoted into the pipeline's main path because it was interesting to implement, and turning every possible branch into an equally weighted step is the failure mode to avoid here. When adding something, say which tier it is in.
 
-A step can also sit outside this hierarchy entirely: `run-inventory` (see "Asset coverage inventory" above) is **infrastructure**, not Primary or Robustness — it makes no scientific claim and feeds no figure, so say that explicitly rather than filing it under either tier.
+A step can also sit outside this hierarchy entirely: `run-inventory` and its `run-inventory-dashboard` renderer (see "Asset coverage inventory" above) are **infrastructure**, not Primary or Robustness — they make no scientific claim and feed no figure, so say that explicitly rather than filing it under either tier.
 
 **Adding a new analysis step:** add a function to `analysis/`, add a `run-{name}` task and a matching `clean-{name}` task in `tasks.py`, call both from the bodies of the top-level `run` and `clean` tasks (see the `pre=` warning above — a body call, not `pre=`), and create or extend a notebook in `notebooks/` for visualization.
 

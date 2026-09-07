@@ -216,6 +216,16 @@ Once the pipeline is run, this folder will contain the following.
     expected asset is absent, `dataset, subject, session, reason`, where
     `reason` is one of `timeseries_content_missing`, `qc_table_empty`,
     `atlas_tsnr_empty`, `no_connectome_file` or `unmatched_entities`.
+  - `inventory_dashboard.html` — the five tables above rendered as one
+    self-contained page (headline counts, the dataset x asset status grid, a
+    raw -> timeseries -> QC coverage bar per dataset, the `match_level`
+    breakdown, and the gaps collapsed by `reason`). Written by `invoke
+    run-inventory-dashboard` from `analysis/inventory_dashboard.py`, which
+    **computes nothing new** — every number on the page is already in a TSV
+    beside it. Carries its own CSS and loads nothing external, so it opens
+    offline. Re-rendered on every `invoke run` rather than cached, so it can
+    never disagree with the tables it sits next to; gitignored for the same
+    reason (it is fully derived, and would churn on every run).
 - `figures/figure_connectomes/network_maps.png` — the montage's network key:
   nine sagittal glass brains, one per network, each filled with its
   `NETWORK_COLORS` entry and named beside it, spanning the full page height

@@ -849,6 +849,53 @@ def run_inventory(c, dataset=None, parcellation=None, skip_durations=False, smok
     print(f"✅ run-inventory: wrote 5 tables to {output_dir}")
 
 
+@task
+def run_inventory_dashboard(c):
+    """
+    Render the asset coverage inventory as one self-contained HTML page,
+    output_data/inventory/inventory_dashboard.html.
+
+    Infrastructure, like `run-inventory` itself: it makes no claim and feeds no
+    figure. It computes nothing new either — it only renders the five TSVs
+    `run-inventory` wrote, so a reader sees where the assets stand without
+    joining those tables by hand.
+
+    Always re-runs, never skipped (like `run-figure-layout`): it is cheap, and
+    it must reflect the tables currently on disk rather than whatever they said
+    when it last ran.
+    """
+    from datetime import datetime
+
+    import pandas as pd
+
+    from analysis.inventory_dashboard import render_dashboard
+
+    output_dir = Path(c.config.get("output_data_dir")) / "inventory"
+    run_path = output_dir / "run_inventory.tsv"
+    if not run_path.exists():
+        print(f"⚠️  {run_path} not found — run `invoke run-inventory` first.")
+        return
+
+    def read(name):
+        path = output_dir / name
+        return pd.read_csv(path, sep="\t") if path.exists() else pd.DataFrame()
+
+    parcellation, _network_order, _ = _parcellation_config(c, None)
+    html = render_dashboard(
+        read("run_inventory.tsv"),
+        read("session_inventory.tsv"),
+        read("subject_coverage.tsv"),
+        read("dataset_coverage.tsv"),
+        read("inventory_gaps.tsv"),
+        parcellation=parcellation,
+        min_usable_seconds=c.config.get("group_stats", {}).get("min_usable_seconds", 1800),
+        generated_at=datetime.now().isoformat(timespec="seconds"),
+    )
+    out_path = output_dir / "inventory_dashboard.html"
+    out_path.write_text(html, encoding="utf-8")
+    print(f"✅ run-inventory-dashboard: wrote {out_path}")
+
+
 def _connectome_index_for(connectome_dir, parcellation, names):
     """Concatenate `/index` across every connectome file for `names`, or an
     empty DataFrame when none are present — `run-inventory` must still work
@@ -936,7 +983,8 @@ def compose_figure(c):
 def run(c, dataset=None, force=False):
     """
     Full pipeline: connectomes → group stats → motion strata → tSNR strata →
-    asset inventory → figure layout → notebooks → composed figure.
+    asset inventory → inventory dashboard → figure layout → notebooks →
+    composed figure.
 
     `run` does NOT pull data: it reads only what `invoke fetch` already
     retrieved, and no step calls `datalad get`. **Run `invoke fetch` first.**
@@ -962,11 +1010,13 @@ def run(c, dataset=None, force=False):
     run_motion_strata(c)
     run_tsnr_strata(c)
     run_inventory(c, dataset=dataset)
+    run_inventory_dashboard(c)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
     record_run(c, tasks="run-connectomes,run-group-stats,run-motion-strata,"
-                        "run-tsnr-strata,run-inventory,run-figure-layout,"
+                        "run-tsnr-strata,run-inventory,run-inventory-dashboard,"
+                        "run-figure-layout,"
                         "run-notebooks,compose-figure")
     print("all analyses completed")
 
@@ -1005,6 +1055,7 @@ def run_smoke(c):
     run_motion_strata(c, smoke=True)
     run_tsnr_strata(c, smoke=True)
     run_inventory(c, smoke=True)
+    run_inventory_dashboard(c)
     run_figure_layout(c)
     run_notebooks(c)
     compose_figure(c)
@@ -1066,6 +1117,13 @@ def clean_inventory(c):
 
 
 @task
+def clean_inventory_dashboard(c):
+    """Remove the rendered inventory dashboard page."""
+    from airoh.utils import clean_folder
+    clean_folder(c, "output_data_dir", "inventory/inventory_dashboard.html")
+
+
+@task
 def clean_figures(c):
     """
     Remove the figures dir (per-notebook panels, the "already ran" sentinels,
@@ -1107,6 +1165,7 @@ def clean(c):
     clean_motion_strata(c)
     clean_tsnr_strata(c)
     clean_inventory(c)
+    clean_inventory_dashboard(c)
     clean_figures(c)
     clean_figure(c)
 

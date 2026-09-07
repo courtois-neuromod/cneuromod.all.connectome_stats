@@ -16,5 +16,10 @@
 # tracked) and regenerated on every run — no need to also track it.
 figures/panel_sizes.json
 
+# The inventory dashboard is fully derived from the (ignored) inventory TSVs
+# and re-rendered on every run — tracking it would be pure churn. Same reasoning
+# as figures/panel_sizes.json above.
+inventory/inventory_dashboard.html
+
 # Provenance is a tracked output: it records what produced everything else.
 !PROVENANCE.json
