@@ -1,0 +1,1406 @@
+dataset	subject	session	n_raw_runs	n_timeseries_runs	n_qc_runs	raw_duration_sec	usable_duration_sec	passes_gate	has_connectome
+emotion-videos	01	001	6	0	0	3021.0		False	False
+emotion-videos	01	002	1	0	0	503.5		False	False
+emotion-videos	01	003	6	0	0	3021.0		False	False
+emotion-videos	01	004	6	0	0	3021.0		False	False
+emotion-videos	01	005	6	0	0	3021.0		False	False
+emotion-videos	01	006	6	0	0	3021.0		False	False
+emotion-videos	01	007	5	0	0	2517.5		False	False
+emotion-videos	02	001	6	0	0	3021.0		False	False
+emotion-videos	02	002	6	0	0	3021.0		False	False
+emotion-videos	02	003	1	0	0	503.5		False	False
+emotion-videos	02	004	6	0	0	3021.0		False	False
+emotion-videos	02	005	6	0	0	3021.0		False	False
+emotion-videos	02	006	6	0	0	3021.0		False	False
+emotion-videos	02	007	5	0	0	2517.5		False	False
+emotion-videos	03	001	3	0	0	1510.5		False	False
+emotion-videos	03	002	6	0	0	3021.0		False	False
+emotion-videos	03	003	6	0	0	3021.0		False	False
+emotion-videos	03	004	6	0	0	3021.0		False	False
+emotion-videos	03	005	6	0	0	3021.0		False	False
+emotion-videos	03	006	6	0	0	3021.0		False	False
+emotion-videos	03	007	6	0	0	3021.0		False	False
+emotion-videos	05	001	6	0	0	3021.0		False	False
+emotion-videos	05	002	4	0	0	2014.0		False	False
+emotion-videos	05	003	6	0	0	3021.0		False	False
+emotion-videos	05	004	6	0	0	3021.0		False	False
+emotion-videos	05	005	8	0	0	4028.0		False	False
+emotion-videos	05	006	8	0	0	4028.0		False	False
+emotion-videos	06	001	6	0	0	3021.0		False	False
+emotion-videos	06	002	6	0	0	3021.0		False	False
+emotion-videos	06	003	6	0	0	3021.0		False	False
+emotion-videos	06	004	6	0	0	3021.0		False	False
+emotion-videos	06	005	6	0	0	3021.0		False	False
+emotion-videos	06	006	6	0	0	3021.0		False	False
+floc	01	001	2	2	2	461.9	454.5	False	True
+floc	01	002	2	2	2	461.9	435.0	False	True
+floc	01	003	2	2	2	461.9	402.0	False	True
+floc	01	004	2	2	2	461.9	387.0	False	True
+floc	01	005	2	2	2	461.9	433.5	False	True
+floc	01	006	2	2	2	461.9	438.0	False	True
+floc	02	001	2	0	0	461.9	355.5	False	True
+floc	02	003	2	2	2	461.9	348.0	False	True
+floc	02	004	2	2	2	461.9	348.0	False	True
+floc	02	005	2	2	2	461.9	372.0	False	True
+floc	02	006	2	2	2	461.9	346.5	False	True
+floc	02	007	2	2	2	461.9	340.5	False	True
+floc	03	001	2	0	0	479.78	481.5	False	True
+floc	03	002	2	2	2	461.9	463.5	False	True
+floc	03	003	2	2	2	461.9	465.0	False	True
+floc	03	004	2	2	2	461.9	462.0	False	True
+floc	03	005	2	2	2	461.9	462.0	False	True
+floc	03	006	2	2	2	461.9	463.5	False	True
+friends	01	001	4	4	4	2842.92	2823.0	True	True
+friends	01	002	4	4	4	2893.58	2788.5	True	True
+friends	01	003	4	4	4	3218.4	3000.0	True	True
+friends	01	004	6	6	6	4282.26	3867.0	True	True
+friends	01	005	4	4	4	2899.54	2388.0	True	True
+friends	01	006	6	6	6	4262.89	3744.0	True	True
+friends	01	007	6	6	6	4300.139999999999	3577.5	True	True
+friends	01	008	4	4	4	2851.8599999999997	2706.0	True	True
+friends	01	009	6	6	6	4204.78	3943.5	True	True
+friends	01	010	6	6	6	4332.92	3907.5	True	True
+friends	01	011	8	8	8	5432.54	5029.5	True	True
+friends	01	012	4	4	4	2968.08	2553.0	True	True
+friends	01	013	6	6	6	4139.22	3595.5	True	True
+friends	01	014	6	6	6	4362.72	3892.5	True	True
+friends	01	015	4	4	4	2801.2	2310.0	True	True
+friends	01	016	4	4	4	2881.66	2704.5	True	True
+friends	01	017	10	10	10	6883.8	6208.5	True	True
+friends	01	018	4	4	4	2756.5	2535.0	True	True
+friends	01	019	6	6	0	4231.6	4260.0	True	True
+friends	01	020	6	6	0	4252.46	4281.0	True	True
+friends	01	021	6	6	0	4231.6	4260.0	True	True
+friends	01	022	6	6	0	4087.0699999999997	4114.5	True	True
+friends	01	023	4	4	0	2775.87	2794.5	True	True
+friends	01	024	6	6	0	4110.91	4138.5	True	True
+friends	01	025	6	6	0	4174.98	4203.0	True	True
+friends	01	026	4	4	0	2750.54	2769.0	True	True
+friends	01	027	10	10	0	7000.02	7047.0	True	True
+friends	01	028	10	10	0	6946.38	6993.0	True	True
+friends	01	029	8	8	0	5590.48	5628.0	True	True
+friends	01	030	6	6	0	4055.7799999999997	4083.0	True	True
+friends	01	031	6	6	0	4198.82	4227.0	True	True
+friends	01	032	4	4	0	2643.26	2661.0	True	True
+friends	01	033	2	2	0	1332.06	1341.0	False	True
+friends	01	034	4	4	0	2702.8599999999997	2721.0	True	True
+friends	01	035	4	4	0	3005.33	3025.5	True	True
+friends	01	036	4	4	0	2889.1099999999997	2908.5	True	True
+friends	01	037	4	4	0	2875.7	2895.0	True	True
+friends	01	041	4	4	0	2918.91	2938.5	True	True
+friends	01	042	2	2	0	1418.48	1428.0	False	True
+friends	01	043	2	2	0	1379.74	1389.0	False	True
+friends	01	044	4	4	0	2801.2	2820.0	True	True
+friends	01	045	4	4	0	2848.88	2868.0	True	True
+friends	01	046	4	4	0	2920.3999999999996	2940.0	True	True
+friends	01	047	4	4	0	2866.76	2886.0	True	True
+friends	01	048	4	4	0	2941.26	2961.0	True	True
+friends	01	049	4	4	0	2789.2799999999997	2808.0	True	True
+friends	01	050	4	4	0	2765.44	2784.0	True	True
+friends	01	051	2	2	0	1358.88	1368.0	False	True
+friends	01	052	4	4	0	2845.9	2865.0	True	True
+friends	01	053	5	5	0	3413.59	3436.5	True	True
+friends	01	054	3	3	0	2103.88	2118.0	True	True
+friends	01	055	4	4	0	2749.05	2767.5	True	True
+friends	01	056	5	5	0	3601.33	3625.5	True	True
+friends	01	057	5	5	0	3485.1099999999997	3508.5	True	True
+friends	01	058	4	4	0	2875.7	2895.0	True	True
+friends	01	059	1	1	0	679.4399999999999	684.0	False	True
+friends	01	060	2	2	0	1370.8	1380.0	False	True
+friends	01	061	3	3	0	2056.2	2070.0	True	True
+friends	01	062	4	4	0	2692.43	2710.5	True	True
+friends	01	063	3	3	0	2020.44	2034.0	True	True
+friends	01	064	3	3	0	2133.68	2148.0	True	True
+friends	01	065	3	3	0	2179.87	2194.5	True	True
+friends	01	066	3	3	0	2103.88	2118.0	True	True
+friends	01	067	2	0	0	1421.46		False	False
+friends	01	068	1	0	0	733.08		False	False
+friends	01	069	1	0	0	783.74		False	False
+friends	01	070	1	0	0	621.33		False	False
+friends	01	071	2	0	0	1339.51		False	False
+friends	01	072	1	0	0	718.18		False	False
+friends	01	073	1	0	0	676.46		False	False
+friends	01	074	1	0	0	727.12		False	False
+friends	01	075	2	0	0	1476.5900000000001		False	False
+friends	01	076	2	0	0	1460.1999999999998		False	False
+friends	01	077	1	0	0	706.26		False	False
+friends	01	078	1	0	0	758.41		False	False
+friends	01	079	2	0	0	1391.6599999999999		False	False
+friends	01	080	5	0	0	3525.34		False	False
+friends	01	081	2	0	0	1527.25		False	False
+friends	01	082	2	0	0	1549.6		False	False
+friends	01	083	2	0	0	1588.3400000000001		False	False
+friends	01	084	2	0	0	1487.02		False	False
+friends	01	085	2	0	0	1242.6599999999999		False	False
+friends	01	086	1	0	0	645.17		False	False
+friends	01	087	2	0	0	1406.56		False	False
+friends	01	088	3	0	0	2114.31		False	False
+friends	01	089	2	0	0	1403.58		False	False
+friends	01	090	4	0	0	2784.81		False	False
+friends	01	091	4	0	0	2924.87		False	False
+friends	02	001	6	6	6	4341.86	3505.5	True	True
+friends	02	002	4	4	4	2848.88	2515.5	True	True
+friends	02	003	6	6	6	4651.780000000001	3733.5	True	True
+friends	02	004	6	6	6	4294.18	3318.0	True	True
+friends	02	005	4	4	4	2799.71	2317.5	True	True
+friends	02	006	6	6	6	4323.98	3276.0	True	True
+friends	02	007	4	4	4	2920.3999999999996	2455.5	True	True
+friends	02	008	6	6	6	4163.0599999999995	2827.5	True	True
+friends	02	009	6	6	6	4323.98	3795.0	True	True
+friends	02	010	6	6	6	4145.18	3451.5	True	True
+friends	02	011	6	6	6	4198.82	3364.5	True	True
+friends	02	012	6	6	6	4189.88	3303.0	True	True
+friends	02	013	8	8	8	5790.14	4821.0	True	True
+friends	02	014	4	4	4	2801.2	2269.5	True	True
+friends	02	015	6	6	6	4252.46	3481.5	True	True
+friends	02	016	4	4	4	2762.46	2445.0	True	True
+friends	02	017	8	8	8	5507.04	4408.5	True	True
+friends	02	018	8	8	0	5641.14	5679.0	True	True
+friends	02	019	6	6	0	4234.58	4263.0	True	True
+friends	02	020	6	6	0	4183.92	4212.0	True	True
+friends	02	021	2	2	0	1360.37	1369.5	False	True
+friends	02	022	6	6	0	4158.59	4186.5	True	True
+friends	02	023	6	6	0	4110.91	4138.5	True	True
+friends	02	024	6	6	0	4174.98	4203.0	True	True
+friends	02	025	6	6	0	4151.139999999999	4179.0	True	True
+friends	02	026	6	6	0	4174.9800000000005	4203.0	True	True
+friends	02	027	6	6	0	4100.48	4128.0	True	True
+friends	02	028	4	4	0	2789.2799999999997	2808.0	True	True
+friends	02	029	6	6	0	4294.18	4323.0	True	True
+friends	02	030	6	6	0	4166.04	4194.0	True	True
+friends	02	031	6	6	0	3990.22	4017.0	True	True
+friends	02	032	6	6	0	4216.7	4245.0	True	True
+friends	02	033	12	12	0	8342.51	8398.5	True	True
+friends	02	034	6	6	0	4256.93	4285.5	True	True
+friends	02	035	6	6	0	4426.79	4456.5	True	True
+friends	02	036	6	6	0	4207.76	4236.0	True	True
+friends	02	037	4	4	0	2862.29	2881.5	True	True
+friends	02	038	4	4	0	2799.71	2818.5	True	True
+friends	02	039	2	2	0	1498.94	1509.0	False	True
+friends	02	040	6	6	0	4264.38	4293.0	True	True
+friends	02	041	6	6	0	4332.92	4362.0	True	True
+friends	02	042	4	4	0	2765.44	2784.0	True	True
+friends	02	043	4	4	0	2768.42	2787.0	True	True
+friends	02	046	4	4	0	2836.96	2856.0	True	True
+friends	02	047	4	4	0	2719.25	2737.5	True	True
+friends	02	048	4	4	0	2769.91	2788.5	True	True
+friends	02	049	4	4	0	2732.66	2751.0	True	True
+friends	02	050	4	4	0	2990.4300000000003	3010.5	True	True
+friends	02	051	4	4	0	2740.1099999999997	2758.5	True	True
+friends	02	052	2	2	0	1451.26	1461.0	False	True
+friends	02	053	2	2	0	1424.44	1434.0	False	True
+friends	02	054	4	4	0	2780.34	2799.0	True	True
+friends	02	055	4	4	0	2674.55	2692.5	True	True
+friends	02	056	4	4	0	2679.02	2697.0	True	True
+friends	02	057	4	4	0	2819.08	2838.0	True	True
+friends	02	058	6	6	0	4283.75	4312.5	True	True
+friends	02	059	5	0	0	3559.61		False	False
+friends	02	060	5	0	0	3409.12		False	False
+friends	02	061	2	0	0	1476.5900000000001		False	False
+friends	02	062	3	0	0	2166.46		False	False
+friends	02	064	1	0	0	758.41		False	False
+friends	02	065	2	0	0	1391.6599999999999		False	False
+friends	02	066	2	0	0	1418.48		False	False
+friends	02	067	2	0	0	1433.38		False	False
+friends	02	068	2	0	0	1397.62		False	False
+friends	02	069	2	0	0	1658.37		False	False
+friends	02	070	2	0	0	1439.3400000000001		False	False
+friends	02	071	2	0	0	1737.3400000000001		False	False
+friends	02	072	3	0	0	1835.6799999999998		False	False
+friends	02	073	3	0	0	2051.73		False	False
+friends	02	074	2	0	0	1412.52		False	False
+friends	02	076	2	0	0	1378.25		False	False
+friends	02	077	3	0	0	2057.69		False	False
+friends	02	078	3	0	0	2169.44		False	False
+friends	02	079	3	0	0	2209.67		False	False
+friends	03	001	4	4	4	2842.92	2836.5	True	True
+friends	03	002	4	4	4	2893.58	2887.5	True	True
+friends	03	003	4	4	4	3218.4	3216.0	True	True
+friends	03	004	4	4	4	2887.62	2829.0	True	True
+friends	03	005	4	4	4	2872.7200000000003	2833.5	True	True
+friends	03	006	4	4	4	2826.5299999999997	2766.0	True	True
+friends	03	007	4	4	4	2857.82	2832.0	True	True
+friends	03	008	4	4	4	2860.8	2712.0	True	True
+friends	03	009	4	4	4	2920.3999999999996	2794.5	True	True
+friends	03	010	4	4	4	2741.6	2692.5	True	True
+friends	03	011	4	4	4	2833.98	2794.5	True	True
+friends	03	012	4	4	4	2911.46	2917.5	True	True
+friends	03	013	4	4	4	2845.9	2808.0	True	True
+friends	03	014	4	4	4	2762.46	2769.0	True	True
+friends	03	015	4	4	4	2735.6400000000003	2745.0	True	True
+friends	03	016	4	4	4	2711.8	2716.5	True	True
+friends	03	017	4	4	4	2881.66	2862.0	True	True
+friends	03	018	2	2	2	1454.24	1453.5	False	True
+friends	03	019	2	2	2	1454.24	1455.0	False	True
+friends	03	020	4	4	4	2801.2	2779.5	True	True
+friends	03	021	4	4	4	2881.66	2874.0	True	True
+friends	03	022	2	2	2	1370.8	1380.0	False	True
+friends	03	023	4	4	4	2762.46	2772.0	True	True
+friends	03	024	4	4	4	2750.54	2748.0	True	True
+friends	03	025	4	4	4	2756.5	2725.5	True	True
+friends	03	026	2	2	2	1478.08	1471.5	False	True
+friends	03	027	2	2	0	1463.18	1473.0	False	True
+friends	03	028	4	4	0	2768.42	2787.0	True	True
+friends	03	029	4	4	0	2851.8599999999997	2871.0	True	True
+friends	03	030	4	4	0	2792.26	2811.0	True	True
+friends	03	031	4	4	0	2839.94	2859.0	True	True
+friends	03	032	4	4	0	2704.35	2722.5	True	True
+friends	03	033	4	4	0	2793.75	2812.5	True	True
+friends	03	034	4	4	0	2729.68	2748.0	True	True
+friends	03	035	6	6	0	4143.6900000000005	4171.5	True	True
+friends	03	036	4	4	0	2777.36	2796.0	True	True
+friends	03	037	4	4	0	2750.54	2769.0	True	True
+friends	03	038	4	4	0	2753.52	2772.0	True	True
+friends	03	039	4	4	0	2822.0600000000004	2841.0	True	True
+friends	03	040	4	4	0	2750.54	2769.0	True	True
+friends	03	041	4	4	0	2753.52	2772.0	True	True
+friends	03	042	4	4	0	2866.76	2886.0	True	True
+friends	03	043	4	4	0	2813.12	2832.0	True	True
+friends	03	044	4	4	0	2777.3599999999997	2796.0	True	True
+friends	03	045	4	4	0	2723.7200000000003	2742.0	True	True
+friends	03	046	4	4	0	2655.18	2673.0	True	True
+friends	03	047	4	4	0	2875.7	2895.0	True	True
+friends	03	048	4	4	0	2643.26	2661.0	True	True
+friends	03	049	4	4	0	2667.1	2685.0	True	True
+friends	03	050	2	2	0	1367.82	1377.0	False	True
+friends	03	052	4	4	0	3005.33	3025.5	True	True
+friends	03	053	4	4	0	2889.1099999999997	2908.5	True	True
+friends	03	054	4	4	0	2875.7	2895.0	True	True
+friends	03	055	4	4	0	2918.91	2938.5	True	True
+friends	03	056	4	4	0	2798.2200000000003	2817.0	True	True
+friends	03	057	4	4	0	2801.2	2820.0	True	True
+friends	03	058	2	2	0	1470.63	1480.5	False	True
+friends	03	059	2	2	0	1378.25	1387.5	False	True
+friends	03	060	4	4	0	2920.3999999999996	2940.0	True	True
+friends	03	061	4	4	0	2866.76	2886.0	True	True
+friends	03	062	4	4	0	2941.26	2961.0	True	True
+friends	03	063	2	2	0	1379.74	1389.0	False	True
+friends	03	065	1	1	0	730.1	735.0	False	True
+friends	03	066	4	4	0	2765.44	2784.0	True	True
+friends	03	067	4	4	0	2768.42	2787.0	True	True
+friends	03	070	4	4	0	2836.96	2856.0	True	True
+friends	03	071	4	4	0	2755.01	2737.5	True	True
+friends	03	072	4	4	0	2769.91	2788.5	True	True
+friends	03	074	4	4	0	2732.66	2751.0	True	True
+friends	03	075	4	4	0	2990.4300000000003	3010.5	True	True
+friends	03	076	4	4	0	2740.1099999999997	2758.5	True	True
+friends	03	077	4	4	0	2875.7	2895.0	True	True
+friends	03	078	5	5	0	3418.06	3441.0	True	True
+friends	03	079	4	4	0	2683.49	2701.5	True	True
+friends	03	080	5	5	0	3453.8199999999997	3477.0	True	True
+friends	03	081	3	3	0	2121.76	2136.0	True	True
+friends	03	082	2	2	0	1455.73	1465.5	False	True
+friends	03	083	3	3	0	2103.88	2118.0	True	True
+friends	03	084	5	0	0	3559.61		False	False
+friends	03	085	4	0	0	2734.15		False	False
+friends	03	086	5	0	0	3663.91		False	False
+friends	03	087	4	0	0	2856.33		False	False
+friends	03	088	1	0	0	683.91		False	False
+friends	03	089	2	0	0	1425.93		False	False
+friends	03	090	1	0	0	742.02		False	False
+friends	03	091	1	0	0	673.48		False	False
+friends	03	093	1	0	0	724.14		False	False
+friends	03	094	1	0	0	803.11		False	False
+friends	03	095	2	0	0	1549.6		False	False
+friends	03	096	1	0	0	745.0		False	False
+friends	03	097	1	0	0	843.34		False	False
+friends	03	098	2	0	0	1487.02		False	False
+friends	03	099	4	0	0	2583.66		False	False
+friends	03	100	2	0	0	1472.12		False	False
+friends	03	101	2	0	0	1352.92		False	False
+friends	03	102	5	0	0	3435.94		False	False
+friends	03	103	2	0	0	1467.65		False	False
+friends	03	104	3	0	0	2209.67		False	False
+friends	04	001	2	2	2	1436.36	1446.0	False	True
+friends	04	003	4	4	4	2905.5	2916.0	True	True
+friends	04	004	6	6	6	4613.04	4552.5	True	True
+friends	04	005	4	4	4	2887.62	2773.5	True	True
+friends	04	006	4	4	4	2872.7200000000003	2850.0	True	True
+friends	04	007	4	4	4	2826.5299999999997	2802.0	True	True
+friends	04	008	4	4	4	2884.6400000000003	2821.5	True	True
+friends	04	009	6	6	6	4359.74	4350.0	True	True
+friends	04	010	6	6	6	4163.0599999999995	4108.5	True	True
+friends	04	011	6	6	6	4323.98	4251.0	True	True
+friends	04	012	2	2	2	1421.46	1366.5	False	True
+friends	04	013	4	4	4	2723.7200000000003	2670.0	True	True
+friends	04	014	8	8	8	5676.9	5665.5	True	True
+friends	04	015	6	6	6	4139.22	4026.0	True	True
+friends	04	016	4	4	4	2908.48	2881.5	True	True
+friends	04	017	6	6	6	4255.4400000000005	4237.5	True	True
+friends	04	018	6	6	6	4252.46	4182.0	True	True
+friends	04	019	6	6	6	4163.0599999999995	4023.0	True	True
+friends	04	020	4	4	4	2708.8199999999997	2712.0	True	True
+friends	04	021	2	2	2	1397.62	1402.5	False	True
+friends	04	022	2	2	2	1394.64	1404.0	False	True
+friends	04	023	4	4	0	2878.6800000000003	2898.0	True	True
+friends	04	024	6	6	0	4204.78	4233.0	True	True
+friends	04	025	4	4	0	2792.26	2811.0	True	True
+friends	04	026	4	4	0	2839.94	2859.0	True	True
+friends	04	027	4	4	0	2704.35	2722.5	True	True
+friends	04	028	6	6	0	4158.59	4186.5	True	True
+friends	04	029	4	4	0	2759.48	2778.0	True	True
+friends	04	030	6	6	0	4143.6900000000005	4171.5	True	True
+friends	04	031	4	4	0	2753.52	2772.0	True	True
+friends	04	032	10	10	0	6955.32	7002.0	True	True
+friends	04	033	6	6	0	4100.48	4128.0	True	True
+friends	04	034	6	6	0	4270.34	4299.0	True	True
+friends	04	035	4	4	0	2813.12	2832.0	True	True
+friends	04	036	6	6	0	4166.04	4194.0	True	True
+friends	04	037	4	4	0	2667.1	2685.0	True	True
+friends	04	038	6	6	0	4198.82	4227.0	True	True
+friends	04	039	4	4	0	2643.26	2661.0	True	True
+friends	04	040	4	4	0	2667.1	2685.0	True	True
+friends	04	041	2	2	0	1367.82	1377.0	False	True
+friends	04	042	4	4	0	3005.33	3025.5	True	True
+friends	04	043	4	4	0	2889.1099999999997	2908.5	True	True
+friends	05	001	2	2	2	1436.36	1446.0	False	True
+friends	05	002	8	8	8	6082.18	4833.0	True	True
+friends	05	003	10	10	10	7117.73	5355.0	True	True
+friends	05	004	10	10	10	7157.96	5776.5	True	True
+friends	05	005	8	8	8	5644.12	4134.0	True	True
+friends	05	006	8	8	8	5745.4400000000005	4578.0	True	True
+friends	05	007	10	10	10	6922.54	5349.0	True	True
+friends	05	008	12	12	12	8525.78	6727.5	True	True
+friends	05	009	12	12	12	8507.9	7215.0	True	True
+friends	05	010	4	4	4	2762.46	2284.5	True	True
+friends	05	011	8	8	8	5507.04	4489.5	True	True
+friends	05	012	4	4	4	2905.5	2725.5	True	True
+friends	05	013	10	10	0	7083.46	7131.0	True	True
+friends	05	014	12	12	0	8336.55	8392.5	True	True
+friends	05	015	4	4	0	2793.75	2812.5	True	True
+friends	05	016	4	4	0	2729.68	2748.0	True	True
+friends	05	017	12	12	0	8291.85	8347.5	True	True
+friends	05	018	4	4	0	2780.34	2799.0	True	True
+friends	05	019	4	4	0	2780.34	2799.0	True	True
+friends	05	020	2	2	0	1424.44	1434.0	False	True
+friends	05	021	2	2	0	1326.1	1335.0	False	True
+friends	05	022	10	10	0	7119.22	7167.0	True	True
+friends	05	023	4	4	0	2652.2	2670.0	True	True
+friends	05	024	5	5	0	3495.54	3519.0	True	True
+friends	05	025	10	10	0	6871.88	6918.0	True	True
+friends	05	026	12	12	0	8342.51	8398.5	True	True
+friends	05	027	12	12	0	8683.72	8742.0	True	True
+friends	05	030	4	4	0	2798.2200000000003	2817.0	True	True
+friends	05	031	6	6	0	4271.83	4300.5	True	True
+friends	05	032	6	6	0	4298.65	4327.5	True	True
+friends	05	033	4	4	0	2866.76	2886.0	True	True
+friends	05	034	6	6	0	4321.0	4350.0	True	True
+friends	05	035	6	6	0	4174.98	4203.0	True	True
+friends	05	036	4	4	0	2768.42	2787.0	True	True
+friends	05	037	2	2	0	1436.3600000000001	1446.0	False	True
+friends	05	038	4	4	0	2759.48	2778.0	True	True
+friends	05	039	6	6	0	4130.28	4158.0	True	True
+friends	05	040	6	6	0	4283.75	4312.5	True	True
+friends	05	041	4	4	0	2831.0	2850.0	True	True
+friends	05	042	6	6	0	4224.15	4252.5	True	True
+friends	05	043	6	6	0	4106.44	4134.0	True	True
+friends	05	044	6	6	0	4027.47	4054.5	True	True
+friends	05	045	6	6	0	4318.0199999999995	4347.0	True	True
+friends	05	046	4	4	0	2784.81	2803.5	True	True
+friends	05	047	5	0	0	3559.61		False	False
+friends	05	048	2	0	0	1421.46		False	False
+friends	05	049	2	0	0	1339.51		False	False
+friends	05	050	6	0	0	4359.74		False	False
+friends	05	051	5	0	0	3573.02		False	False
+friends	05	052	2	0	0	1397.62		False	False
+friends	05	053	4	0	0	3097.71		False	False
+friends	05	054	3	0	0	2330.36		False	False
+friends	05	055	3	0	0	1887.83		False	False
+friends	05	056	5	0	0	3520.87		False	False
+friends	05	057	10	0	0	7113.26		False	False
+friends	06	001	10	10	10	7190.74	4846.5	True	True
+friends	06	002	8	8	8	6046.42	4525.5	True	True
+friends	06	003	10	10	10	7160.9400000000005	5755.5	True	True
+friends	06	004	8	8	8	5781.2	3618.0	True	True
+friends	06	005	11	11	11	7719.69	4302.0	True	True
+friends	06	006	9	9	9	6265.45	4024.5	True	True
+friends	06	007	12	12	12	8463.2	6880.5	True	True
+friends	06	008	4	4	4	2908.48	2541.0	True	True
+friends	06	009	6	6	6	4255.4400000000005	2653.5	True	True
+friends	06	010	8	8	8	5676.9	4071.0	True	True
+friends	06	011	4	4	4	2738.62	1702.5	False	True
+friends	06	012	6	6	6	4106.44	2731.5	True	True
+friends	06	013	8	8	0	5641.14	5679.0	True	True
+friends	06	014	6	6	0	4234.58	4263.0	True	True
+friends	06	015	6	6	0	4183.92	4212.0	True	True
+friends	06	016	6	6	0	4154.12	4182.0	True	True
+friends	06	018	4	4	0	2729.68	2748.0	True	True
+friends	06	019	6	6	0	4143.6900000000005	4171.5	True	True
+friends	06	020	12	12	0	8281.42	8337.0	True	True
+friends	06	021	10	10	0	6922.54	6969.0	True	True
+friends	06	022	2	2	0	1403.58	1413.0	False	True
+friends	06	023	12	12	0	8457.24	8514.0	True	True
+friends	06	024	10	10	0	6830.16	6876.0	True	True
+friends	06	025	6	6	0	4067.7	4095.0	True	True
+friends	06	026	6	6	0	4034.92	4062.0	True	True
+friends	06	027	4	4	0	3005.33	3025.5	True	True
+friends	06	028	6	6	0	4256.93	4285.5	True	True
+friends	06	029	4	4	0	3008.31	3028.5	True	True
+friends	06	030	6	6	0	4216.7	4245.0	True	True
+friends	06	031	4	4	0	2801.2	2820.0	True	True
+friends	06	032	2	2	0	1470.63	1480.5	False	True
+friends	06	033	6	6	0	4298.65	4327.5	True	True
+friends	06	034	2	2	0	1370.8000000000002	1380.0	False	True
+friends	06	035	4	4	0	2893.58	2913.0	True	True
+friends	06	036	2	2	0	1543.6399999999999	1554.0	False	True
+friends	06	037	4	4	0	2789.2799999999997	2808.0	True	True
+friends	06	038	4	4	0	2765.44	2784.0	True	True
+friends	06	039	4	4	0	2768.42	2787.0	True	True
+friends	06	042	4	4	0	2836.96	2856.0	True	True
+friends	06	043	4	4	0	2719.25	2737.5	True	True
+friends	06	044	4	4	0	2769.91	2788.5	True	True
+friends	06	045	4	4	0	2732.66	2751.0	True	True
+friends	06	046	4	4	0	2990.4300000000003	3010.5	True	True
+friends	06	047	4	4	0	2740.1099999999997	2758.5	True	True
+friends	06	048	4	4	0	2875.7	2895.0	True	True
+friends	06	049	6	6	0	4106.44	4134.0	True	True
+friends	06	050	2	2	0	1348.4499999999998	1357.5	False	True
+friends	06	051	5	5	0	3364.42	3387.0	True	True
+friends	06	052	3	3	0	2133.68	2148.0	True	True
+friends	06	053	2	2	0	1498.94	1509.0	False	True
+friends	06	054	3	3	0	2054.71	2068.5	True	True
+friends	06	055	1	1	0	730.1	735.0	False	True
+friends	06	056	4	0	0	2848.88		False	False
+friends	06	057	4	0	0	2588.13		False	False
+friends	06	058	4	0	0	2880.17		False	False
+friends	06	059	5	0	0	2935.2999999999997		False	False
+friends	06	060	7	0	0	4917.0		False	False
+friends	06	061	3	0	0	2382.51		False	False
+friends	06	062	1	0	0	694.34		False	False
+friends	06	063	6	0	0	4318.02		False	False
+friends	06	064	1	0	0	645.17		False	False
+friends	06	065	5	0	0	3520.87		False	False
+friends	06	066	2	0	0	1403.58		False	False
+friends	06	067	2	0	0	1330.5700000000002		False	False
+friends	06	068	2	0	0	1454.24		False	False
+friends	06	069	1	0	0	715.2		False	False
+friends	06	070	3	0	0	2209.67		False	False
+gamepad	01	001	2	2	2	616.86	565.5	False	True
+gamepad	01	004	2	2	2	616.86	610.5	False	True
+gamepad	01	006	2	2	2	616.86	550.5	False	True
+gamepad	01	007	2	2	2	616.86	562.5	False	True
+gamepad	01	009	2	2	2	616.86	469.5	False	True
+gamepad	02	002	2	2	2	616.86	405.0	False	True
+gamepad	02	003	2	2	2	616.86	442.5	False	True
+gamepad	02	005	2	2	2	616.86	514.5	False	True
+gamepad	02	008	2	2	2	616.86	481.5	False	True
+gamepad	03	003	2	2	2	616.86	619.5	False	True
+gamepad	03	005	2	2	2	616.86	621.0	False	True
+gamepad	03	008	2	2	2	616.86	618.0	False	True
+gamepad	03	010	2	2	2	616.86	621.0	False	True
+gamepad	06	002	2	2	2	616.86	438.0	False	True
+gamepad	06	003	2	2	2	616.86	466.5	False	True
+gamepad	06	006	2	2	2	616.86	391.5	False	True
+gamepad	06	007	2	2	2	616.86	379.5	False	True
+harrypotter	01		7	7	7	5010.87		False	False
+harrypotter	02		7	7	7	5010.87		False	False
+harrypotter	03		7	7	7	5010.87		False	False
+harrypotter	05		7	7	7	5010.87		False	False
+harrypotter	06		7	7	7	5010.87		False	False
+hcptrt	01	001	5	5	5	1808.8600000000001	1683.0	False	True
+hcptrt	01	002	14	14	14	2932.32	2908.5	True	True
+hcptrt	01	003	8	8	8	2360.16	2175.0	True	True
+hcptrt	01	004	8	8	8	2384.0	2208.0	True	True
+hcptrt	01	005	14	14	14	2932.32	2728.5	True	True
+hcptrt	01	006	14	14	14	2932.32	2866.5	True	True
+hcptrt	01	007	8	8	8	2360.16	2170.5	True	True
+hcptrt	01	008	14	14	14	2932.32	2892.0	True	True
+hcptrt	01	009	8	8	8	2360.16	2334.0	True	True
+hcptrt	01	010	14	14	14	2932.32	2814.0	True	True
+hcptrt	02	001	8	8	8	2360.16	1867.5	True	True
+hcptrt	02	002	14	14	14	2932.32	2178.0	True	True
+hcptrt	02	003	8	8	8	2360.16	1720.5	False	True
+hcptrt	02	004	14	14	14	2932.32	2353.5	True	True
+hcptrt	02	005	8	8	8	2360.16	1756.5	False	True
+hcptrt	02	006	14	14	14	2932.32	2490.0	True	True
+hcptrt	02	007	8	8	8	2360.16	1759.5	False	True
+hcptrt	02	008	14	14	14	2932.32	2481.0	True	True
+hcptrt	02	009	8	8	8	2360.16	1690.5	False	True
+hcptrt	02	010	14	14	14	2932.32	2182.5	True	True
+hcptrt	03	001	14	14	14	2932.32	2932.5	True	True
+hcptrt	03	002	8	8	8	2360.16	2371.5	True	True
+hcptrt	03	003	12	12	12	2330.36	2313.0	True	True
+hcptrt	03	004	8	8	8	2360.16	2365.5	True	True
+hcptrt	03	005	8	8	8	2360.16	2364.0	True	True
+hcptrt	03	006	14	14	14	2932.32	2941.5	True	True
+hcptrt	03	007	8	8	8	2360.16	2362.5	True	True
+hcptrt	03	008	14	14	14	2932.32	2929.5	True	True
+hcptrt	03	009	14	14	14	2932.32	2922.0	True	True
+hcptrt	03	010	8	8	8	2360.16	2361.0	True	True
+hcptrt	03	011	2	2	2	601.96	604.5	False	True
+hcptrt	04	001	8	8	8	2360.16	2310.0	True	True
+hcptrt	04	002	7	7	7	1466.16	1462.5	False	True
+hcptrt	04	003	8	8	8	2360.16	2316.0	True	True
+hcptrt	04	005	14	14	14	2932.32	2940.0	True	True
+hcptrt	04	006	8	8	8	2360.16	2344.5	True	True
+hcptrt	04	007	14	14	14	2932.32	2931.0	True	True
+hcptrt	04	008	8	8	8	2360.16	2307.0	True	True
+hcptrt	04	009	14	14	14	2932.32	2766.0	True	True
+hcptrt	04	010	8	8	8	2360.16	2008.5	True	True
+hcptrt	04	011	14	14	14	2932.32	2325.0	True	True
+hcptrt	05	001	14	14	14	2932.32	2730.0	True	True
+hcptrt	05	002	8	8	8	2360.16	1969.5	True	True
+hcptrt	05	003	8	8	8	2360.16	2028.0	True	True
+hcptrt	05	004	14	14	14	2932.32	2640.0	True	True
+hcptrt	05	005	14	14	14	2932.32	2532.0	True	True
+hcptrt	05	006	8	8	8	2360.16	2011.5	True	True
+hcptrt	05	008	14	14	14	2932.32	2641.5	True	True
+hcptrt	05	009	8	8	8	2360.16	1993.5	True	True
+hcptrt	05	010	14	14	14	2932.32	2572.5	True	True
+hcptrt	06	001	5	5	5	1783.53	906.0	False	True
+hcptrt	06	002	14	14	14	2932.32	1854.0	True	True
+hcptrt	06	003	13	13	13	2725.21	1488.0	False	True
+hcptrt	06	004	20	20	20	4878.26	3105.0	True	True
+hcptrt	06	006	14	14	14	2932.32	2373.0	True	True
+hcptrt	06	007	8	8	8	2360.16	1668.0	False	True
+hcptrt	06	008	8	8	8	2360.16	1849.5	True	True
+hcptrt	06	009	14	14	14	2932.32	2155.5	True	True
+hcptrt	06	010	8	8	8	2360.16	1869.0	True	True
+hcptrt	06	012	14	14	14	2932.32	2193.0	True	True
+hcptrt	06	013	8	8	8	2360.16	1474.5	False	True
+langlocalizer	01	001	4	4	0	1257.56	1266.0	False	True
+langlocalizer	01	002	4	4	0	1257.56	1266.0	False	True
+langlocalizer	01	003	4	4	0	1257.56	1266.0	False	True
+langlocalizer	02	001	4	4	0	1257.56	1266.0	False	True
+langlocalizer	02	002	4	4	0	1257.56	1266.0	False	True
+langlocalizer	02	003	4	4	0	1257.56	1266.0	False	True
+langlocalizer	03	001	4	4	0	1267.99	1276.5	False	True
+langlocalizer	03	002	4	4	0	1257.56	1266.0	False	True
+langlocalizer	03	003	4	4	0	1257.56	1266.0	False	True
+langlocalizer	05	001	4	4	0	1257.56	1266.0	False	True
+langlocalizer	05	002	4	4	0	1257.56	1266.0	False	True
+langlocalizer	05	003	4	4	0	1257.56	1266.0	False	True
+mario	01	001	4	4	0	2673.06	2691.0	True	True
+mario	01	002	3	3	0	1972.7600000000002	1986.0	True	True
+mario	01	003	5	5	0	3261.6099999999997	3283.5	True	True
+mario	01	004	4	4	0	2671.5699999999997	2689.5	True	True
+mario	01	005	5	5	0	3324.19	3346.5	True	True
+mario	01	006	4	4	0	2689.45	2707.5	True	True
+mario	01	007	5	5	0	3352.5	3375.0	True	True
+mario	01	008	5	5	0	3413.59	3436.5	True	True
+mario	01	009	5	5	0	3325.68	3348.0	True	True
+mario	01	010	4	4	0	2680.51	2698.5	True	True
+mario	01	011	4	0	0	2598.56		False	False
+mario	01	012	2	2	0	1382.7199999999998	1392.0	False	True
+mario	01	013	3	3	0	1972.76	2875.5	True	True
+mario	01	014	5	5	0	3383.79	3406.5	True	True
+mario	01	015	5	5	0	3249.69	3271.5	True	True
+mario	01	016	4	4	0	2646.24	2664.0	True	True
+mario	01	017	4	4	0	2650.71	2668.5	True	True
+mario	01	018	3	3	0	1908.69	1921.5	True	True
+mario	01	019	2	2	0	1321.63	1330.5	False	True
+mario	01	020	4	4	0	2603.0299999999997	2620.5	True	True
+mario	01	021	4	4	0	2723.7200000000003	2742.0	True	True
+mario	02	001	4	4	0	2759.48	2778.0	True	True
+mario	02	002	5	5	0	3422.5299999999997	3445.5	True	True
+mario	02	003	5	5	0	3231.81	3253.5	True	True
+mario	02	004	5	5	0	3260.12	3282.0	True	True
+mario	02	005	6	6	0	3899.33	3925.5	True	True
+mario	02	006	4	4	0	2740.11	2758.5	True	True
+mario	02	007	4	4	0	2743.09	2761.5	True	True
+mario	02	008	4	4	0	2659.65	2677.5	True	True
+mario	02	009	5	5	0	3321.21	3343.5	True	True
+mario	02	010	5	5	0	3485.1099999999997	3508.5	True	True
+mario	02	011	4	4	0	2622.4	2640.0	True	True
+mario	02	012	5	5	0	3371.87	3394.5	True	True
+mario	02	013	5	5	0	3453.82	3477.0	True	True
+mario	02	014	5	5	0	3412.1	3435.0	True	True
+mario	02	015	4	4	0	2740.11	2758.5	True	True
+mario	02	016	4	4	0	2644.75	2662.5	True	True
+mario	02	017	5	5	0	3525.34	3549.0	True	True
+mario	02	018	4	4	0	2859.31	2878.5	True	True
+mario	02	019	4	4	0	2819.08	2838.0	True	True
+mario	02	020	5	5	0	3353.99	3376.5	True	True
+mario	02	021	3	3	0	2054.71	2068.5	True	True
+mario	02	022	3	3	0	2012.99	2026.5	True	True
+mario	02	023	4	4	0	2552.37	2569.5	True	True
+mario	03	001	3	3	0	2115.8	2130.0	True	True
+mario	03	002	3	3	0	2099.41	2113.5	True	True
+mario	03	003	5	5	0	3412.1	3435.0	True	True
+mario	03	004	3	3	0	2106.86	2121.0	True	True
+mario	03	005	4	4	0	2871.23	2890.5	True	True
+mario	03	006	3	3	0	2008.52	2230.5	True	True
+mario	03	007	3	3	0	2310.9900000000002	2326.5	True	True
+mario	03	009	2	2	0	1408.0500000000002	1417.5	False	True
+mario	03	010	3	3	0	2032.3600000000001	2046.0	True	True
+mario	03	011	2	2	0	1385.6999999999998	1395.0	False	True
+mario	03	012	2	2	0	1405.07	1414.5	False	True
+mario	03	013	4	4	0	2987.45	3007.5	True	True
+mario	03	014	4	4	0	2783.32	2802.0	True	True
+mario	03	015	4	4	0	2804.18	2823.0	True	True
+mario	03	016	2	2	0	1378.25	1387.5	False	True
+mario	03	017	3	3	0	1980.21	1993.5	True	True
+mario	03	018	3	3	0	1947.4299999999998	1960.5	True	True
+mario	03	019	4	4	0	2668.59	2686.5	True	True
+mario	03	020	4	4	0	2807.16	2826.0	True	True
+mario	03	021	3	3	0	2056.2	2070.0	True	True
+mario	03	022	4	4	0	2597.0699999999997	2614.5	True	True
+mario	03	023	3	3	0	2093.45	2107.5	True	True
+mario	03	024	2	2	0	1428.9099999999999	1438.5	False	True
+mario	03	025	5	5	0	3371.87	3394.5	True	True
+mario	03	026	3	3	0	2088.98	2103.0	True	True
+mario	03	027	4	4	0	2601.54	2619.0	True	True
+mario	03	028	4	4	0	2608.99	2626.5	True	True
+mario	03	029	4	4	0	2729.68	2748.0	True	True
+mario	03	030	3	3	0	2032.3600000000001	2046.0	True	True
+mario	05	001	5	5	0	3580.47	3604.5	True	True
+mario	05	002	3	3	0	2090.4700000000003	2104.5	True	True
+mario	05	003	4	4	0	2825.04	2844.0	True	True
+mario	05	004	4	4	0	2826.5299999999997	2845.5	True	True
+mario	05	005	4	4	0	2778.85	2797.5	True	True
+mario	05	006	4	4	0	3210.95	3232.5	True	True
+mario	05	007	5	5	0	3742.88	3768.0	True	True
+mario	05	008	2	2	0	1343.98	1353.0	False	True
+mario	05	009	5	5	0	3321.21	3343.5	True	True
+mario	05	010	5	5	0	3410.61	3433.5	True	True
+mario	05	011	4	4	0	2965.1	2985.0	True	True
+mario	05	012	3	3	0	1969.78	1983.0	True	True
+mario	05	013	5	5	0	3611.7599999999998	3636.0	True	True
+mario	05	014	5	5	0	3398.69	3421.5	True	True
+mario	05	015	5	5	0	3662.42	3687.0	True	True
+mario	05	016	5	5	0	3523.85	3547.5	True	True
+mario	05	017	5	5	0	3516.4	3540.0	True	True
+mario	05	018	5	5	0	3546.2	3570.0	True	True
+mario	05	019	5	0	0	3371.87		False	False
+mario	05	020	5	0	0	3607.29		False	False
+mario	05	021	7	0	0	4748.63		False	False
+mario	05	022	5	0	0	3480.64		False	False
+mario	06	001	5	5	0	3413.59	3436.5	True	True
+mario	06	002	5	5	0	3397.2	3420.0	True	True
+mario	06	003	4	4	0	2877.19	2896.5	True	True
+mario	06	004	5	5	0	3476.17	3499.5	True	True
+mario	06	005	3	3	0	2130.7	2145.0	True	True
+mario	06	006	3	3	0	2068.12	2248.5	True	True
+mario	06	007	4	4	0	2832.49	2851.5	True	True
+mario	06	008	3	3	0	2105.37	2119.5	True	True
+mario	06	009	4	4	0	2878.68	2898.0	True	True
+mario	06	010	4	4	0	2823.55	2842.5	True	True
+mario	06	011	5	5	0	3446.37	3469.5	True	True
+mario	06	012	5	5	0	3397.2	3420.0	True	True
+mario	06	013	5	5	0	3385.2799999999997	3408.0	True	True
+mario	06	014	4	4	0	2705.84	2724.0	True	True
+mario	06	015	4	4	0	2813.12	2832.0	True	True
+mario	06	016	4	4	0	2786.3	2805.0	True	True
+mario	06	017	4	4	0	2756.5	2775.0	True	True
+mario	06	018	1	1	0	718.18	723.0	False	True
+mario	06	019	4	4	0	2847.39	2866.5	True	True
+mario	06	020	4	4	0	2828.02	2847.0	True	True
+mario	06	021	3	3	0	2066.63	2080.5	True	True
+mario	06	022	4	4	0	2676.04	2694.0	True	True
+mario	06	023	5	5	0	3349.52	3372.0	True	True
+mario	06	024	5	5	0	3456.7999999999997	3480.0	True	True
+mario	06	025	5	5	0	3215.42	3237.0	True	True
+mario3	01	001	2	0	2	902.94		False	False
+mario3	01	002	3	0	3	1487.02		False	False
+mario3	01	003	3	0	3	1615.16		False	False
+mario3	01	004	3	0	3	1837.17		False	False
+mario3	01	005	2	0	2	990.85		False	False
+mario3	01	006	3	0	3	1609.2		False	False
+mario3	01	007	2	0	2	946.15		False	False
+mario3	01	008	2	0	2	922.31		False	False
+mario3	01	009	1	0	1	543.85		False	False
+mario3	01	011	5	0	5	2461.48		False	False
+mario3	01	012	3	0	3	1740.32		False	False
+mario3	01	013	2	0	2	1017.6700000000001		False	False
+mario3	01	014	3	0	3	1479.5700000000002		False	False
+mario3	01	015	3	0	3	1563.01		False	False
+mario3	01	016	3	0	3	1942.96		False	False
+mario3	01	017	5	0	5	3024.7		False	False
+mario3	01	018	3	0	3	1858.0300000000002		False	False
+mario3	01	019	3	0	3	1752.24		False	False
+mario3	01	020	1	0	1	540.87		False	False
+mario3	01	021	4	0	4	2066.63		False	False
+mario3	01	022	3	0	3	1513.84		False	False
+mario3	01	023	3	0	3	1545.13		False	False
+mario3	01	024	4	0	4	2072.5899999999997		False	False
+mario3	01	025	3	0	3	1478.08		False	False
+mario3	02	001	4	0	4	1920.6100000000001		False	False
+mario3	02	002	4	0	4	1880.3799999999999		False	False
+mario3	02	003	3	0	3	1419.97		False	False
+mario3	02	004	3	0	3	1585.3600000000001		False	False
+mario3	02	005	3	0	3	1564.5		False	False
+mario3	02	006	3	0	3	1466.16		False	False
+mario3	02	007	3	0	3	1481.06		False	False
+mario3	02	008	4	0	4	1813.33		False	False
+mario3	02	009	3	0	3	1586.85		False	False
+mario3	02	010	3	0	3	1543.6399999999999		False	False
+mario3	02	011	4	0	4	1984.68		False	False
+mario3	02	012	4	0	4	1999.58		False	False
+mario3	02	013	1	0	1	575.14		False	False
+mario3	02	014	4	0	4	1935.51		False	False
+mario3	02	015	4	0	4	2112.8199999999997		False	False
+mario3	02	016	5	0	5	2486.81		False	False
+mario3	02	017	7	0	7	3348.0299999999997		False	False
+mario3	02	018	6	0	6	3322.7		False	False
+mario3	02	019	6	0	6	3376.34		False	False
+mario3	03	001	5	0	5	2538.96		False	False
+mario3	03	002	3	0	3	1390.17		False	False
+mario3	03	003	5	0	5	2413.8		False	False
+mario3	03	004	3	0	3	1589.83		False	False
+mario3	03	005	4	0	4	2345.26		False	False
+mario3	03	006	3	0	3	1506.3899999999999		False	False
+mario3	03	007	3	0	3	1561.52		False	False
+mario3	03	008	4	0	4	2121.76		False	False
+mario3	03	009	3	0	3	1561.52		False	False
+mario3	03	010	1	0	1	606.43		False	False
+mario3	03	011	4	0	4	2033.85		False	False
+mario3	03	012	2	0	2	1156.24		False	False
+mario3	03	013	4	0	4	1969.78		False	False
+mario3	03	014	5	0	5	2391.45		False	False
+mario3	03	015	4	0	4	1951.9		False	False
+mario3	03	016	4	0	4	1950.4099999999999		False	False
+mario3	03	017	5	0	5	2737.13		False	False
+mario3	03	018	6	0	6	3030.66		False	False
+mario3	03	019	5	0	5	2552.37		False	False
+mario3	05	001	4	0	4	2330.36		False	False
+mario3	05	002	7	0	7	4385.07		False	False
+mario3	05	003	8	0	8	4116.87		False	False
+mario3	05	004	6	0	6	3576.0		False	False
+mario3	05	005	4	0	4	1917.63		False	False
+mario3	05	006	7	0	7	3713.08		False	False
+mario3	05	007	7	0	7	3578.9799999999996		False	False
+mario3	05	008	6	0	6	3191.58		False	False
+mario3	05	009	6	0	6	3309.29		False	False
+mario3	05	010	10	0	10	5119.64		False	False
+mario3	06	001	4	0	4	1880.38		False	False
+mario3	06	002	4	0	4	2066.63		False	False
+mario3	06	003	4	0	4	2004.05		False	False
+mario3	06	004	3	0	3	1729.89		False	False
+mario3	06	005	3	0	3	1998.09		False	False
+mario3	06	006	3	0	3	2077.06		False	False
+mario3	06	007	2	0	2	1130.91		False	False
+mario3	06	008	3	0	3	1472.12		False	False
+mario3	06	009	3	0	3	1524.27		False	False
+mario3	06	010	3	0	3	1826.7399999999998		False	False
+mario3	06	011	3	0	3	1616.6499999999999		False	False
+mario3	06	012	3	0	3	1945.94		False	False
+mario3	06	013	3	0	3	1540.66		False	False
+mario3	06	014	3	0	3	1568.97		False	False
+mario3	06	015	4	0	4	2200.73		False	False
+mario3	06	016	3	0	3	1427.42		False	False
+mario3	06	017	2	0	2	1034.06		False	False
+mario3	06	018	3	0	3	1552.58		False	False
+mariostars	01	001	4	0	4	2702.8599999999997		False	False
+mariostars	01	002	4	0	4	2670.08		False	False
+mariostars	01	003	5	0	5	3337.6		False	False
+mariostars	01	004	5	0	5	3336.11		False	False
+mariostars	01	005	3	0	3	2068.12		False	False
+mariostars	01	006	4	0	4	2702.8599999999997		False	False
+mariostars	01	007	2	0	2	1288.85		False	False
+mariostars	02	001	3	0	3	2138.15		False	False
+mariostars	02	002	4	0	4	2707.33		False	False
+mariostars	02	003	3	0	3	2035.3400000000001		False	False
+mariostars	02	004	3	0	3	2047.2599999999998		False	False
+mariostars	02	005	2	0	2	1343.98		False	False
+mariostars	02	006	2	0	2	1332.06		False	False
+mariostars	02	007	3	0	3	2035.3400000000001		False	False
+mariostars	02	008	3	0	3	1926.57		False	False
+mariostars	02	009	2	0	2	1329.08		False	False
+mariostars	02	010	2	0	2	1364.8400000000001		False	False
+mariostars	02	011	3	0	3	1942.96		False	False
+mariostars	02	012	2	0	2	1352.92		False	False
+mariostars	03	001	5	0	5	3410.61		False	False
+mariostars	03	002	2	0	2	1387.19		False	False
+mariostars	03	003	1	0	1	694.34		False	False
+mariostars	03	004	1	0	1	667.52		False	False
+mariostars	03	005	2	0	2	1306.73		False	False
+mariostars	03	006	2	0	2	1355.9		False	False
+mariostars	03	007	2	0	2	1390.17		False	False
+mariostars	03	008	3	0	3	1987.6599999999999		False	False
+mariostars	03	009	2	0	2	1397.62		False	False
+mariostars	03	010	3	0	3	1984.6799999999998		False	False
+mariostars	03	011	5	0	5	3383.79		False	False
+mariostars	03	012	5	0	5	3275.02		False	False
+mariostars	03	013	3	0	3	2063.65		False	False
+mariostars	05	001	4	0	4	2930.83		False	False
+mariostars	05	002	10	0	10	7174.35		False	False
+mariostars	05	003	10	0	10	7232.46		False	False
+mariostars	05	004	5	0	5	3471.7		False	False
+mariostars	05	005	6	0	6	3717.55		False	False
+mariostars	05	006	6	0	6	4091.54		False	False
+mariostars	06	001	4	0	4	2714.7799999999997		False	False
+mariostars	06	002	3	0	3	1941.4699999999998		False	False
+mariostars	06	003	4	0	4	2790.77		False	False
+mariostars	06	004	4	0	4	2720.74		False	False
+mariostars	06	005	5	0	5	3456.8		False	False
+mariostars	06	007	4	0	4	2686.47		False	False
+mariostars	06	009	2	0	2	1487.02		False	False
+mariostars	06	010	3	0	3	2050.24		False	False
+mariostars	06	011	3	0	3	1999.58		False	False
+mariostars	06	012	4	0	4	2582.17		False	False
+mariostars	06	013	4	0	4	2673.06		False	False
+mariostars	06	014	2	0	2	1400.6		False	False
+mariostars	06	015	4	0	4	2620.91		False	False
+movie10	01	001	5	5	5	3017.25	2965.5	True	True
+movie10	01	002	5	5	5	2984.4700000000003	2751.0	True	True
+movie10	01	003	6	6	6	3629.6399999999994	3465.0	True	True
+movie10	01	004	6	6	6	3629.6399999999994	3570.0	True	True
+movie10	01	005	3	3	3	1814.8199999999997	1804.5	True	True
+movie10	01	006	4	4	4	2556.8399999999997	2434.5	True	True
+movie10	01	007	6	6	6	3647.5199999999995	3192.0	True	True
+movie10	01	008	5	5	5	3054.5	2935.5	True	True
+movie10	01	009	6	6	6	3613.25	3520.5	True	True
+movie10	01	010	3	3	3	1793.96	1729.5	False	True
+movie10	01	011	4	4	4	2443.6	2449.5	True	True
+movie10	01	012	8	8	8	4820.15	4755.0	True	True
+movie10	02	001	4	4	4	2419.7599999999998	1777.5	False	True
+movie10	02	002	7	7	7	4270.34	3387.0	True	True
+movie10	02	003	6	6	6	3610.27	3157.5	True	True
+movie10	02	004	5	5	5	3017.25	2398.5	True	True
+movie10	02	005	5	5	5	3017.25	2283.0	True	True
+movie10	02	006	6	6	6	3629.6399999999994	3052.5	True	True
+movie10	02	007	6	6	6	3638.58	2382.0	True	True
+movie10	02	008	5	5	5	3187.1099999999997	2361.0	True	True
+movie10	02	009	5	5	5	3021.72	2157.0	True	True
+movie10	02	010	5	5	5	3054.5	2569.5	True	True
+movie10	02	011	4	4	4	2443.6	1819.5	True	True
+movie10	02	012	3	3	3	1777.57	1410.0	False	True
+movie10	03	001	5	5	5	3017.25	2881.5	True	True
+movie10	03	002	5	5	5	2982.98	2940.0	True	True
+movie10	03	003	6	6	6	3629.6399999999994	3394.5	True	True
+movie10	03	004	6	6	6	3629.6399999999994	3516.0	True	True
+movie10	03	005	5	5	5	3161.7799999999997	2938.5	True	True
+movie10	03	006	5	5	5	2991.9199999999996	2950.5	True	True
+movie10	03	007	6	6	6	3665.3999999999996	3294.0	True	True
+movie10	03	009	3	3	3	1832.6999999999998	1795.5	False	True
+movie10	03	010	3	3	3	1777.57	1684.5	False	True
+movie10	03	011	5	5	5	3021.72	3018.0	True	True
+movie10	03	012	6	6	6	3649.0099999999998	3567.0	True	True
+movie10	03	013	6	6	6	3610.27	3531.0	True	True
+movie10	04	001	3	3	3	1814.8199999999997	1827.0	True	True
+movie10	04	002	6	6	6	3629.6399999999994	3651.0	True	True
+movie10	04	003	5	5	5	3024.7	3045.0	True	True
+movie10	04	004	6	6	6	3789.0699999999997	3804.0	True	True
+movie10	04	005	5	5	5	3048.54	3060.0	True	True
+movie10	04	006	5	5	5	2994.8999999999996	2979.0	True	True
+movie10	04	007	6	6	6	3629.64	3595.5	True	True
+movie10	04	008	6	6	6	3622.19	3570.0	True	True
+movie10	04	009	7	7	7	4195.84	4110.0	True	True
+movie10	04	010	6	6	6	3649.0099999999998	3652.5	True	True
+movie10	04	011	4	4	4	2436.1499999999996	2395.5	True	True
+movie10	04	012	2	2	2	1165.1799999999998	1164.0	False	True
+movie10	05	001	5	5	5	3026.19	2125.5	True	True
+movie10	05	002	5	5	5	3054.5	2406.0	True	True
+movie10	05	003	7	7	7	4221.17	3711.0	True	True
+movie10	05	004	3	3	3	1814.8199999999997	1725.0	False	True
+movie10	05	005	9	9	9	5444.459999999999	5019.0	True	True
+movie10	05	007	5	5	5	3212.4399999999996	3045.0	True	True
+movie10	05	008	5	5	5	3024.7	2736.0	True	True
+movie10	05	009	10	10	10	6009.17	5142.0	True	True
+movie10	05	010	12	12	12	7275.67	6177.0	True	True
+movie10	06	001	5	5	5	3054.5	1756.5	False	True
+movie10	06	002	6	6	6	3662.42	1992.0	True	True
+movie10	06	003	6	6	6	3611.7599999999998	1726.5	False	True
+movie10	06	004	2	2	2	1221.8	724.5	False	True
+movie10	06	005	8	8	8	4817.17	2415.0	True	True
+movie10	06	006	9	9	9	5413.17	3765.0	True	True
+movie10	06	007	4	4	4	2436.1499999999996	1407.0	False	True
+movie10	06	008	4	4	4	2388.47	1174.5	False	True
+movie10	06	009	8	8	8	4851.44	3177.0	True	True
+movie10	06	010	9	9	9	5602.4	3070.5	True	True
+multfs	01	001	7	7	7	1948.92	1942.5	True	True
+multfs	01	002	7	7	7	1948.92	1866.0	True	True
+multfs	01	003	7	7	7	1948.92	1797.0	False	True
+multfs	01	004	7	7	7	1948.92	1858.5	True	True
+multfs	01	005	7	7	0	1948.92	1962.0	True	True
+multfs	01	006	7	7	0	1948.92	1962.0	True	True
+multfs	01	007	7	7	0	1948.92	1962.0	True	True
+multfs	01	008	7	7	0	1948.92	1962.0	True	True
+multfs	01	009	7	7	0	1948.92	1962.0	True	True
+multfs	01	010	7	7	0	1948.92	1962.0	True	True
+multfs	01	011	7	7	0	1948.92	1962.0	True	True
+multfs	01	012	7	7	0	1948.92	1962.0	True	True
+multfs	01	013	7	7	0	1948.92	1962.0	True	True
+multfs	01	014	7	7	0	1948.92	1962.0	True	True
+multfs	01	015	7	7	0	1948.92	1962.0	True	True
+multfs	01	016	7	7	0	1948.92	1962.0	True	True
+multfs	02	000	4	0	0	1710.52		False	False
+multfs	02	001	7	7	7	1948.92	946.5	False	True
+multfs	02	002	7	7	7	1948.92	1128.0	False	True
+multfs	02	003	7	7	7	1948.92	1002.0	False	True
+multfs	02	004	7	7	7	1948.92	1000.5	False	True
+multfs	02	005	7	7	7	1948.92	1051.5	False	True
+multfs	02	006	7	7	7	1948.92	915.0	False	True
+multfs	02	007	7	7	7	1948.92	1081.5	False	True
+multfs	02	008	7	7	7	1948.92	1050.0	False	True
+multfs	02	009	7	7	7	1948.92	664.5	False	True
+multfs	02	010	7	7	0	1948.92	1962.0	True	True
+multfs	02	011	7	7	0	1948.92	1962.0	True	True
+multfs	02	012	7	7	0	1948.92	1962.0	True	True
+multfs	02	013	7	7	0	1948.92	1962.0	True	True
+multfs	02	014	7	7	0	1948.92	1962.0	True	True
+multfs	02	015	7	7	0	1948.92	1962.0	True	True
+multfs	02	016	7	7	0	1948.92	1962.0	True	True
+multfs	03	001	7	7	7	1957.8600000000001	1945.5	True	True
+multfs	03	002	7	7	7	1948.92	1903.5	True	True
+multfs	03	003	7	7	7	1948.92	1872.0	True	True
+multfs	03	004	7	7	7	1948.92	1864.5	True	True
+multfs	03	005	7	7	7	1948.92	1852.5	True	True
+multfs	03	006	7	7	7	1948.92	1912.5	True	True
+multfs	03	007	7	7	7	1948.92	1809.0	True	True
+multfs	03	008	7	7	7	1948.92	1846.5	True	True
+multfs	03	009	7	7	7	1948.92	1807.5	True	True
+multfs	03	010	7	7	7	1948.92	1759.5	False	True
+multfs	03	011	7	7	7	1948.92	1837.5	True	True
+multfs	03	012	7	7	7	1948.92	1761.0	False	True
+multfs	03	013	7	7	7	1948.92	1923.0	True	True
+multfs	03	014	7	7	7	1948.92	1855.5	True	True
+multfs	03	015	7	7	7	1948.92	1923.0	True	True
+multfs	03	016	7	7	7	1948.92	1867.5	True	True
+multfs	05	001	7	7	7	1948.92	1789.5	False	True
+multfs	05	002	7	7	7	1948.92	1543.5	False	True
+multfs	05	003	7	7	0	1948.92	1962.0	True	True
+multfs	05	004	7	7	0	1948.92	1962.0	True	True
+multfs	05	005	7	7	0	1948.92	1962.0	True	True
+multfs	05	006	7	7	0	1948.92	1962.0	True	True
+multfs	05	007	7	7	0	1948.92	1962.0	True	True
+multfs	05	008	7	7	0	1948.92	1962.0	True	True
+multfs	05	009	7	7	0	1948.92	1962.0	True	True
+multfs	05	010	7	7	0	1948.92	1962.0	True	True
+multfs	05	011	7	7	0	1948.92	1962.0	True	True
+multfs	05	012	7	7	0	1948.92	1962.0	True	True
+multfs	05	013	7	7	0	1948.92	1962.0	True	True
+multfs	05	014	7	7	0	1948.92	1962.0	True	True
+multfs	05	015	7	7	0	1948.92	1962.0	True	True
+multfs	05	016	7	7	0	1948.92	1962.0	True	True
+multfs	06	001	7	7	7	1948.92	1423.5	False	True
+multfs	06	002	7	7	7	1948.92	1456.5	False	True
+multfs	06	003	7	7	7	1948.92	1342.5	False	True
+multfs	06	004	7	7	7	1948.92	1414.5	False	True
+multfs	06	005	7	7	0	1948.92	1962.0	True	True
+multfs	06	006	7	7	7	1948.92	1212.0	False	True
+multfs	06	007	7	7	7	1948.92	1237.5	False	True
+multfs	06	008	7	7	7	1948.92	1159.5	False	True
+multfs	06	009	7	7	7	1948.92	1209.0	False	True
+multfs	06	010	7	7	7	1948.92	1123.5	False	True
+multfs	06	011	7	7	7	1948.92	1197.0	False	True
+multfs	06	012	7	7	7	1948.92	1378.5	False	True
+multfs	06	013	7	7	7	1948.92	1204.5	False	True
+multfs	06	014	7	7	7	1948.92	912.0	False	True
+multfs	06	015	7	7	7	1948.92	999.0	False	True
+multfs	06	016	7	7	7	1948.92	1143.0	False	True
+mutemusic	01	001	3	3	3	2011.5	1977.0	True	True
+mutemusic	01	002	3	3	3	1995.1100000000001	1987.5	True	True
+mutemusic	01	003	3	3	3	2001.07	1990.5	True	True
+mutemusic	01	004	3	2	3	1980.21	1291.5	False	True
+mutemusic	01	005	3	3	3	1999.58	1969.5	True	True
+mutemusic	01	006	3	3	3	1986.17	1969.5	True	True
+mutemusic	02	001	3	3	3	1971.27	1278.0	False	True
+mutemusic	02	002	6	6	6	4003.63	2065.5	True	True
+mutemusic	02	003	3	3	3	1954.88	888.0	False	True
+mutemusic	02	004	3	3	3	1968.29	1062.0	False	True
+mutemusic	02	005	3	3	3	1986.17	819.0	False	True
+mutemusic	03	001	6	5	6	3915.7200000000003	3199.5	True	True
+mutemusic	03	002	6	6	6	3920.19	3834.0	True	True
+mutemusic	03	003	6	6	6	3914.23	3756.0	True	True
+mutemusic	05	001	3	3	3	2020.44	1459.5	False	True
+mutemusic	05	002	6	4	6	4063.23	2142.0	True	True
+mutemusic	05	003	3	2	3	1685.19	823.5	False	True
+mutemusic	05	004	5	5	5	3044.0699999999997	2676.0	True	True
+mutemusic	05	005	2	2	2	1296.3	1077.0	False	True
+mutemusic	06	001	3	3	3	2059.18	1377.0	False	True
+mutemusic	06	002	6	5	6	3978.3	1623.0	False	True
+mutemusic	06	003	3	3	3	1998.0900000000001	1060.5	False	True
+mutemusic	06	004	6	5	6	3963.4	1527.0	False	True
+narratives	01	001	6	6	6	3453.8199999999997	2608.5	True	True
+narratives	01	002	6	6	6	2953.18	2520.0	True	True
+narratives	01	003	6	6	6	2862.29	2265.0	True	True
+narratives	01	004	6	6	6	3050.0299999999997	2601.0	True	True
+narratives	01	005	6	6	6	2929.34	2538.0	True	True
+narratives	01	006	6	6	6	3212.44	2503.5	True	True
+narratives	01	007	6	6	6	3188.6	2572.5	True	True
+narratives	01	008	8	8	0	3872.51	3898.5	True	True
+narratives	01	009	6	6	6	2772.89	2449.5	True	True
+narratives	01	010	8	8	0	3909.76	3936.0	True	True
+narratives	01	011	6	6	6	3103.67	2607.0	True	True
+narratives	01	012	8	8	0	4194.35	4222.5	True	True
+narratives	02	001	6	6	6	2007.03	1371.0	False	True
+narratives	02	002	6	6	6	2172.42	1578.0	False	True
+narratives	02	003	6	6	6	2226.06	1284.0	False	True
+narratives	02	004	6	6	6	2270.76	1690.5	False	True
+narratives	02	005	6	6	6	2214.14	1357.5	False	True
+narratives	02	006	6	6	6	2173.91	1051.5	False	True
+narratives	02	007	6	6	6	2193.2799999999997	1599.0	False	True
+narratives	02	008	8	8	8	3182.64	1969.5	True	True
+narratives	02	009	6	6	6	2193.2799999999997	1449.0	False	True
+narratives	02	010	8	8	8	3313.7599999999998	1750.5	False	True
+narratives	02	011	6	6	6	2212.65	1257.0	False	True
+narratives	02	012	8	8	8	3474.68	1651.5	False	True
+narratives	03	001	6	6	6	2322.91	1990.5	True	True
+narratives	03	002	6	6	6	2513.63	2070.0	True	True
+narratives	03	003	6	6	6	2561.31	2223.0	True	True
+narratives	03	004	6	6	6	2538.96	2110.5	True	True
+narratives	03	005	6	6	6	2501.71	2164.5	True	True
+narratives	03	006	6	6	6	2600.05	2095.5	True	True
+narratives	03	007	6	6	6	2835.47	2194.5	True	True
+narratives	03	008	8	8	0	4090.05	4117.5	True	True
+narratives	03	009	6	6	6	2981.49	2100.0	True	True
+narratives	03	010	8	8	0	4176.47	4204.5	True	True
+narratives	03	011	6	6	6	3023.21	2292.0	True	True
+narratives	03	012	8	8	0	4186.9	4215.0	True	True
+narratives	05	001	6	6	6	2476.38	2107.5	True	True
+narratives	05	002	6	6	6	2044.2799999999997	1687.5	False	True
+narratives	05	003	6	6	6	2126.23	1770.0	False	True
+narratives	05	004	6	6	6	2313.97	1894.5	True	True
+narratives	05	005	6	6	6	2106.8599999999997	1662.0	False	True
+narratives	05	006	6	6	6	2494.26	1867.5	True	True
+narratives	05	007	5	5	5	2053.22	1519.5	False	True
+narratives	05	008	8	8	8	3400.18	2349.0	True	True
+narratives	05	009	6	6	6	2658.16	1953.0	True	True
+narratives	05	010	8	8	8	3343.56	2217.0	True	True
+narratives	05	011	6	6	6	2720.74	1986.0	True	True
+narratives	05	012	8	8	8	3656.46	2916.0	True	True
+narratives	06	001	6	6	6	2629.85	1585.5	False	True
+narratives	06	002	6	6	6	3213.93	1548.0	False	True
+narratives	06	003	6	6	6	2832.49	1605.0	False	True
+narratives	06	004	6	6	6	2993.41	1878.0	True	True
+narratives	06	005	6	6	6	2814.61	1426.5	False	True
+narratives	06	006	6	6	6	2863.7799999999997	1695.0	False	True
+narratives	06	007	6	6	6	3388.2599999999998	2236.5	True	True
+narratives	06	008	8	8	0	4012.57	4039.5	True	True
+narratives	06	009	6	6	6	2948.71	1600.5	False	True
+narratives	06	010	8	8	8	3792.05	2040.0	True	True
+narratives	06	011	6	6	6	2999.37	1648.5	False	True
+narratives	06	012	8	8	0	3827.81	3853.5	True	True
+ood	01	001	6	0	6	3790.56		False	False
+ood	01	002	6	0	6	3537.26		False	False
+ood	02	001	6	0	6	3790.56		False	False
+ood	02	002	6	0	6	3537.26		False	False
+ood	03	001	6	0	6	3790.56		False	False
+ood	03	002	6	0	6	3537.26		False	False
+ood	05	001	4	0	4	2512.14		False	False
+ood	05	002	8	0	8	4815.68		False	False
+petit-prince	01	001	6	6	6	3996.1800000000003	3594.0	True	True
+petit-prince	01	002	6	6	6	3800.99	3562.5	True	True
+petit-prince	01	003	6	6	6	3821.85	3651.0	True	True
+petit-prince	02	001	6	6	6	3996.1800000000003	2938.5	True	True
+petit-prince	02	002	6	6	6	3800.99	2266.5	True	True
+petit-prince	02	003	6	6	6	3821.85	2205.0	True	True
+petit-prince	03	001	6	6	6	3689.24	3679.5	True	True
+petit-prince	03	002	6	6	6	3985.75	3876.0	True	True
+petit-prince	03	003	6	6	6	3944.0299999999997	3847.5	True	True
+petit-prince	05	001	6	6	6	3689.24	3019.5	True	True
+petit-prince	05	002	6	6	6	3985.75	3040.5	True	True
+petit-prince	05	003	6	6	6	3944.0299999999997	3081.0	True	True
+petit-prince	06	001	5	5	5	2997.88	1653.0	False	True
+petit-prince	06	002	6	6	6	3961.91	2257.5	True	True
+petit-prince	06	003	5	5	5	3382.3	1972.5	True	True
+retinotopy	01	001	3	3	3	902.94	738.0	False	True
+retinotopy	01	002	3	3	3	902.94	538.5	False	True
+retinotopy	01	003	3	3	3	902.94	610.5	False	True
+retinotopy	01	004	3	3	3	902.94	601.5	False	True
+retinotopy	01	005	3	3	3	902.94	645.0	False	True
+retinotopy	01	006	3	3	3	902.94	694.5	False	True
+retinotopy	02	001	3	3	3	902.94	715.5	False	True
+retinotopy	02	002	3	3	3	902.94	562.5	False	True
+retinotopy	02	003	3	3	3	902.94	522.0	False	True
+retinotopy	02	004	3	3	3	902.94	532.5	False	True
+retinotopy	02	005	3	3	3	902.94	472.5	False	True
+retinotopy	02	006	3	3	3	902.94	489.0	False	True
+retinotopy	03	002	3	3	3	902.94	903.0	False	True
+retinotopy	03	003	3	3	3	902.94	909.0	False	True
+retinotopy	03	004	3	3	3	902.94	906.0	False	True
+retinotopy	03	005	3	3	3	902.94	861.0	False	True
+retinotopy	03	006	3	3	3	902.94	892.5	False	True
+retinotopy	05	001	3	3	3	902.94	667.5	False	True
+retinotopy	05	002	1	1	1	300.98	259.5	False	True
+retinotopy	05	003	3	3	3	902.94	829.5	False	True
+retinotopy	05	004	3	3	3	902.94	883.5	False	True
+retinotopy	05	005	3	3	3	902.94	727.5	False	True
+retinotopy	05	006	3	3	3	902.94	831.0	False	True
+shinobi	01	002	4	4	4	2573.23	2091.0	True	True
+shinobi	01	003	4	4	4	2558.33	2263.5	True	True
+shinobi	01	004	5	5	5	3227.34	2931.0	True	True
+shinobi	01	005	4	4	4	2705.84	2460.0	True	True
+shinobi	01	006	5	5	5	3427.0	3169.5	True	True
+shinobi	01	007	5	5	5	3301.84	2854.5	True	True
+shinobi	01	008	5	5	5	3260.12	3142.5	True	True
+shinobi	01	009	4	4	4	2698.39	2409.0	True	True
+shinobi	01	010	3	3	3	2075.5699999999997	1719.0	False	True
+shinobi	01	011	4	4	4	2679.02	2301.0	True	True
+shinobi	01	012	4	4	4	2842.92	2607.0	True	True
+shinobi	01	013	6	6	6	3941.05	3181.5	True	True
+shinobi	02	002	5	5	5	3425.51	2104.5	True	True
+shinobi	02	005	2	2	2	1293.32	846.0	False	True
+shinobi	02	006	3	3	3	2196.26	1465.5	False	True
+shinobi	02	007	5	5	5	3520.87	2169.0	True	True
+shinobi	02	008	5	5	5	3316.7400000000002	1996.5	True	True
+shinobi	02	009	4	4	4	2886.13	2080.5	True	True
+shinobi	02	010	6	6	6	4161.57	2746.5	True	True
+shinobi	02	011	6	6	6	4124.32	2722.5	True	True
+shinobi	02	012	5	5	5	3364.42	1854.0	True	True
+shinobi	02	013	5	5	5	3467.23	1900.5	True	True
+shinobi	02	014	4	4	4	2679.02	1455.0	False	True
+shinobi	02	015	5	5	5	3307.8	1951.5	True	True
+shinobi	04	001	5	5	5	3511.93	3453.0	True	True
+shinobi	04	002	5	5	5	3638.58	3580.5	True	True
+shinobi	04	003	5	5	5	3361.44	3306.0	True	True
+shinobi	04	004	5	5	5	3842.71	3612.0	True	True
+shinobi	04	005	5	5	5	3498.52	3468.0	True	True
+shinobi	04	006	5	5	5	3356.9700000000003	3294.0	True	True
+shinobi	04	007	5	5	0	3386.77	3409.5	True	True
+shinobi	04	008	5	5	5	3455.31	3328.5	True	True
+shinobi	04	009	5	5	5	3486.6000000000004	3282.0	True	True
+shinobi	04	010	5	5	5	3276.5099999999998	2674.5	True	True
+shinobi	04	011	5	5	5	3516.4	3387.0	True	True
+shinobi	06	001	4	4	4	2968.08	1117.5	False	True
+shinobi	06	003	4	4	4	2904.01	1401.0	False	True
+shinobi	06	004	4	4	4	2997.88	1395.0	False	True
+shinobi	06	005	4	4	4	2994.9	1333.5	False	True
+shinobi	06	006	4	4	4	2842.92	1372.5	False	True
+shinobi	06	007	4	4	4	3164.76	1366.5	False	True
+shinobi	06	008	5	5	5	3541.73	1485.0	False	True
+shinobi	06	009	5	5	5	3555.14	1639.5	False	True
+shinobi	06	010	4	4	4	2889.11	1221.0	False	True
+shinobi	06	011	5	5	5	3541.73	1777.5	False	True
+shinobi	06	012	4	4	4	2939.77	1584.0	False	True
+shinobi	06	013	5	5	5	3634.11	1845.0	True	True
+things	01	01	3	3	3	849.3000000000001	709.5	False	True
+things	01	02	6	6	6	1698.6000000000001	1525.5	False	True
+things	01	03	6	6	6	1698.6000000000001	1471.5	False	True
+things	01	04	6	6	6	1698.6000000000001	1524.0	False	True
+things	01	05	6	6	6	1698.6000000000001	1530.0	False	True
+things	01	06	6	6	6	1698.6000000000001	1537.5	False	True
+things	01	07	6	6	6	1698.6000000000001	1390.5	False	True
+things	01	08	6	6	6	1698.6000000000001	1303.5	False	True
+things	01	09	6	6	6	1698.6000000000001	1059.0	False	True
+things	01	10	6	6	6	1698.6000000000001	1206.0	False	True
+things	01	11	6	6	6	1698.6000000000001	1300.5	False	True
+things	01	12	6	6	6	1698.6000000000001	931.5	False	True
+things	01	13	6	6	6	1698.6000000000001	1036.5	False	True
+things	01	14	6	6	6	1698.6000000000001	1317.0	False	True
+things	01	15	6	6	6	1698.6000000000001	1204.5	False	True
+things	01	16	6	6	6	1698.6000000000001	1350.0	False	True
+things	01	17	6	6	6	1698.6000000000001	1120.5	False	True
+things	01	18	6	6	6	1698.6000000000001	1608.0	False	True
+things	01	19	6	6	6	1698.6000000000001	1387.5	False	True
+things	01	20	6	6	6	1698.6000000000001	1447.5	False	True
+things	01	21	6	6	6	1698.6000000000001	1465.5	False	True
+things	01	22	6	6	6	1698.6000000000001	1348.5	False	True
+things	01	23	6	6	6	1698.6000000000001	1284.0	False	True
+things	01	24	6	6	6	1698.6000000000001	1488.0	False	True
+things	01	25	6	6	6	1698.6000000000001	1399.5	False	True
+things	01	26	6	6	6	1698.6000000000001	1434.0	False	True
+things	01	27	6	6	6	1698.6000000000001	1573.5	False	True
+things	01	28	6	6	6	1698.6000000000001	1579.5	False	True
+things	01	29	6	6	6	1698.6000000000001	1183.5	False	True
+things	01	30	6	6	6	1698.6000000000001	1513.5	False	True
+things	01	31	6	6	6	1698.6000000000001	1587.0	False	True
+things	01	32	6	6	6	1698.6000000000001	1290.0	False	True
+things	01	33	6	6	6	1698.6000000000001	1332.0	False	True
+things	01	34	6	6	6	1698.6000000000001	1249.5	False	True
+things	01	35	6	6	6	1698.6000000000001	1246.5	False	True
+things	01	36	6	6	6	1698.6000000000001	1278.0	False	True
+things	02	01	3	3	3	849.3000000000001	778.5	False	True
+things	02	02	6	6	6	1698.6000000000001	1345.5	False	True
+things	02	03	6	6	6	1698.6000000000001	1141.5	False	True
+things	02	04	6	6	6	1698.6000000000001	1162.5	False	True
+things	02	05	6	6	6	1698.6000000000001	1182.0	False	True
+things	02	06	6	6	6	1698.6000000000001	1249.5	False	True
+things	02	07	6	6	6	1698.6000000000001	1054.5	False	True
+things	02	08	6	6	6	1698.6000000000001	1201.5	False	True
+things	02	09	6	6	6	1698.6000000000001	1213.5	False	True
+things	02	10	6	6	6	1698.6000000000001	1237.5	False	True
+things	02	11	6	6	6	1698.6000000000001	1099.5	False	True
+things	02	12	6	6	6	1698.6000000000001	1224.0	False	True
+things	02	13	6	6	6	1698.6000000000001	1011.0	False	True
+things	02	14	6	6	6	1698.6000000000001	1030.5	False	True
+things	02	15	6	6	6	1698.6000000000001	1053.0	False	True
+things	02	16	6	6	6	1698.6000000000001	1018.5	False	True
+things	02	17	6	6	6	1698.6000000000001	937.5	False	True
+things	02	18	6	6	6	1698.6000000000001	1065.0	False	True
+things	02	19	6	6	6	1698.6000000000001	1140.0	False	True
+things	02	20	6	6	6	1698.6000000000001	1120.5	False	True
+things	02	21	6	6	6	1698.6000000000001	1089.0	False	True
+things	02	22	6	6	6	1698.6000000000001	979.5	False	True
+things	02	23	6	6	6	1698.6000000000001	1050.0	False	True
+things	02	24	6	6	6	1698.6000000000001	1122.0	False	True
+things	02	25	6	6	6	1698.6000000000001	964.5	False	True
+things	02	26	6	6	6	1698.6000000000001	967.5	False	True
+things	02	27	6	6	6	1698.6000000000001	928.5	False	True
+things	02	28	6	6	6	1698.6000000000001	1081.5	False	True
+things	02	29	6	6	6	1698.6000000000001	1153.5	False	True
+things	02	30	6	6	6	1698.6000000000001	1182.0	False	True
+things	02	31	6	6	6	1698.6000000000001	1120.5	False	True
+things	02	32	6	6	6	1698.6000000000001	1102.5	False	True
+things	02	33	6	6	6	1698.6000000000001	1135.5	False	True
+things	02	34	6	6	6	1698.6000000000001	1132.5	False	True
+things	02	35	6	6	6	1698.6000000000001	990.0	False	True
+things	02	36	6	6	6	1698.6000000000001	997.5	False	True
+things	03	01	3	3	3	849.3000000000001	853.5	False	True
+things	03	02	6	6	6	1698.6000000000001	1686.0	False	True
+things	03	03	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	04	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	05	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	06	6	6	6	1698.6000000000001	1707.0	False	True
+things	03	07	6	6	6	1698.6000000000001	1701.0	False	True
+things	03	08	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	09	6	6	6	1698.6000000000001	1707.0	False	True
+things	03	10	6	6	6	1698.6000000000001	1695.0	False	True
+things	03	11	6	6	6	1698.6000000000001	1705.5	False	True
+things	03	12	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	13	6	6	6	1698.6000000000001	1705.5	False	True
+things	03	14	6	6	6	1698.6000000000001	1702.5	False	True
+things	03	15	6	6	6	1698.6000000000001	1698.0	False	True
+things	03	16	6	6	6	1698.6000000000001	1705.5	False	True
+things	03	17	6	6	6	1698.6000000000001	1705.5	False	True
+things	03	18	6	6	6	1698.6000000000001	1701.0	False	True
+things	03	19	6	6	6	1698.6000000000001	1698.0	False	True
+things	03	20	6	6	6	1698.6000000000001	1687.5	False	True
+things	03	21	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	22	6	6	6	1698.6000000000001	1696.5	False	True
+things	03	23	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	24	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	25	6	6	6	1698.6000000000001	1702.5	False	True
+things	03	26	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	27	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	28	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	29	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	30	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	31	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	32	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	33	6	6	6	1698.6000000000001	1707.0	False	True
+things	03	34	6	6	6	1698.6000000000001	1708.5	False	True
+things	03	35	6	6	6	1698.6000000000001	1710.0	False	True
+things	03	36	6	6	6	1698.6000000000001	1705.5	False	True
+things	06	01	3	3	3	849.3000000000001	624.0	False	True
+things	06	02	6	6	6	1698.6000000000001	1195.5	False	True
+things	06	03	6	6	6	1698.6000000000001	1114.5	False	True
+things	06	04	6	6	6	1698.6000000000001	1279.5	False	True
+things	06	05	6	6	6	1698.6000000000001	1203.0	False	True
+things	06	06	6	6	6	1698.6000000000001	1320.0	False	True
+things	06	07	6	6	6	1698.6000000000001	1065.0	False	True
+things	06	08	6	5	6	1698.6000000000001	880.5	False	True
+things	06	09	6	6	6	1698.6000000000001	1048.5	False	True
+things	06	10	6	6	6	1698.6000000000001	1105.5	False	True
+things	06	11	6	6	6	1698.6000000000001	1176.0	False	True
+things	06	12	6	6	6	1698.6000000000001	1056.0	False	True
+things	06	13	6	6	6	1698.6000000000001	1342.5	False	True
+things	06	14	6	6	6	1698.6000000000001	1239.0	False	True
+things	06	15	6	6	6	1698.6000000000001	886.5	False	True
+things	06	16	6	6	6	1698.6000000000001	1155.0	False	True
+things	06	17	6	6	6	1698.6000000000001	954.0	False	True
+things	06	18	6	6	6	1698.6000000000001	949.5	False	True
+things	06	19	6	6	6	1698.6000000000001	1210.5	False	True
+things	06	20	6	6	6	1698.6000000000001	1069.5	False	True
+things	06	21	6	6	6	1698.6000000000001	1167.0	False	True
+things	06	22	6	6	6	1698.6000000000001	1023.0	False	True
+things	06	23	6	6	6	1698.6000000000001	1104.0	False	True
+things	06	24	6	6	6	1698.6000000000001	1255.5	False	True
+things	06	25	6	6	6	1698.6000000000001	1197.0	False	True
+things	06	26	6	6	6	1698.6000000000001	1002.0	False	True
+things	06	27	6	6	6	1698.6000000000001	1149.0	False	True
+things	06	28	6	6	6	1698.6000000000001	1185.0	False	True
+things	06	29	6	6	6	1698.6000000000001	1315.5	False	True
+things	06	30	6	6	6	1698.6000000000001	949.5	False	True
+things	06	31	6	6	6	1698.6000000000001	1129.5	False	True
+things	06	32	6	6	6	1698.6000000000001	1257.0	False	True
+things	06	33	6	6	6	1698.6000000000001	1117.5	False	True
+triplets	01	001	3	3	3	987.8700000000001	963.0	False	True
+triplets	01	002	3	3	3	987.8700000000001	657.0	False	True
+triplets	01	003	3	3	3	987.8700000000001	835.5	False	True
+triplets	01	004	3	3	3	987.8700000000001	822.0	False	True
+triplets	01	005	3	3	3	987.8700000000001	912.0	False	True
+triplets	01	006	3	3	3	1108.56	1053.0	False	True
+triplets	01	007	3	3	3	1108.56	999.0	False	True
+triplets	01	008	3	3	3	1108.56	1087.5	False	True
+triplets	01	009	3	3	3	1108.56	895.5	False	True
+triplets	01	010	3	3	3	987.8700000000001	846.0	False	True
+triplets	01	011	3	3	3	987.8700000000001	712.5	False	True
+triplets	01	012	3	3	3	987.8700000000001	921.0	False	True
+triplets	01	013	3	3	3	987.8700000000001	777.0	False	True
+triplets	01	014	3	3	3	987.8700000000001	907.5	False	True
+triplets	01	015	3	3	3	1108.56	936.0	False	True
+triplets	01	016	3	0	3	1108.56		False	False
+triplets	01	017	3	3	3	1108.56	1005.0	False	True
+triplets	01	018	3	3	3	1108.56	1018.5	False	True
+triplets	01	019	3	3	3	987.8700000000001	745.5	False	True
+triplets	01	020	3	3	3	987.8700000000001	561.0	False	True
+triplets	01	021	3	3	3	987.8700000000001	565.5	False	True
+triplets	01	022	3	3	3	987.8700000000001	909.0	False	True
+triplets	01	023	3	3	3	987.8700000000001	811.5	False	True
+triplets	01	024	3	3	3	1108.56	1054.5	False	True
+triplets	01	025	3	3	3	1108.56	987.0	False	True
+triplets	01	026	3	3	3	1108.56	931.5	False	True
+triplets	01	027	3	3	3	1108.56	813.0	False	True
+triplets	02	001	3	3	3	987.8700000000001	765.0	False	True
+triplets	02	002	3	3	3	987.8700000000001	781.5	False	True
+triplets	02	003	3	3	3	987.8700000000001	633.0	False	True
+triplets	02	004	3	3	3	987.8700000000001	733.5	False	True
+triplets	02	005	3	3	3	987.8700000000001	687.0	False	True
+triplets	02	006	3	3	3	1108.56	892.5	False	True
+triplets	02	007	3	3	3	1108.56	787.5	False	True
+triplets	02	008	3	3	3	1108.56	699.0	False	True
+triplets	02	009	3	3	3	1108.56	642.0	False	True
+triplets	02	010	3	3	3	987.8700000000001	666.0	False	True
+triplets	02	011	3	3	3	987.8700000000001	624.0	False	True
+triplets	02	012	3	3	3	987.8700000000001	609.0	False	True
+triplets	02	013	3	3	3	987.8700000000001	547.5	False	True
+triplets	02	014	3	3	3	987.8700000000001	615.0	False	True
+triplets	02	015	3	3	3	1108.56	801.0	False	True
+triplets	02	016	3	3	3	1108.56	822.0	False	True
+triplets	02	017	3	3	3	1108.56	759.0	False	True
+triplets	02	018	3	3	3	1108.56	820.5	False	True
+triplets	02	019	3	3	3	987.8700000000001	618.0	False	True
+triplets	02	020	3	3	3	987.8700000000001	666.0	False	True
+triplets	02	021	3	3	3	987.8700000000001	738.0	False	True
+triplets	02	022	3	3	3	987.8700000000001	621.0	False	True
+triplets	02	023	3	3	3	987.8700000000001	618.0	False	True
+triplets	02	024	3	3	3	1108.56	706.5	False	True
+triplets	02	025	3	3	3	1108.56	681.0	False	True
+triplets	02	026	3	3	3	1108.56	595.5	False	True
+triplets	02	027	3	3	3	1108.56	477.0	False	True
+triplets	03	001	3	3	3	961.0500000000001	961.5	False	True
+triplets	03	002	3	0	3	995.32	1033.5	False	True
+triplets	03	003	3	3	3	987.8700000000001	994.5	False	True
+triplets	03	004	3	3	3	987.8700000000001	994.5	False	True
+triplets	03	005	3	3	3	987.8700000000001	979.5	False	True
+triplets	03	006	3	3	3	1108.56	1116.0	False	True
+triplets	03	007	3	3	3	1108.56	1116.0	False	True
+triplets	03	008	3	3	3	1108.56	1111.5	False	True
+triplets	03	009	3	3	3	1108.56	1111.5	False	True
+triplets	03	010	3	3	3	987.8700000000001	994.5	False	True
+triplets	03	011	3	3	3	987.8700000000001	993.0	False	True
+triplets	03	012	3	3	3	987.8700000000001	993.0	False	True
+triplets	03	013	3	2	3	998.3	988.5	False	True
+triplets	03	014	3	3	3	987.8700000000001	979.5	False	True
+triplets	03	015	3	3	3	1108.56	1116.0	False	True
+triplets	03	016	3	3	3	1108.56	1111.5	False	True
+triplets	03	017	3	3	3	1108.56	1111.5	False	True
+triplets	03	018	3	3	3	1108.56	1114.5	False	True
+triplets	03	019	3	3	3	987.8700000000001	991.5	False	True
+triplets	03	020	3	3	3	987.8700000000001	994.5	False	True
+triplets	03	021	3	3	3	987.8700000000001	990.0	False	True
+triplets	03	022	3	3	3	987.8700000000001	966.0	False	True
+triplets	03	023	3	3	3	987.8700000000001	990.0	False	True
+triplets	03	024	3	3	3	1108.56	1111.5	False	True
+triplets	03	025	3	3	3	1108.56	1116.0	False	True
+triplets	03	026	3	3	3	1108.56	1111.5	False	True
+triplets	03	027	3	3	3	1108.56	1113.0	False	True
+triplets	06	001	3	2	3	996.8100000000001	817.5	False	True
+triplets	06	002	3	3	3	987.8700000000001	699.0	False	True
+triplets	06	003	3	3	3	987.8700000000001	651.0	False	True
+triplets	06	004	3	3	3	987.8700000000001	636.0	False	True
+triplets	06	005	3	3	3	987.8700000000001	697.5	False	True
+triplets	06	006	3	0	3	1108.56		False	False
+triplets	06	007	3	0	3	1108.56		False	False
+triplets	06	008	3	3	3	1108.56	762.0	False	True
+triplets	06	009	3	3	3	1108.56	777.0	False	True
+triplets	06	010	3	3	3	987.8700000000001	685.5	False	True
+triplets	06	011	3	3	3	987.8700000000001	765.0	False	True
+triplets	06	012	3	3	3	987.8700000000001	724.5	False	True
+triplets	06	013	3	3	3	987.8700000000001	706.5	False	True
+triplets	06	014	3	3	3	987.8700000000001	732.0	False	True
+triplets	06	015	3	3	3	1108.56	726.0	False	True
+triplets	06	016	3	3	3	1108.56	765.0	False	True
+triplets	06	017	3	3	3	1108.56	904.5	False	True
+triplets	06	018	3	3	3	1108.56	925.5	False	True
+triplets	06	019	3	3	3	987.8700000000001	693.0	False	True
+triplets	06	020	3	3	3	987.8700000000001	633.0	False	True
+triplets	06	021	3	3	3	987.8700000000001	633.0	False	True
+triplets	06	022	3	3	3	987.8700000000001	631.5	False	True
+triplets	06	023	3	3	3	987.8700000000001	772.5	False	True
+triplets	06	024	3	3	3	1108.56	918.0	False	True
+triplets	06	025	3	3	3	1108.56	687.0	False	True
+triplets	06	026	3	3	3	1108.56	774.0	False	True
+triplets	06	027	3	3	3	1108.56	882.0	False	True

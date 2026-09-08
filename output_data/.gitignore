@@ -2,6 +2,13 @@
 *.tsv
 *.h5
 
+# The asset coverage inventory is the deliberate exception to the "no tables"
+# rule above: five small TSVs (~510 kB total) that say what has been acquired
+# vs. what the pipeline consumed. They are infrastructure, not results — worth
+# having in history so asset drift (a dataset appearing, content going missing
+# upstream) is visible as a diff rather than only on the machine that ran it.
+!inventory/*.tsv
+
 # Figures are the deliberate exception to "no binaries" below: small
 # (~1.2 MB total), genuinely useful to diff/review across pipeline runs, and
 # the actual scientific output of this project. Tracked, not ignored.

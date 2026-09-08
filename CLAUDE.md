@@ -488,7 +488,19 @@ pipeline's actual figures — are tracked (`!*.png` in `output_data/.gitignore`)
 Small enough in aggregate (~1.2 MB) to stay well under the size check below,
 and worth having in history to see how a change moved the result. A
 multi-megabyte figure or a NIfTI volume is still a no — this exception is
-scoped to these two small, curated locations, not "images in general." When a
+scoped to these two small, curated locations, not "images in general."
+
+**Second exception, also at the user's request:** the five
+`output_data/inventory/*.tsv` tables (`!inventory/*.tsv`, ~510 kB total). They
+are infrastructure rather than results — a record of what has been acquired
+against what the pipeline consumed — and their value is longitudinal: asset
+drift (a dataset appearing, content going missing upstream, a QC table
+filling in) becomes a reviewable diff instead of a fact known only to the
+machine that last ran `run-inventory`. `inventory_dashboard.html` stays
+ignored: it is fully derived from those five tables, re-rendered on every run,
+and would churn without adding anything the TSVs do not already carry.
+
+When a
 project does start tracking outputs, keep a **guard line** in the folder's
 `.gitignore` for the file types that must never be committed there, even if
 nothing currently produces them:

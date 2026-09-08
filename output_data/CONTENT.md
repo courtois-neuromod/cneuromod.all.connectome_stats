@@ -185,13 +185,18 @@ Once the pipeline is run, this folder will contain the following.
   `analysis/asset_inventory.py`. **Infrastructure, not an analysis tier**: it
   makes no scientific claim and feeds no figure — it answers "what has been
   acquired vs. what this pipeline consumed" across raw BIDS, timeseries `.h5`,
-  qa_figures QC and this project's own connectome outputs.
+  qa_figures QC and this project's own connectome outputs. **The five TSVs
+  below are tracked in git** — the deliberate exception to the "no tables"
+  rule in `output_data/.gitignore`: ~510 kB in total, and worth having in
+  history so asset drift (a dataset appearing, content going missing
+  upstream) shows up as a reviewable diff rather than only on the machine
+  that ran the step. The dashboard beside them is not (see below).
   - `run_inventory.tsv` *(sentinel)* — one row per unique raw BIDS run:
     `dataset, subject, session, task, run, n_volumes, tr_seconds,
     duration_sec, in_timeseries, in_qc, match_level`. `tr_seconds` is read
     from each run's own sidecar, not assumed from config — raw sidecars
     report 1.49s where `invoke.yaml`'s `tr_seconds` says 1.5s (CLAUDE.md,
-    "One thing flagged, not settled"). `match_level` is `exact`, `no_run`,
+    "One thing this table caught and settled"). `match_level` is `exact`, `no_run`,
     `no_session` or `unmatched` — which tier resolved the join against the
     timeseries side (CLAUDE.md has the three-tier hazard list in full).
     `n_volumes`/`tr_seconds`/`duration_sec` are blank when `--skip-durations`

@@ -175,6 +175,8 @@ verify:
     - courtois-neuromod/*.timeseries
     - origin/main
     - .tsv
+    # A gitignore negation pattern quoted in CLAUDE.md, not a path.
+    - "!inventory/*.tsv"
     # Per-environment cache of content this machine could not retrieve, written
     # by fetch-timeseries. Never committed (see source_data/.gitignore).
     - .fetch_failures.json
