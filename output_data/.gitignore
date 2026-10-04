@@ -9,6 +9,19 @@
 # upstream) is visible as a diff rather than only on the machine that ran it.
 !inventory/*.tsv
 
+# Second exception, at the user's request: the eight group_stats tables the
+# figure caption (connectome_figure_caption.md) quotes its numbers from (~375 kB
+# total). Small, aggregate (medians per bin/network/lag/subject, no
+# per-session rows), and needed to write and re-check the paper text.
+!group_stats/session_gate.tsv
+!group_stats/cross_context.tsv
+!group_stats/duration_balance.tsv
+!group_stats/longitudinal_lag.tsv
+!group_stats/longitudinal_lag_subject.tsv
+!group_stats/network_quality.tsv
+!group_stats/domain_cross_context.tsv
+!group_stats/domain_duration_balance.tsv
+
 # Figures are the deliberate exception to "no binaries" below: small
 # (~1.2 MB total), genuinely useful to diff/review across pipeline runs, and
 # the actual scientific output of this project. Tracked, not ignored.

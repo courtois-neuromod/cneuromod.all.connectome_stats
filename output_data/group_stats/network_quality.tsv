@@ -1,0 +1,10 @@
+network	median_tsnr	n_tsnr	datasets	within_subject_median_cross_context	n_edges_valid	n_edges_total	within_subject_median_longitudinal
+Vis	34.000734643844346	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9463089183868028	13041	13041	0.9562263565623528
+SomMot	39.53826367394242	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9104872639696001	18721	18721	0.9241796820298787
+DorsAttn	42.51481358532933	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9432055557767188	7381	7381	0.9520812316186639
+SalVentAttn	39.54633462589134	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9194127549036182	7260	7260	0.9354791175993529
+Limbic	17.34195276804068	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.856603921810451	1770	1770	0.8780679311784838
+Cont	39.830389270934944	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9388609350612888	8128	8128	0.951309376392926
+Default	37.531367394239055	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9406994122355855	21736	21736	0.9514029372535348
+cerebellum	29.087619828416667	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.9337062832228341	3828	3828	0.9424767540272521
+subcortex	27.263511797638913	809	floc,friends,gamepad,hcptrt,langlocalizer,mario,movie10,mutemusic,narratives,retinotopy,things	0.8961283722196115	1225	1225	0.9053955270890766

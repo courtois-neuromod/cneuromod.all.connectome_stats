@@ -1,0 +1,21 @@
+gate	bin	n_pairs	median_min_duration_sec	q25	q75	n_sessions
+all	within-subject / within-dataset	16776	1956.3699999999997	1221.8	2674.9224999999997	1128
+all	within-subject / between-dataset	101194	1203.9200000000003	855.2600000000001	1881.8700000000001	1128
+all	between-subject / within-dataset	72455	2054.7099999999996	1269.48	2676.04	1128
+all	between-subject / between-dataset	445203	1241.1699999999998	889.53	1948.9200000000003	1128
+gated	within-subject / within-dataset	9401	2628.3599999999997	2233.5099999999998	2775.8700000000003	650
+gated	within-subject / between-dataset	27667	2248.41	1948.9200000000003	2689.4500000000003	650
+gated	between-subject / within-dataset	43546	2595.58	2205.2	2786.3	650
+gated	between-subject / between-dataset	130311	2267.7799999999997	1948.9200000000003	2711.8	650
+qc_covered	within-subject / within-dataset	8016	2635.81	2294.6000000000004	2775.8699999999994	496
+qc_covered	within-subject / between-dataset	13533	2294.6	1972.7599999999998	2686.4700000000003	496
+qc_covered	between-subject / within-dataset	37986	2595.58	2281.19	2789.28	496
+qc_covered	between-subject / between-dataset	63225	2276.7200000000003	1972.7599999999998	2652.2	496
+low_motion	within-subject / within-dataset	1997	2687.96	2382.51	2784.81	241
+low_motion	within-subject / between-dataset	3029	2392.94	1978.72	2726.7000000000003	241
+low_motion	between-subject / within-dataset	9692	2637.2999999999997	2327.38	2813.1200000000003	241
+low_motion	between-subject / between-dataset	14202	2392.94	1983.1899999999998	2717.7599999999998	241
+high_tsnr	within-subject / within-dataset	1886	2626.8700000000003	2294.6000000000004	2760.9700000000003	227
+high_tsnr	within-subject / between-dataset	2591	2428.7	1978.72	2726.7000000000003	227
+high_tsnr	between-subject / within-dataset	9161	2535.98	2269.27	2757.9900000000002	227
+high_tsnr	between-subject / between-dataset	12013	2378.04	1983.1899999999998	2714.7799999999997	227

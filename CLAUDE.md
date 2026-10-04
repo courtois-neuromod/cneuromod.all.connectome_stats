@@ -525,6 +525,14 @@ machine that last ran `run-inventory`. `inventory_dashboard.html` stays
 ignored: it is fully derived from those five tables, re-rendered on every run,
 and would churn without adding anything the TSVs do not already carry.
 
+**Third exception, also at the user's request:** eight aggregate
+`output_data/group_stats/*.tsv` tables (`session_gate`, `cross_context`,
+`duration_balance`, `longitudinal_lag`, `longitudinal_lag_subject`,
+`network_quality`, `domain_cross_context`, `domain_duration_balance`, ~375 kB),
+the ones `output_data/connectome_figure_caption.md` quotes its numbers from,
+kept to write and re-check the paper. Listed by name in `output_data/.gitignore`;
+the other `group_stats` tables stay ignored.
+
 When a
 project does start tracking outputs, keep a **guard line** in the folder's
 `.gitignore` for the file types that must never be committed there, even if

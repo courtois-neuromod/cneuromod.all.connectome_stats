@@ -337,5 +337,9 @@ hand-authored source, not a generated output; `PROVENANCE.json` is small and is
 the record of where the untracked results came from (it changes on every run,
 by design); and the figures are the pipeline's actual visual output, small
 enough in aggregate (~1.2 MB) to track and review across pipeline changes
-(CLAUDE.md, "Where data lives"). `panel_sizes.json` stays untracked — it is
+(CLAUDE.md, "Where data lives"). Eight aggregate `group_stats/*.tsv` tables
+(`session_gate`, `cross_context`, `duration_balance`, `longitudinal_lag`,
+`longitudinal_lag_subject`, `network_quality`, `domain_cross_context`,
+`domain_duration_balance`) are also tracked, since `connectome_figure_caption.md`
+quotes its numbers from them. `panel_sizes.json` stays untracked — it is
 fully derived from the tracked `connectome_figure.svg` and regenerated on every run.
