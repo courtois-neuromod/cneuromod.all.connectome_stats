@@ -241,7 +241,7 @@ Once the pipeline is run, this folder will contain the following.
   `NETWORK_COLORS` entry and named beside it, spanning the full page height
   down the left edge, stacked in decreasing panel-A stability (mean gated
   within-subject median similarity over season lags) so the key doubles as a
-  ranking — only this panel is reordered; the rest keep `NETWORK_ORDER`.
+  ranking — the bar panels B, D, E and F share this order; panels A and C keep `NETWORK_ORDER`.
   Every other panel inherits those colours (panel A's
   lines, panel C's points and labels, the bar panels' x-tick bubbles), which is
   why none of them repeats a nine-network legend. Drawn from the MNI group

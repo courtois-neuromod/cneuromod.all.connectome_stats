@@ -41,8 +41,8 @@
   },
   "outputs": {
     "connectome_figure.png": {
-      "sha256": "35daca85afb7aca9b3871234fe0a2d5bfbd1c54e8e47763df4026b54c6640afa",
-      "size_bytes": 869345
+      "sha256": "b1d255785af7b6a4cbaf7ee7daed254dd131035293ca5016203c914593dec004",
+      "size_bytes": 869486
     },
     "connectome_figure.svg": {
       "sha256": "168898d1e26b0f32e1f9a0acdf0608c60603c94fee7e1e19e1fa43f584e02638",
@@ -117,8 +117,8 @@
       "size_bytes": 71935956
     },
     "figures/figure_connectomes/cross_context.png": {
-      "sha256": "225c228ea2ca7776cd7be6fe54fceaa050f07774c9be67d8ff62d6234fbb3715",
-      "size_bytes": 42021
+      "sha256": "89d56a87ca93f14644cb7e1072f5c1ddf380483a04f8816bf231223483fee018",
+      "size_bytes": 42009
     },
     "figures/figure_connectomes/cross_context_legend.png": {
       "sha256": "c0cbe8940c13a2b300ac782f930395733f2180ab66f18b7596f2fe677e2cc416",
@@ -129,24 +129,24 @@
       "size_bytes": 216506
     },
     "figures/figure_connectomes/domain_movies.png": {
-      "sha256": "a0ffe43e8a256fc218e15f23fa1b38b5dbbb46783dbd4ee6b75ba43e148abbb5",
-      "size_bytes": 42963
+      "sha256": "f9d05ee1c6a1799738d1df79079aa9037cc82497c6ed2817bd65d021df3b688d",
+      "size_bytes": 42986
     },
     "figures/figure_connectomes/domain_movies_legend.png": {
       "sha256": "c36b9e4e83614c37c79980c003e7c6fb5497182e5977ba266122ba6e842a0e66",
       "size_bytes": 19725
     },
     "figures/figure_connectomes/domain_stories.png": {
-      "sha256": "ff4de35789f393a3e2056467cd7fd25fc20842d2ad15df5a986dddba4d8447db",
-      "size_bytes": 42214
+      "sha256": "044f8e5999d4e726de739018b432d76eff19b002650193995c79b969b1850535",
+      "size_bytes": 42190
     },
     "figures/figure_connectomes/domain_stories_legend.png": {
       "sha256": "d65c5b42613d19be4993ad883305b1ff122c062fb5da7a3a09e25e54a0bae5c6",
       "size_bytes": 26544
     },
     "figures/figure_connectomes/domain_videogames.png": {
-      "sha256": "859a9e420b4caa7d334a4039d15e91be8da8610956b1f3368d338fa949f6c2ca",
-      "size_bytes": 42180
+      "sha256": "89233088514ab792b08db3f260a4144647e70eef4f2ac5dcc103cb84435eb444",
+      "size_bytes": 42165
     },
     "figures/figure_connectomes/domain_videogames_legend.png": {
       "sha256": "d65c5b42613d19be4993ad883305b1ff122c062fb5da7a3a09e25e54a0bae5c6",
@@ -253,7 +253,7 @@
       "size_bytes": 874
     },
     "inventory/inventory_dashboard.html": {
-      "sha256": "5d019cfcda4027e62d936cb09c03f3970c2340fded1e1b29e60c6e238af4decb",
+      "sha256": "f24d8f7ee6ec65d6d55ee028b0e1c3cf3e0c32335f15af0348829eb62cfc6b19",
       "size_bytes": 17735
     },
     "inventory/inventory_gaps.tsv": {
@@ -313,10 +313,10 @@
       "size_bytes": 33953
     }
   },
-  "recorded_at": "2026-10-04T20:23:57+00:00",
+  "recorded_at": "2026-10-04T20:33:30+00:00",
   "repository": {
     "branch": "main",
-    "commit": "8f3eb1a0ea6ce1d57626fe8b9efa546a20d69cc5",
+    "commit": "ae162b5c5ab9baea9b2f1c04f3dfdb83e4f0bcaa",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/git/cneuromod.all.connectome_stats"

@@ -457,9 +457,12 @@ of 2026-10-04) — so the key doubles as a ranking of which networks carry the
 most stable connectomes. `stability_ordered_networks()` in
 `figure_connectomes.ipynb` derives it from `longitudinal_lag.tsv`, falling back
 to `NETWORK_ORDER` if that table is empty and sorting any network friends does
-not cover to the end. **Only panel G is reordered.** Every other panel keeps
-`NETWORK_ORDER`, whose fixed anatomical grouping is what lets a reader compare
-the same x position across panels B, D, E and F.
+not cover to the end. **Panels G, B, D, E and F share this one order**
+(`NETWORK_STABILITY_ORDER`, computed once from panel A), so x positions stay
+comparable across the bar panels and the bars step down left to right; as of
+2026-10-04 it matches panel B's within-subject/within-task ranking. Panel A's
+lines, panel C's points and the diagnostic grid keep `NETWORK_ORDER`, where
+order carries no meaning.
 
 `run-figure-layout` is a deliberate exception to the existence-based caching described above: it always re-runs, because it is cheap and a box resized in Inkscape must take effect on the very next `invoke run`, not only after a `clean`.
 
