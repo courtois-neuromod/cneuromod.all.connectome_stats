@@ -2,30 +2,20 @@ dataset	subject	session	reason
 emotion-videos			qc_table_empty
 emotion-videos			atlas_tsnr_empty
 emotion-videos			no_connectome_file
-friends			atlas_tsnr_empty
-gamepad			atlas_tsnr_empty
 harrypotter			atlas_tsnr_empty
-hcptrt			atlas_tsnr_empty
-langlocalizer			qc_table_empty
-langlocalizer			atlas_tsnr_empty
 mario			qc_table_empty
-mario			atlas_tsnr_empty
 mario3			timeseries_content_missing
 mario3			atlas_tsnr_empty
 mario3			no_connectome_file
 mariostars			timeseries_content_missing
 mariostars			atlas_tsnr_empty
 mariostars			no_connectome_file
-movie10			atlas_tsnr_empty
 multfs			atlas_tsnr_empty
-mutemusic			atlas_tsnr_empty
-narratives			atlas_tsnr_empty
 ood			timeseries_content_missing
 ood			atlas_tsnr_empty
 ood			no_connectome_file
 petit-prince			atlas_tsnr_empty
 shinobi			atlas_tsnr_empty
-things			atlas_tsnr_empty
 triplets			atlas_tsnr_empty
 emotion-videos	01	001	unmatched_entities
 emotion-videos	01	001	unmatched_entities
@@ -1005,10 +995,6 @@ mariostars	06	015	unmatched_entities
 mariostars	06	015	unmatched_entities
 mariostars	06	015	unmatched_entities
 mariostars	06	015	unmatched_entities
-multfs	02	000	unmatched_entities
-multfs	02	000	unmatched_entities
-multfs	02	000	unmatched_entities
-multfs	02	000	unmatched_entities
 mutemusic	01	004	unmatched_entities
 mutemusic	03	001	unmatched_entities
 mutemusic	05	002	unmatched_entities
@@ -1065,17 +1051,9 @@ ood	05	002	unmatched_entities
 ood	05	002	unmatched_entities
 ood	05	002	unmatched_entities
 things	06	08	unmatched_entities
-triplets	01	016	unmatched_entities
-triplets	01	016	unmatched_entities
-triplets	01	016	unmatched_entities
+triplets	01	013	unmatched_entities
+triplets	01	013	unmatched_entities
+triplets	01	013	unmatched_entities
 triplets	03	002	unmatched_entities
 triplets	03	002	unmatched_entities
 triplets	03	002	unmatched_entities
-triplets	03	013	unmatched_entities
-triplets	06	001	unmatched_entities
-triplets	06	006	unmatched_entities
-triplets	06	006	unmatched_entities
-triplets	06	006	unmatched_entities
-triplets	06	007	unmatched_entities
-triplets	06	007	unmatched_entities
-triplets	06	007	unmatched_entities
