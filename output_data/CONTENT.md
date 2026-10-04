@@ -101,7 +101,7 @@ Once the pipeline is run, this folder will contain the following.
     median_min_tsnr, n_sessions`: the pairwise-minimum usable-duration **and**
     tSNR distribution across the six bins, the audit that the motion split is
     not secretly a duration or a pure-tSNR confound (`fd_mean` vs. `tsnr` is
-    r=-0.68, so tSNR is expected to track the stratum; duration, r=-0.065, is
+    r=-0.65, so tSNR is expected to track the stratum; duration, r=-0.013, is
     not).
   - `motion_permutation.tsv` — `network` -> `observed_diff` (`median(low-low) -
     median(high-high)`, pooled over both task bins), `p_value` (two-sided,
@@ -173,7 +173,7 @@ Once the pipeline is run, this folder will contain the following.
   result.
 - `figures/figure_tsnr/tsnr_bins_fd_residual.png` — same layout, under the
   `fd_residual` definition (median split on `tsnr` residualized on `fd_mean`
-  within cell). tSNR and `fd_mean` correlate at r=-0.68 — related, but not
+  within cell). tSNR and `fd_mean` correlate at r=-0.65 — related, but not
   equivalent — so this is a **sensitivity-analysis** panel checking whether
   the `raw` result holds once head motion is regressed out, not a second
   headline result to report on its own.
@@ -254,7 +254,7 @@ Once the pipeline is run, this folder will contain the following.
 - `figures/figure_connectomes/cross_context.png` — claim 2: the four bins ×
   nine networks, all datasets, gated.
 - `figures/figure_connectomes/network_quality.png` — claim 3: per-network
-  within-subject stability vs. median tSNR, one hollow marker per subject
+  within-subject stability vs. median tSNR, one white-filled marker per subject
   (shape = subject, from `network_quality_subject.tsv`) under a filled,
   labelled dot per network median, each network's subject points enclosed in a
   translucent convex-hull outline (falls back to a labelled ordering

@@ -699,7 +699,7 @@ def run_tsnr_strata(c, dataset=None, smoke=False):
     dataset) cell, under two definitions carried side by side in a
     `stratum_def` column: `raw` tSNR, and `fd_residual` — tSNR residualized on
     `fd_mean` within the same cell, which is what separates a signal-quality
-    effect from the motion effect the two axes share (r=-0.68). Whole-brain
+    effect from the motion effect the two axes share (r=-0.65). Whole-brain
     tSNR only, chosen when `atlas_tsnr` was empty upstream for every gated
     dataset; it is now populated for most of them, but this step has not been
     extended per network.

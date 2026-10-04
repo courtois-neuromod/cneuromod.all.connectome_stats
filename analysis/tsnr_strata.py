@@ -14,7 +14,7 @@ it (CLAUDE.md, "tSNR stratification"):
   the gap on 2026-10-04, and a per-network version is now feasible but not
   implemented (CLAUDE.md, "Still open").
 - **Two stratum definitions, not one.** `tsnr` and `fd_mean` correlate at
-  r=-0.68, and a raw tSNR median split agrees with the motion stratum on 72%
+  r=-0.65, and a raw tSNR median split agrees with the motion stratum on 72%
   of sessions, so a raw-only analysis would largely re-run the motion result.
   `fd_residual` splits on tSNR residualized on `fd_mean` within the same cell,
   which is near-independent of the motion stratum (~chance agreement) and

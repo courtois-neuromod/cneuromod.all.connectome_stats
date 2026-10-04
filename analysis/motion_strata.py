@@ -8,8 +8,8 @@ this is a *relative* split, not an absolute-threshold one, and `fd_mean`
 coverage (mario, harrypotter both entirely unmatched upstream) rules out the
 domain stratification — this runs pooled over all FD-covered datasets. See
 CLAUDE.md, "Motion stratification", for the full empirical basis (motion is
-subject- and dataset-specific, `fd_mean` vs `tsnr` r=-0.68, `fd_mean` vs
-usable duration r=-0.065).
+subject- and dataset-specific, `fd_mean` vs `tsnr` r=-0.65, `fd_mean` vs
+usable duration r=-0.013).
 
 Thin configuration over `analysis/quality_strata.py`, which holds the
 machinery shared with `analysis/tsnr_strata.py`. Low motion is the *good*
@@ -39,7 +39,7 @@ MOTION_STRATUM = "motion_stratum"
 GOOD_STRATUM = "low"
 
 # Pair-min usable duration AND pair-min tSNR: the motion stratum is
-# substantially a tSNR stratum too (r=-0.68 — CLAUDE.md, "Motion
+# substantially a tSNR stratum too (r=-0.65 — CLAUDE.md, "Motion
 # stratification") and both must be reported together, never as independent
 # axes.
 MOTION_BALANCE_COLUMNS = (

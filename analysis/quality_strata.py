@@ -42,7 +42,7 @@ DEFAULT_SPLITS = (
 )
 
 # The column every analysis defines its covered population by. Both axes have
-# identical coverage in practice (246/246 gated sessions), and sharing one
+# identical coverage in practice (496/496 QC-covered sessions), and sharing one
 # definition is what makes the per-axis gates in `group_stats.GATES` directly
 # comparable — see CLAUDE.md, "tSNR stratification".
 COVERAGE_COLUMN = "fd_mean"
@@ -96,7 +96,7 @@ def assign_strata(index_frame, column, stratum_column, split_by=("subject", "dat
     predictor *within the same group* (`_cell_residuals`), which makes the
     stratum orthogonal to the predictor by construction rather than by
     assumption — see CLAUDE.md, "tSNR stratification", for why that matters
-    when the two QC axes correlate at r = -0.68.
+    when the two QC axes correlate at r = -0.65.
     """
     frame = index_frame.copy()
     frame[stratum_column] = pd.array([None] * len(frame), dtype=object)
