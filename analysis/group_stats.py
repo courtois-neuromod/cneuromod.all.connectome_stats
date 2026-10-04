@@ -91,6 +91,46 @@ def network_quality(index_frame, network_order):
     return pd.DataFrame(rows)
 
 
+def subject_bin_medians(similarity, bins, subjects, bin_label):
+    """Per subject: `n` and `median` of the `bin_label` pairs that subject owns.
+
+    Only meaningful for a within-subject bin, where both sessions of a pair
+    belong to the same subject — so the pair's row subject identifies it.
+    """
+    labels, triu_mask = bins
+    subjects = np.asarray(subjects)
+    rows = []
+    for subject in sorted(set(subjects)):
+        row_mask = (subjects == subject)[:, None]
+        values = similarity[triu_mask & (labels == bin_label) & row_mask]
+        rows.append({
+            "subject": subject,
+            "n": len(values),
+            "median": float(np.median(values)) if len(values) else np.nan,
+        })
+    return pd.DataFrame(rows)
+
+
+def subject_network_tsnr(index_frame, network_order):
+    """Per subject x network: median `tsnr_{network}` over that subject's sessions.
+
+    Same population as `network_quality` (every session, ungated), split by
+    subject. A subject with no coverage for a network gets NaN, not a raise.
+    """
+    rows = []
+    for network in network_order:
+        column = f"tsnr_{network}"
+        for subject, group in index_frame.groupby("subject"):
+            values = group[column].dropna() if column in group.columns else pd.Series([])
+            rows.append({
+                "network": network,
+                "subject": subject,
+                "median_tsnr": float(values.median()) if len(values) else np.nan,
+                "n_tsnr": len(values),
+            })
+    return pd.DataFrame(rows)
+
+
 def similarity_histogram(values, bins):
     """Tidy `(bin_left, bin_right, count)` histogram of one array of similarity values."""
     values = np.asarray(values)
@@ -191,11 +231,15 @@ def cross_context_summary(paths, network_order, measure, min_usable_seconds, n_b
     via `attach_titles` — dropping unmatched and boundary sessions — before
     binning by `group_column` (normally `"title"` in that case).
 
-    Returns `{"cross_context": frame, "histograms": frame, "duration_balance": frame}`.
+    Returns `{"cross_context": frame, "histograms": frame, "duration_balance": frame,
+    "subject_within": frame}` — the last is the within-subject/within-group
+    median per subject (`network, gate, subject, n, median`), backing the
+    per-subject points of claim 3's panel.
     """
     bin_labels = pair_bin_labels(group_column)
     bin_rows = []
     hist_rows = []
+    subject_rows = []
     balance_frame = None
     for network in network_order:
         index_frame, matrix = load_stacked_measure(paths, measure, network)
@@ -226,6 +270,12 @@ def cross_context_summary(paths, network_order, measure, min_usable_seconds, n_b
             summary["n_edges_total"] = int(valid.size)
             bin_rows.append(summary)
 
+            per_subject = subject_bin_medians(similarity, bins_, sub_index["subject"],
+                                              bin_labels[0])
+            per_subject["network"] = network
+            per_subject["gate"] = gate_name
+            subject_rows.append(per_subject)
+
             for bin_label, values in values_by_bin.items():
                 hist = similarity_histogram(values, n_bins)
                 hist["network"] = network
@@ -238,6 +288,7 @@ def cross_context_summary(paths, network_order, measure, min_usable_seconds, n_b
         "cross_context": pd.concat(bin_rows, ignore_index=True),
         "histograms": pd.concat(hist_rows, ignore_index=True),
         "duration_balance": balance_frame,
+        "subject_within": pd.concat(subject_rows, ignore_index=True),
     }
 
 

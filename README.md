@@ -232,7 +232,7 @@ The plumbing and the science are both wired up.
 | `fetch-parcel-labels` | ✅ implemented — builds the parcel -> network lookup table (see "The parcel -> network lookup" in `source_data/CONTENT.md`) |
 | `fetch-atlas` | ✅ implemented — retrieves the MNI group atlas the montage's glass-brain network key is drawn from (display only) |
 | `run-connectomes` | ✅ implemented — per-session, per-network Pearson + regularized partial correlation |
-| `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses plus the domain-restricted robustness check (Pearson only) into ten tidy TSVs |
+| `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses plus the domain-restricted robustness check (Pearson only) into eleven tidy TSVs |
 | `run-motion-strata` | ✅ implemented — robustness-tier motion-stratified similarity check into five tidy TSVs |
 | `run-tsnr-strata` | ✅ implemented — robustness-tier tSNR-stratified similarity check into five tidy TSVs (raw and motion-residualized strata) |
 | `run-inventory` | ✅ implemented — asset coverage inventory (raw BIDS, timeseries, QC, connectomes) into five tidy TSVs; infrastructure, not an analysis tier |

@@ -14,8 +14,11 @@ from analysis.group_stats import (
     duration_balance,
     network_quality,
     similarity_histogram,
+    subject_bin_medians,
+    subject_network_tsnr,
     usable_sessions,
 )
+from analysis.similarity import pair_bin_labels, pair_bins
 
 
 def test_usable_sessions_gate_and_report():
@@ -332,3 +335,35 @@ def test_domain_datasets_covers_the_three_named_domains():
     assert DOMAIN_DATASETS["movies"] == ("friends", "movie10")
     assert DOMAIN_DATASETS["videogames"] == ("mario", "mario3", "mariostars", "shinobi")
     assert DOMAIN_DATASETS["stories"] == ("harrypotter", "petit-prince")
+
+
+def test_subject_bin_medians_splits_within_subject_pairs_by_subject():
+    index_frame = pd.DataFrame({
+        "subject": ["01", "01", "01", "02", "02"],
+        "dataset": ["a", "a", "a", "a", "b"],
+    })
+    similarity = np.full((5, 5), 0.5)
+    similarity[0, 1], similarity[0, 2], similarity[1, 2] = 0.9, 0.7, 0.8
+    similarity[3, 4] = 0.1  # within-subject but between-dataset: excluded
+
+    result = subject_bin_medians(similarity, pair_bins(index_frame), index_frame["subject"],
+                                 pair_bin_labels()[0]).set_index("subject")
+
+    assert result.loc["01", "n"] == 3
+    assert result.loc["01", "median"] == 0.8
+    assert result.loc["02", "n"] == 0
+    assert np.isnan(result.loc["02", "median"])
+
+
+def test_subject_network_tsnr_medians_per_subject_with_nan_coverage():
+    index_frame = pd.DataFrame({
+        "subject": ["01", "01", "02"],
+        "tsnr_Vis": [10.0, 20.0, np.nan],
+    })
+
+    result = subject_network_tsnr(index_frame, ["Vis", "Missing"]).set_index(
+        ["network", "subject"])
+
+    assert result.loc[("Vis", "01"), "median_tsnr"] == 15.0
+    assert result.loc[("Vis", "02"), "n_tsnr"] == 0
+    assert np.isnan(result.loc[("Missing", "01"), "median_tsnr"])

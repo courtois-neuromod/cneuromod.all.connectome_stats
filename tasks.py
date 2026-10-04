@@ -458,7 +458,7 @@ def run_group_stats(c, dataset=None, smoke=False):
     `analysis.group_stats.DOMAIN_DATASETS` (movies, videogames, stories).
 
     Reads output_data/connectomes/{dataset}_{parcellation}.h5 (`run-connectomes`'s
-    output) and writes ten tidy TSVs under output_data/group_stats/. Skips when
+    output) and writes eleven tidy TSVs under output_data/group_stats/. Skips when
     cross_context.tsv already exists.
     """
     import numpy as np
@@ -470,6 +470,7 @@ def run_group_stats(c, dataset=None, smoke=False):
         domain_cross_context_summary,
         longitudinal_summary,
         network_quality,
+        subject_network_tsnr,
         usable_sessions,
     )
     from analysis.similarity import discover_connectome_files
@@ -570,6 +571,13 @@ def run_group_stats(c, dataset=None, smoke=False):
         empty_lag.to_csv(output_dir / "longitudinal_lag.tsv", sep="\t", index=False)
 
     network_quality_frame.to_csv(output_dir / "network_quality.tsv", sep="\t", index=False)
+    subject_within = cross_context_result["subject_within"]
+    subject_within = subject_within[subject_within["gate"] == "gated"][
+        ["network", "subject", "n", "median"]
+    ].rename(columns={"n": "n_pairs", "median": "within_subject_median_cross_context"})
+    subject_network_tsnr(all_index, network_order).merge(
+        subject_within, on=["network", "subject"], how="outer"
+    ).to_csv(output_dir / "network_quality_subject.tsv", sep="\t", index=False)
     session_gate.to_csv(output_dir / "session_gate.tsv", sep="\t", index=False)
     pd.concat(histograms, ignore_index=True).to_csv(
         output_dir / "pair_histograms.tsv", sep="\t", index=False)
@@ -583,7 +591,7 @@ def run_group_stats(c, dataset=None, smoke=False):
     domain_result["duration_balance"].to_csv(
         output_dir / "domain_duration_balance.tsv", sep="\t", index=False)
 
-    print(f"✅ run-group-stats: wrote 10 tables to {output_dir}")
+    print(f"✅ run-group-stats: wrote 11 tables to {output_dir}")
 
 
 @task(help={

@@ -51,6 +51,11 @@ Once the pipeline is run, this folder will contain the following.
     count), contributing `datasets`, and within-subject median similarity from
     both analyses (`within_subject_median_cross_context`,
     `within_subject_median_longitudinal`, gated).
+  - `network_quality_subject.tsv` — the same claim-3 axes split by subject:
+    `network × subject` -> `median_tsnr`, `n_tsnr` (that subject's sessions,
+    ungated, like `network_quality.tsv`), `n_pairs` and
+    `within_subject_median_cross_context` (gated within-subject /
+    within-dataset pairs). Backs the per-subject markers of panel C.
   - `session_gate.tsv` — per dataset: `n_sessions`, `n_passing` the 1800 s
     gate, `median_usable_duration_sec`, `qc_coverage` (fraction of sessions
     with a motion-QC match).
@@ -249,7 +254,10 @@ Once the pipeline is run, this folder will contain the following.
 - `figures/figure_connectomes/cross_context.png` — claim 2: the four bins ×
   nine networks, all datasets, gated.
 - `figures/figure_connectomes/network_quality.png` — claim 3: per-network
-  within-subject stability vs. median tSNR (falls back to a labelled ordering
+  within-subject stability vs. median tSNR, one hollow marker per subject
+  (shape = subject, from `network_quality_subject.tsv`) under a filled,
+  labelled dot per network median, each network's subject points enclosed in a
+  translucent convex-hull outline (falls back to a labelled ordering
   plot when tSNR coverage is too thin, with the caveat written to
   `network_quality_note.txt` rather than onto the panel).
 - `figures/figure_connectomes/domain_movies.png`, `domain_videogames.png`,
@@ -259,7 +267,7 @@ Once the pipeline is run, this folder will contain the following.
   check on claim 2, not a fourth headline claim (CLAUDE.md, "Domain-restricted
   cross-context figures").
 - `figures/figure_connectomes/longitudinal_legend.png`,
-  `cross_context_legend.png`, `domain_movies_legend.png`,
+  `cross_context_legend.png`, `network_quality_legend.png`, `domain_movies_legend.png`,
   `domain_videogames_legend.png` and `domain_stories_legend.png` — the legends
   for the panels above, each a standalone horizontal strip holding nothing but
   the key. `longitudinal_legend.png` holds a single entry (the between-subject
@@ -267,7 +275,9 @@ Once the pipeline is run, this folder will contain the following.
   montage-level furniture that crowds the data inside a panel-sized canvas, so
   they are placed once in `connectome_figure.svg` instead. The strips are
   montage elements like any other — linked by relative path and sized through
-  `panel_size`. `network_quality.png` has a single series and so gets no strip.
+  `panel_size`. `network_quality_legend.png` keys panel C's marker shapes
+  (one per subject, plus the filled network-median dot) — colour still means
+  network there, keyed by `network_maps.png`.
 - `figures/figure_connectomes/network_quality_note.txt` — the tSNR-coverage
   caveat for panel 3 as plain text, to be typeset as caption in the montage
   rather than drawn onto the panel. Empty when coverage is sufficient and the
