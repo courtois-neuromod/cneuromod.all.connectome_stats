@@ -14,7 +14,7 @@ tasks from [`airoh`](https://pypi.org/project/airoh/).
 > ✅ **Status: implemented end to end.** `fetch` retrieves real data,
 > `run-connectomes` writes real per-network connectomes, and `run-group-stats`
 > computes the two headline analyses into `output_data/group_stats/*.tsv`,
-> plotted by seven real montage panels (three headline, three domain, one glass-brain network key). `run-motion-strata` and
+> plotted by ten real montage panels (three headline plus a per-subject companion to the first, cross-context with five domain checks, one glass-brain network key). `run-motion-strata` and
 > `run-tsnr-strata` add two robustness-tier QC-dependence checks — head motion
 > and temporal SNR — into `output_data/motion_strata/*.tsv` and
 > `output_data/tsnr_strata/*.tsv`, each plotted standalone. See **Current
@@ -232,13 +232,13 @@ The plumbing and the science are both wired up.
 | `fetch-parcel-labels` | ✅ implemented — builds the parcel -> network lookup table (see "The parcel -> network lookup" in `source_data/CONTENT.md`) |
 | `fetch-atlas` | ✅ implemented — retrieves the MNI group atlas the montage's glass-brain network key is drawn from (display only) |
 | `run-connectomes` | ✅ implemented — per-session, per-network Pearson + regularized partial correlation |
-| `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses plus the domain-restricted robustness check (Pearson only) into eleven tidy TSVs |
+| `run-group-stats` | ✅ implemented — computes the cross-context and longitudinal headline analyses plus the domain-restricted and task-category robustness checks (Pearson only) into twelve tidy TSVs, plus three `category_*` TSVs |
 | `run-motion-strata` | ✅ implemented — robustness-tier motion-stratified similarity check into five tidy TSVs |
 | `run-tsnr-strata` | ✅ implemented — robustness-tier tSNR-stratified similarity check into five tidy TSVs (raw and motion-residualized strata) |
 | `run-inventory` | ✅ implemented — asset coverage inventory (raw BIDS, timeseries, QC, connectomes) into five tidy TSVs; infrastructure, not an analysis tier |
 | `run-inventory-dashboard` | ✅ implemented — renders those five TSVs as one self-contained HTML page; always re-runs |
 | `run-figure-layout` | ✅ implemented (from `airoh.figures`) |
-| `run-notebooks` | ✅ implemented — renders the seven real montage panels plus the standalone motion- and tSNR-stratification panels |
+| `run-notebooks` | ✅ implemented — renders the ten real montage panels plus the standalone motion- and tSNR-stratification panels |
 | `compose-figure` | ✅ implemented (needs the optional Inkscape binary) |
 | `verify`, `clean*` | ✅ implemented |
 
@@ -360,7 +360,7 @@ Use `invoke --list` or `invoke --help <task>` for descriptions and usage.
 | Folder / File  | Description                              |
 | -------------- | ---------------------------------------- |
 | `analysis/`    | Pure Python analysis logic, called by invoke tasks |
-| `notebooks/`   | `figure_connectomes.ipynb` — reads `output_data/group_stats/*.tsv` and renders the seven montage panels (including the glass-brain network key) plus their legend strips and diagnostic histogram grids. `figure_motion.ipynb` — reads `output_data/motion_strata/*.tsv` and renders the standalone motion-stratification panels. `figure_tsnr.ipynb` — reads `output_data/tsnr_strata/*.tsv` and renders the standalone tSNR-stratification panels |
+| `notebooks/`   | `figure_connectomes.ipynb` — reads `output_data/group_stats/*.tsv` and renders the ten montage panels (including the glass-brain network key) plus their legend strips and diagnostic histogram grids. `figure_motion.ipynb` — reads `output_data/motion_strata/*.tsv` and renders the standalone motion-stratification panels. `figure_tsnr.ipynb` — reads `output_data/tsnr_strata/*.tsv` and renders the standalone tSNR-stratification panels. `figure_categories.ipynb` — reads `output_data/group_stats/category_cross_context.tsv` and renders the standalone task-category panel |
 | `tests/`       | Unit tests (`pytest`)                    |
 | `source_data/` | Source datasets — see [`source_data/CONTENT.md`](source_data/CONTENT.md) |
 | `output_data/` | Generated results and figures — see [`output_data/CONTENT.md`](output_data/CONTENT.md) |

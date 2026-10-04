@@ -6,9 +6,12 @@ import pandas as pd
 
 from analysis.connectome_store import write_dataset_connectomes
 from analysis.group_stats import (
+    CATEGORY_DATASETS,
     DOMAIN_DATASETS,
     GATES,
     _gate_mask_for,
+    _subject_lag_stats,
+    category_cross_context_summary,
     cross_context_summary,
     domain_cross_context_summary,
     duration_balance,
@@ -330,11 +333,66 @@ def test_domain_cross_context_summary_skips_domains_with_no_files(tmp_path):
     assert set(result["cross_context"]["domain"]) == {"videogames"}
 
 
-def test_domain_datasets_covers_the_three_named_domains():
-    assert set(DOMAIN_DATASETS) == {"movies", "videogames", "stories"}
+def test_domain_datasets_covers_the_named_domains():
+    assert set(DOMAIN_DATASETS) == {
+        "movies", "videogames", "stories", "taskscapes", "localizers",
+    }
     assert DOMAIN_DATASETS["movies"] == ("friends", "movie10")
     assert DOMAIN_DATASETS["videogames"] == ("mario", "mario3", "mariostars", "shinobi")
     assert DOMAIN_DATASETS["stories"] == ("harrypotter", "petit-prince")
+
+
+def test_category_cross_context_summary_bins_by_category_and_drops_unassigned(tmp_path):
+    connectome_dir = tmp_path / "connectomes"
+    connectome_dir.mkdir()
+    for dataset in ("friends", "multfs", "gamepad"):
+        _write_connectome(
+            connectome_dir / f"{dataset}_cneuromod2026.h5", dataset, ["01", "02"], ["001", "001"],
+        )
+    paths = sorted(connectome_dir.glob("*.h5"))
+
+    result = category_cross_context_summary(
+        paths, "cneuromod2026", ["A"], "pearson", min_usable_seconds=100,
+    )
+    bins = result["cross_context"]
+
+    assert set(bins["bin"]) == {
+        "within-subject / within-category", "within-subject / between-category",
+        "between-subject / within-category", "between-subject / between-category",
+    }
+    # gamepad is unassigned: 4 sessions (friends + multfs) -> 6 pairs, ungated.
+    assert bins[bins["gate"] == "all"]["n"].sum() == 6
+
+
+def test_category_cross_context_summary_needs_two_categories(tmp_path):
+    path = tmp_path / "friends_cneuromod2026.h5"
+    _write_connectome(path, "friends", ["01", "02"], ["001", "001"])
+
+    assert category_cross_context_summary(
+        [path], "cneuromod2026", ["A"], "pearson", min_usable_seconds=100,
+    ) is None
+
+
+def test_subject_lag_stats_keeps_only_within_subject_pairs_per_lag():
+    pairs = pd.DataFrame({
+        "subject_i": ["01", "01", "01", "02"],
+        "subject_j": ["01", "01", "02", "02"],
+        "season_lag": [0, 0, 0, 1],
+        "similarity": [0.8, 0.6, 0.1, 0.5],
+    })
+
+    result = _subject_lag_stats(pairs).set_index(["subject", "lag_value"])
+
+    assert len(result) == 2  # the 01-02 pair is between-subject and is dropped
+    assert result.loc[("01", 0), "n"] == 2
+    assert np.isclose(result.loc[("01", 0), "median"], 0.7)
+    assert np.isclose(result.loc[("02", 1), "median"], 0.5)
+
+
+def test_category_datasets_have_no_overlap():
+    assigned = [d for datasets in CATEGORY_DATASETS.values() for d in datasets]
+    assert len(assigned) == len(set(assigned))
+    assert set(CATEGORY_DATASETS) == {"naturalistic", "taskscapes", "localizers"}
 
 
 def test_subject_bin_medians_splits_within_subject_pairs_by_subject():

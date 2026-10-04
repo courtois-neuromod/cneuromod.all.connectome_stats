@@ -11,7 +11,7 @@ subject state, elapsed time) from cognitive context.
 
 `domain_cross_context_summary` is a robustness-tier check on Analysis B: the
 same within-/between-task contrast, restricted one domain at a time to
-`DOMAIN_DATASETS` (movies, videogames, stories) — sets of datasets sharing a
+`DOMAIN_DATASETS` (movies, videogames, stories, taskscapes, localizers) — sets of datasets sharing a
 naturalistic-stimulus domain, so "between-task" means a much more homogeneous
 swap than "friends vs. retinotopy".
 
@@ -219,8 +219,12 @@ def duration_balance(index_frame, min_usable_seconds, group_column="dataset"):
 
 
 def cross_context_summary(paths, network_order, measure, min_usable_seconds, n_bins=60,
-                           group_column="dataset", title_frame=None):
+                           group_column="dataset", title_frame=None, dataset_categories=None):
     """Analysis B: same-/different-subject x same-/different-dataset, gated and ungated.
+
+    `dataset_categories` (`{dataset: category}`) adds a `category` column and
+    drops sessions of datasets absent from the mapping, so `group_column="category"`
+    asks the same question one level up (see `category_cross_context_summary`).
 
     `group_column`/`title_frame` let a caller narrow the same-/different-task
     axis below "dataset" — used by `domain_cross_context_summary` for the
@@ -248,6 +252,11 @@ def cross_context_summary(paths, network_order, measure, min_usable_seconds, n_b
             index_frame, _dropped = attach_titles(index_frame, title_frame)
             matrix = matrix[index_frame["_row"].to_numpy()]
             index_frame = index_frame.drop(columns="_row").reset_index(drop=True)
+        if dataset_categories is not None:
+            keep = index_frame["dataset"].isin(dataset_categories).to_numpy()
+            index_frame = index_frame[keep].reset_index(drop=True)
+            matrix = matrix[keep]
+            index_frame["category"] = index_frame["dataset"].map(dataset_categories)
         if balance_frame is None:
             balance_frame = duration_balance(index_frame, min_usable_seconds, group_column)
         z_matrix = fisher_z(matrix)
@@ -304,7 +313,51 @@ DOMAIN_DATASETS = {
     "movies": ("friends", "movie10"),
     "videogames": ("mario", "mario3", "mariostars", "shinobi"),
     "stories": ("harrypotter", "petit-prince"),
+    # The two below come from the task-category scheme (`CATEGORY_DATASETS`).
+    # At the 1800 s gate each is down to one dataset and has no between-task
+    # bin, so they are only drawn ungated (`gate="all"`).
+    "taskscapes": ("emotion-videos", "triplets", "multfs", "things"),
+    "localizers": ("hcptrt", "floc", "langlocalizer", "retinotopy"),
 }
+
+
+# Robustness-tier, ungated-first check on Analysis B at the level of task
+# *category* rather than dataset (CLAUDE.md, "Task categories"). `taskscapes`
+# systematically explore a stimulus space; `localizers` are the standard
+# functional localizer batteries (hcptrt's eight tasks, with rest, included);
+# `naturalistic` is continuous-stimulus and game data. `gamepad` and `ood` are
+# deliberately unassigned and drop out. At the 1800 s gate most taskscape and
+# localizer datasets vanish, so `gate="all"` is the informative view.
+CATEGORY_DATASETS = {
+    "naturalistic": ("friends", "movie10", "harrypotter", "petit-prince", "mario", "mario3",
+                     "mariostars", "shinobi", "mutemusic", "narratives"),
+    "taskscapes": ("emotion-videos", "triplets", "multfs", "things"),
+    "localizers": ("hcptrt", "floc", "langlocalizer", "retinotopy"),
+}
+
+
+def category_cross_context_summary(paths, parcellation, network_order, measure,
+                                    min_usable_seconds, n_bins=60):
+    """Analysis B with same-/different-*category* as the task axis.
+
+    Returns `cross_context_summary`'s dict, or `None` when fewer than two
+    categories have a connectome file present (nothing to contrast).
+    """
+    dataset_categories = {
+        dataset: category
+        for category, datasets in CATEGORY_DATASETS.items() for dataset in datasets
+    }
+    present = {
+        dataset_categories[dataset]
+        for dataset in dataset_categories
+        if _paths_for_datasets(paths, parcellation, (dataset,))
+    }
+    if len(present) < 2:
+        return None
+    return cross_context_summary(
+        paths, network_order, measure, min_usable_seconds, n_bins,
+        group_column="category", dataset_categories=dataset_categories,
+    )
 
 
 def _paths_for_datasets(paths, parcellation, datasets):
@@ -357,14 +410,27 @@ def _lag_stats(group, lag_column):
     return stats
 
 
+def _subject_lag_stats(pairs):
+    """Within-subject median similarity per `(subject, season_lag)`.
+
+    Columns: `subject, lag_value, n, median`.
+    """
+    within = pairs[pairs["subject_i"] == pairs["subject_j"]]
+    return within.groupby(["subject_i", "season_lag"])["similarity"].agg(
+        n="count", median="median",
+    ).reset_index().rename(columns={"subject_i": "subject", "season_lag": "lag_value"})
+
+
 def longitudinal_summary(friends_path, cneuromod_root, parcellation, network_order,
                           measure, min_usable_seconds, n_bins=60):
     """Analysis A: `friends` only, same-/different-subject x same-/different-season,
     plus similarity-vs-lag curves (season lag and binned session gap).
 
-    Returns `{"longitudinal_bins", "longitudinal_lag", "histograms", "dropped",
-    "n_sessions"}`. Season is re-derived from source h5 key names, never
-    recomputed from timeseries — see `analysis.friends_seasons`.
+    Returns `{"longitudinal_bins", "longitudinal_lag", "longitudinal_lag_subject",
+    "histograms", "dropped", "n_sessions"}` — the third is the within-subject
+    curve per subject, backing the per-subject panel. Season is re-derived from
+    source h5 key names, never recomputed from timeseries — see
+    `analysis.friends_seasons`.
     """
     full_index = load_index(friends_path)
     full_index["_row"] = np.arange(len(full_index))
@@ -375,6 +441,7 @@ def longitudinal_summary(friends_path, cneuromod_root, parcellation, network_ord
 
     bin_rows = []
     lag_rows = []
+    subject_lag_rows = []
     hist_rows = []
 
     for network in network_order:
@@ -417,6 +484,12 @@ def longitudinal_summary(friends_path, cneuromod_root, parcellation, network_ord
                 pairs["session_i"].astype(int) - pairs["session_j"].astype(int)
             ).abs()
 
+            subject_lag = _subject_lag_stats(pairs)
+            subject_lag["network"] = network
+            subject_lag["gate"] = gate_name
+            subject_lag["measure"] = measure
+            subject_lag_rows.append(subject_lag)
+
             for pair_type, group in (
                 ("within-subject", pairs[pairs["subject_i"] == pairs["subject_j"]]),
                 ("between-subject", pairs[pairs["subject_i"] != pairs["subject_j"]]),
@@ -441,6 +514,7 @@ def longitudinal_summary(friends_path, cneuromod_root, parcellation, network_ord
     return {
         "longitudinal_bins": pd.concat(bin_rows, ignore_index=True),
         "longitudinal_lag": pd.concat(lag_rows, ignore_index=True),
+        "longitudinal_lag_subject": pd.concat(subject_lag_rows, ignore_index=True),
         "histograms": pd.concat(hist_rows, ignore_index=True) if hist_rows else pd.DataFrame(),
         "dropped": dropped,
         "n_sessions": len(filtered_index),

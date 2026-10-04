@@ -47,6 +47,10 @@ Once the pipeline is run, this folder will contain the following.
     lag_type × lag_value` -> `n, median, q25, q75`. `lag_type` is `season`
     (0-5 season lag) or `session_gap_decile` (binned session-ordinal gap, the
     only time axis available — no acquisition dates are stored).
+  - `longitudinal_lag_subject.tsv` — analysis A: `network × gate × subject ×
+    lag_value` -> `n, median`, within-subject pairs only, season lag. Backs
+    the per-subject panel (`longitudinal_subject.png`), which averages the
+    nine networks.
   - `network_quality.tsv` — per network: `median_tsnr`, `n_tsnr` (coverage
     count), contributing `datasets`, and within-subject median similarity from
     both analyses (`within_subject_median_cross_context`,
@@ -77,12 +81,22 @@ Once the pipeline is run, this folder will contain the following.
     (CLAUDE.md, "Domain-restricted cross-context figures"): the same shapes as
     `cross_context.tsv`/`pair_histograms.tsv`/`duration_balance.tsv`, each with
     an added `domain` column, computed once per domain in
-    `analysis.group_stats.DOMAIN_DATASETS` (`movies`, `videogames`, `stories`)
+    `analysis.group_stats.DOMAIN_DATASETS` (`movies`, `videogames`, `stories`, plus ungated-only `taskscapes` and
+    `localizers`)
     by `domain_cross_context_summary`. `movies` bins by title-level task
     identity (friends season or movie10 title, via `analysis/domain_titles.py`)
     rather than dataset, since `friends`/`movie10` alone would collapse to a
     two-value dataset contrast; `videogames`/`stories` bin by dataset, same
     axis as `cross_context.tsv`, just restricted to fewer datasets.
+  - `category_cross_context.tsv`, `category_pair_histograms.tsv`,
+    `category_duration_balance.tsv` — a robustness-tier check on analysis B
+    (CLAUDE.md, "Task categories"): the same shapes as `cross_context.tsv`/
+    `pair_histograms.tsv`/`duration_balance.tsv`, with task identity set to the
+    category in `analysis.group_stats.CATEGORY_DATASETS` (`naturalistic`,
+    `taskscapes`, `localizers`; bins read `within-/between-category`).
+    `gate="all"` is the informative view — the 1800 s gate leaves one dataset
+    each for taskscapes and localizers. Written only when at least two
+    categories are present.
 - `motion_strata/` — robustness-tier QC (motion) dependence check (CLAUDE.md,
   "Motion stratification"), written by `invoke run-motion-strata` from
   `analysis/motion_strata.py`, Pearson only, restricted throughout to the
@@ -113,6 +127,9 @@ Once the pipeline is run, this folder will contain the following.
   - `motion_sessions.tsv` — one row per QC-covered session: `dataset, subject,
     session, fd_mean, tsnr, usable_duration_sec, motion_stratum_cell,
     motion_stratum_subject` — for auditability.
+- `figures/figure_categories/category_bins.png`, `category_bins_legend.png` —
+  the four subject x category bins per network, ungated, from
+  `category_cross_context.tsv`; standalone, not in `connectome_figure.svg`.
 - `figures/figure_motion/motion_bins.png`, `motion_bins_legend.png` — the six
   motion×task bins ("cell" split) × nine networks, grouped bar chart plus its
   legend strip, within-task bins grouped together and between-task bins
@@ -241,7 +258,7 @@ Once the pipeline is run, this folder will contain the following.
   `NETWORK_COLORS` entry and named beside it, spanning the full page height
   down the left edge, stacked in decreasing panel-A stability (mean gated
   within-subject median similarity over season lags) so the key doubles as a
-  ranking — the bar panels B, D, E and F share this order; panels A and C keep `NETWORK_ORDER`.
+  ranking — the bar panels D-I share this order; panels A and C keep `NETWORK_ORDER`.
   Every other panel inherits those colours (panel A's
   lines, panel C's points and labels, the bar panels' x-tick bubbles), which is
   why none of them repeats a nine-network legend. Drawn from the MNI group
@@ -250,7 +267,7 @@ Once the pipeline is run, this folder will contain the following.
   Omitted with a warning when that atlas content is not retrieved.
 - `figures/figure_connectomes/longitudinal.png` — claim 1: within-subject
   Pearson similarity vs. friends season lag, one line per network, against the
-  between-subject band.
+  between-subject curve.
 - `figures/figure_connectomes/cross_context.png` — claim 2: the four bins ×
   nine networks, all datasets, gated.
 - `figures/figure_connectomes/network_quality.png` — claim 3: per-network
@@ -261,17 +278,19 @@ Once the pipeline is run, this folder will contain the following.
   plot when tSNR coverage is too thin, with the caveat written to
   `network_quality_note.txt` rather than onto the panel).
 - `figures/figure_connectomes/domain_movies.png`, `domain_videogames.png`,
-  `domain_stories.png` — the same four-bin × nine-network chart as
+  `domain_stories.png`, `domain_taskscapes.png`, `domain_localizers.png` — the same four-bin × nine-network chart as
   `cross_context.png`, one per domain in `domain_cross_context.tsv`. Placed in
   the headline montage at the user's request, despite being a robustness-tier
   check on claim 2, not a fourth headline claim (CLAUDE.md, "Domain-restricted
   cross-context figures").
+- `figures/figure_connectomes/longitudinal_subject.png` — panel 1's
+  within-subject curves, one line per subject, averaged over networks.
 - `figures/figure_connectomes/longitudinal_legend.png`,
-  `cross_context_legend.png`, `network_quality_legend.png`, `domain_movies_legend.png`,
-  `domain_videogames_legend.png` and `domain_stories_legend.png` — the legends
+  `longitudinal_subject_legend.png`, `network_quality_legend.png` and
+  `bar_legend.png` (one strip shared by every four-bin bar panel) — the legends
   for the panels above, each a standalone horizontal strip holding nothing but
   the key. `longitudinal_legend.png` holds a single entry (the between-subject
-  band) — its nine networks are keyed by `network_maps.png` instead. The panels themselves are drawn bare (no legend, no title): both are
+  curve) — its nine networks are keyed by `network_maps.png` instead. The panels themselves are drawn bare (no legend, no title): both are
   montage-level furniture that crowds the data inside a panel-sized canvas, so
   they are placed once in `connectome_figure.svg` instead. The strips are
   montage elements like any other — linked by relative path and sized through

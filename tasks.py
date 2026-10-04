@@ -455,10 +455,14 @@ def run_group_stats(c, dataset=None, smoke=False):
 
     Also computes a robustness-tier check on analysis B: the same
     within-/between-task contrast restricted one domain at a time to
-    `analysis.group_stats.DOMAIN_DATASETS` (movies, videogames, stories).
+    `analysis.group_stats.DOMAIN_DATASETS` (movies, videogames, stories, taskscapes,
+    localizers), and a
+    category-level one over `CATEGORY_DATASETS` (naturalistic, taskscapes,
+    localizers), whose informative view is ungated.
 
     Reads output_data/connectomes/{dataset}_{parcellation}.h5 (`run-connectomes`'s
-    output) and writes eleven tidy TSVs under output_data/group_stats/. Skips when
+    output) and writes twelve tidy TSVs under output_data/group_stats/, plus three
+    `category_*` TSVs when at least two task categories are present. Skips when
     cross_context.tsv already exists.
     """
     import numpy as np
@@ -466,6 +470,7 @@ def run_group_stats(c, dataset=None, smoke=False):
 
     from analysis.connectome_store import load_index
     from analysis.group_stats import (
+        category_cross_context_summary,
         cross_context_summary,
         domain_cross_context_summary,
         longitudinal_summary,
@@ -512,10 +517,16 @@ def run_group_stats(c, dataset=None, smoke=False):
         paths, network_order, measure, min_usable_seconds, n_bins
     )
 
-    print("⏳ domain-restricted cross-context (movies, videogames, stories)")
+    print("⏳ domain-restricted cross-context (movies, videogames, stories, "
+          "taskscapes, localizers)")
     domain_result = domain_cross_context_summary(
         paths, parcellation, _cneuromod_dir(c), network_order, measure,
         min_usable_seconds, n_bins,
+    )
+
+    print("⏳ category cross-context (naturalistic, taskscapes, localizers)")
+    category_result = category_cross_context_summary(
+        paths, parcellation, network_order, measure, min_usable_seconds, n_bins,
     )
 
     friends_paths = [p for p in paths if p.stem.startswith("friends_")]
@@ -565,10 +576,15 @@ def run_group_stats(c, dataset=None, smoke=False):
             output_dir / "longitudinal_bins.tsv", sep="\t", index=False)
         longitudinal_result["longitudinal_lag"].to_csv(
             output_dir / "longitudinal_lag.tsv", sep="\t", index=False)
+        longitudinal_result["longitudinal_lag_subject"].to_csv(
+            output_dir / "longitudinal_lag_subject.tsv", sep="\t", index=False)
         histograms.append(longitudinal_result["histograms"])
     else:
         empty_bins.to_csv(output_dir / "longitudinal_bins.tsv", sep="\t", index=False)
         empty_lag.to_csv(output_dir / "longitudinal_lag.tsv", sep="\t", index=False)
+        pd.DataFrame(columns=[
+            "subject", "lag_value", "n", "median", "network", "gate", "measure",
+        ]).to_csv(output_dir / "longitudinal_lag_subject.tsv", sep="\t", index=False)
 
     network_quality_frame.to_csv(output_dir / "network_quality.tsv", sep="\t", index=False)
     subject_within = cross_context_result["subject_within"]
@@ -591,7 +607,16 @@ def run_group_stats(c, dataset=None, smoke=False):
     domain_result["duration_balance"].to_csv(
         output_dir / "domain_duration_balance.tsv", sep="\t", index=False)
 
-    print(f"✅ run-group-stats: wrote 11 tables to {output_dir}")
+    if category_result is not None:
+        category_result["cross_context"].to_csv(
+            output_dir / "category_cross_context.tsv", sep="\t", index=False)
+        category_result["histograms"].to_csv(
+            output_dir / "category_pair_histograms.tsv", sep="\t", index=False)
+        category_result["duration_balance"].to_csv(
+            output_dir / "category_duration_balance.tsv", sep="\t", index=False)
+
+    n_tables = 12 + (3 if category_result is not None else 0)
+    print(f"✅ run-group-stats: wrote {n_tables} tables to {output_dir}")
 
 
 @task(help={

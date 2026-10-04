@@ -12,7 +12,7 @@ Built on the [`invoke`](https://www.pyinvoke.org/) task runner. The `airoh` pip 
 
 The project establishes three claims about CNeuroMod's data quality as a functional-connectome resource, using functional connectomes built from six deeply sampled individuals, scanned several times per week across many distinct experiments (very different stimuli, tasks and cognitive constraints), at 2 mm isotropic and TR = 1.49 s, preprocessed and denoised upstream. Runs are typically ~10 minutes; sessions hold several runs, ~30–60 minutes total.
 
-1. **Stable across five years of acquisition.** `friends` sessions compared across the six locally available seasons — the most task-homogeneous dataset available, so the between-season contrast isolates drift (scanner, subject state, elapsed time; session ordinal is the only available time axis, there are no acquisition dates) from cognitive context. Season lives in the source h5 key's task entity (`s01e02a` -> `s01`), not the stored connectome index (which collapses multi-run sessions' `task` to `"multi"`), so `analysis/friends_seasons.py` re-derives it from source h5 key names only, never by recomputing connectomes; sessions straddling a season boundary are dropped. Within-subject similarity decays gently with season lag against a clear between-subject floor.
+1. **Stable across five years of acquisition.** `friends` sessions compared across the six locally available seasons — the most task-homogeneous dataset available, so the between-season contrast isolates drift (scanner, subject state, elapsed time; session ordinal is the only available time axis, there are no acquisition dates) from cognitive context. Season lives in the source h5 key's task entity (`s01e02a` -> `s01`), not the stored connectome index (which collapses multi-run sessions' `task` to `"multi"`), so `analysis/friends_seasons.py` re-derives it from source h5 key names only, never by recomputing connectomes; sessions straddling a season boundary are dropped. Within-subject similarity decays gently with season lag against a clear between-subject floor. What the data supports saying (2026-10-04, gated): the pooled within-subject similarity drops about 2% from season lag 0 to 5 (0.9425 to 0.9231), the decline appears in all 6 subjects (2-4% each) and in all 54 network x subject cells, and the between-subject floor moves only ~1% (0.5717 to 0.5646). **Do not split that decay into scanner drift versus ageing or any other cause** — the design cannot separate them, and the project states the decline and its consistency, nothing more. **Observation, not a group contrast:** in the network-averaged per-subject curves (panel B) the six participants fall into two non-overlapping groups at every lag — sub-03, 04, 06 above sub-01, 02, 05, a ~0.015 gap at lag 0 against ~0.004 spread within each group. Any six values split into a top and bottom three, so the split itself proves nothing; what is notable is the gap size. It is clearest in Vis, Default, Cont and DorsAttn (25 of 54 network x lag cells separate; none in Limbic, cerebellum, subcortex), and head motion, tSNR and usable duration do not line up with the groups. With six participants it is untestable (a pre-specified 3-v-3 split has a best two-sided exact p of 0.1) and no participant trait is recorded or claimed here.
 2. **Captures a variety of functional brain states.** Across all datasets, within-subject/within-task similarity exceeds within-subject/between-task, which exceeds between-subject/within-task, which exceeds between-subject/between-task — in every network.
 3. **Applies to all networks, with varying quality.** Both analyses above, reported per network and related to per-network tSNR where qa_figures covers it.
 
@@ -37,7 +37,7 @@ Partial correlation's between-subject floor is barely below Pearson's, while its
 
 ### Current state: run-connectomes, run-group-stats and run-motion-strata are implemented
 
-`invoke run-smoke` passes, `fetch` retrieves real data, `run-connectomes` computes real per-session, per-network connectomes, and `run-group-stats` computes the two headline analyses plus a domain-restricted robustness check on claim 2 (`analysis/group_stats.py`) into `output_data/group_stats/*.tsv`, plotted by the six real montage panels in `notebooks/figure_connectomes.ipynb` — see "Domain-restricted cross-context figures" below. `run-motion-strata` and `run-tsnr-strata` compute two robustness-tier QC-dependence checks — head motion and temporal SNR — into `output_data/motion_strata/*.tsv` and `output_data/tsnr_strata/*.tsv`, plotted standalone by `notebooks/figure_motion.ipynb` and `notebooks/figure_tsnr.ipynb` — see "Motion stratification" and "tSNR stratification" below. Both are thin configuration over one parameterized core, `analysis/quality_strata.py`.
+`invoke run-smoke` passes, `fetch` retrieves real data, `run-connectomes` computes real per-session, per-network connectomes, and `run-group-stats` computes the two headline analyses plus a domain-restricted robustness check on claim 2 (`analysis/group_stats.py`) into `output_data/group_stats/*.tsv`, plotted by the ten real montage panels (A-J) in `notebooks/figure_connectomes.ipynb` — see "Domain-restricted cross-context figures" below — and a task-category check (naturalistic / taskscapes / localizers, plotted standalone by `notebooks/figure_categories.ipynb`, see "Task categories" below). `run-motion-strata` and `run-tsnr-strata` compute two robustness-tier QC-dependence checks — head motion and temporal SNR — into `output_data/motion_strata/*.tsv` and `output_data/tsnr_strata/*.tsv`, plotted standalone by `notebooks/figure_motion.ipynb` and `notebooks/figure_tsnr.ipynb` — see "Motion stratification" and "tSNR stratification" below. Both are thin configuration over one parameterized core, `analysis/quality_strata.py`.
 
 `fetch-cneuromod`, `fetch-timeseries`, `fetch-parcel-labels`, `run-connectomes`, `run-group-stats`, `run-motion-strata`, `run-tsnr-strata`, `run-inventory`, `run-inventory-dashboard`, `run-figure-layout`, `run-notebooks`, `compose-figure`, `verify` and every `clean-*` task are real.
 
@@ -133,9 +133,21 @@ A robustness-tier check on claim 2 (CLAUDE.md, "Respect the analysis hierarchy" 
 - **`videogames`**: `mario`, `mario3`, `mariostars`, `shinobi` — dataset-level task identity, same axis as the global cross-context analysis, just restricted to fewer datasets.
 - **`stories`**: `harrypotter`, `petit-prince` — dataset-level task identity.
 
-`floc`, `things`, `hcptrt`, `retinotopy` don't fit a naturalistic-stimulus domain and are out of all three domain figures. A domain with no connectome file present is skipped rather than raising (e.g. the smoke run, `movie10`/schaefer1000 only, contributes to none of the three). Output: `domain_cross_context.tsv`, `domain_pair_histograms.tsv`, `domain_duration_balance.tsv` under `output_data/group_stats/`, each carrying a `domain` column alongside the usual `cross_context.tsv` shape, both gated and ungated like every other headline table.
+`floc`, `things`, `hcptrt`, `retinotopy` don't fit a naturalistic-stimulus domain and are out of the three naturalistic domain figures (the last two now feed the `taskscapes`/`localizers` domains below). A domain with no connectome file present is skipped rather than raising (e.g. the smoke run, `movie10`/schaefer1000 only, contributes to none of the three). Output: `domain_cross_context.tsv`, `domain_pair_histograms.tsv`, `domain_duration_balance.tsv` under `output_data/group_stats/`, each carrying a `domain` column alongside the usual `cross_context.tsv` shape, both gated and ungated like every other headline table.
 
-**Placement is a deliberate exception to the tier rule below.** This is Robustness-tier by nature (a check on claim 2's generalizability, not a fourth headline claim), but at the user's explicit request the three panels (`domain_movies.png`, `domain_videogames.png`, `domain_stories.png`) are drawn by `notebooks/figure_connectomes.ipynb` and placed in the hand-authored `output_data/connectome_figure.svg` montage alongside the three headline panels — a future reader should not infer from montage placement alone that this is a fourth headline claim.
+**Placement is a deliberate exception to the tier rule below.** This is Robustness-tier by nature (a check on claim 2's generalizability, not a fourth headline claim), but at the user's explicit request the domain panels (`domain_movies.png`, `domain_videogames.png`, `domain_stories.png`, `domain_taskscapes.png`, `domain_localizers.png`) are drawn by `notebooks/figure_connectomes.ipynb` and placed in the hand-authored `output_data/connectome_figure.svg` montage in the same grid as claim 2's panel D — a future reader should not infer from montage placement alone that this is a fourth headline claim.
+
+**Taskscapes and localizers as domains (added 2026-10-04, at the user's request).** `DOMAIN_DATASETS` also holds `taskscapes` (emotion-videos, triplets, multfs, things) and `localizers` (hcptrt, floc, langlocalizer, retinotopy), dataset-level task identity like `videogames`/`stories`. They only exist **ungated**: gated, each is a single dataset, so panels H and I draw `gate="all"` and carry the duration confound (see `domain_duration_balance.tsv`). They overlap the category check below by design; the category check contrasts the three groups, these panels repeat the four-bin contrast inside one.
+
+**Observation: the task effect grows across domains (2026-10-04, network means, ungated).** The within-subject within-task minus between-task gap runs movies 0.027, video games 0.044, taskscapes 0.079, stories 0.101, localizers 0.130, and the within-subject between-task similarity sits 0.30 above the between-subject within-task one for movies but 0.19 above for localizers (in panel I, subcortex's two bars are about equal). A descriptive observation, kept with its limits: (1) localizers' between-task pairs are short (median pair min-duration ~500 s vs ~1750 s within-task), so part of their gap is duration; movies, stories and taskscapes are balanced, video games mildly imbalanced; (2) "task" is title for movies but dataset elsewhere, and localizers' between-task pairs span very different paradigms, so the gradient mixes task-dissimilarity with granularity; (3) hcptrt's sessions mix tasks, so its eight tasks are one dataset. No duration-matched check was run, by the user's choice.
+
+### Task categories
+
+A robustness-tier check on claim 2 at the level of paradigm *category* (`analysis/group_stats.py`'s `CATEGORY_DATASETS`, `category_cross_context_summary`), at the user's request: `naturalistic` (friends, movie10, harrypotter, petit-prince, mario, mario3, mariostars, shinobi, mutemusic, narratives), `taskscapes` — tasks that systematically explore a stimulus space (emotion-videos, triplets, multfs, things) — and `localizers` — functional localizer batteries (hcptrt's eight tasks incl. rest, floc, langlocalizer, retinotopy). `gamepad` and `ood` are deliberately unassigned and drop out; say so rather than silently assigning them. Task identity here is the category, so the four bins are within-/between-subject x within-/between-category; it reuses `cross_context_summary` (new `dataset_categories` argument) rather than a second code path.
+
+**Ungated is the informative view.** The 1800 s gate removes `things`, `triplets`, `floc`, `langlocalizer`, `retinotopy` entirely and `emotion-videos` has no timeseries, leaving `multfs` alone for taskscapes and `hcptrt` alone for localizers; gated, the four-bin ordering holds in only 7/9 networks. Ungated (`gate="all"`, 1111 sessions) it holds in **9/9** (2026-10-04). That is not a duration-clean result: `category_duration_balance.tsv` shows pair min-duration of ~1865/1947 s for the within-category bins against ~1107/1109 s for the between-category bins ungated (~1.7x), and similarity rises with duration. Report it beside the contrast. Also note hcptrt's sessions mix tasks, so its eight tasks are one dataset here, not eight.
+
+Output: `category_cross_context.tsv`, `category_pair_histograms.tsv`, `category_duration_balance.tsv` under `output_data/group_stats/`, plotted standalone by `notebooks/figure_categories.ipynb` (`category_bins.png`), **not** placed in `connectome_figure.svg`. Skipped when fewer than two categories have a connectome file (e.g. the smoke run).
 
 ### Motion stratification
 
@@ -401,17 +413,23 @@ otherwise be drawn onto a panel (e.g. panel 3's tSNR-coverage caveat) is written
 to a plain text file beside it, to become a caption. Keep this split when adding a panel:
 `save_legend` in `figure_connectomes.ipynb` is the helper.
 
-**The montage is two rows, and type is sized once.** `connectome_figure.svg` is
-188.3 x 122.6 mm: row 1 holds the three headline panels A-C with their legend
-strips beneath, row 2 the three domain panels D-F sharing a single legend (the
-three `domain_*_legend.png` are identical, so only `domain_movies_legend.png`
-is placed). **Row 1's three panels are one shape**, 48.33 x 43.33 mm on a 7.5
-mm gap — panel B's original 58:52 proportions, applied to all three at the
+**The montage is three rows, and type is sized once.** `connectome_figure.svg` is
+188.3 x 167.5 mm: row 1 holds A (claim 1), B (the same curves per subject,
+averaged over networks — `longitudinal_subject.png`, from
+`longitudinal_lag_subject.tsv`) and C (claim 3) with their legend strips
+beneath; rows 2-3 hold the claim-2 grid, D (claim 2, `cross_context.png`) then
+the domain checks E movies, F video games, G stories, H taskscapes, I
+localizers. The four-bin bar legend is **one strip, `bar_legend.png`, placed
+once above that grid** ("task" is each panel's own axis: dataset, or title for
+movies). **H and I are ungated** (`gate="all"`), flagged "(ungated)" in their
+titles, since the 1800 s gate leaves each one dataset and no between-task bin.
+**Every panel is one shape**, 48.33 x 43.33 mm on a 7.5
+mm gap — the original cross-context panel's 58:52 proportions, applied to all nine at the
 width that fits the row, at the user's request. Keep them equal when
-re-laying the montage: A's broken axis, B's bars and C's scatter are read
-against each other, and three different frames make that comparison harder
-than it needs to be. Panel letters, panel titles, and the strap that says row 2 is a
-robustness check on B rather than a fourth claim are all typeset in the SVG,
+re-laying the montage: A's broken axis, the bars and C's scatter are read
+against each other, and different frames make that comparison harder
+than it needs to be. Panel letters, panel titles, and the strap that says E-I are
+robustness checks on D rather than further claims are all typeset in the SVG,
 never drawn onto a panel. Because a placed panel is only ~2 in wide,
 matplotlib's 10 pt defaults overflow it — the y-axis label alone came out
 taller than the figure and was clipped — so `figure_connectomes.ipynb` sets the
@@ -421,7 +439,7 @@ ticks). Change it there, not per call.
 **Two truncated axes, both marked.** Panel A's curves live in ~0.83-0.96 while
 the between-subject floor sits near 0.57, so it is drawn as two stacked axes
 with the gap removed rather than one continuous axis wasting ~40% of the panel;
-the four bar panels (B, D, E, F) start at 0.4, since nothing falls below ~0.42
+the six bar panels (D-I) start at 0.4, since nothing falls below ~0.42
 and a 0-based axis squashes the within-/between-task contrast that is the
 result. Both breaks are drawn on the frame (`mark_truncated_axis` in
 `figure_connectomes.ipynb`) — truncate the axis, but never silently.
@@ -429,7 +447,7 @@ result. Both breaks are drawn on the frame (`mark_truncated_axis` in
 **One network palette, learned once.** `NETWORK_COLORS` in
 `figure_connectomes.ipynb` maps each network to a tab10 colour, and every panel
 that shows networks uses it: panel A's lines, panel C's points, and a
-network-coloured bubble beside each x tick of the four bar panels
+network-coloured bubble beside each x tick of the six bar panels
 (`add_network_color_bubbles`). Panel A's legend strip is therefore the montage's
 single network key — no panel repeats it. Keep new per-network panels on the
 same mapping rather than picking fresh colours. The palette itself is the
@@ -440,11 +458,11 @@ near-invisible on a white glass brain) plus two off-palette hues for
 cerebellum and subcortex, so the same network reads the same colour across
 both projects' figures.
 
-**Panel G, the glass-brain network key.** `network_maps.png` is nine sagittal
+**Panel J, the glass-brain network key.** `network_maps.png` is nine sagittal
 glass brains stacked down the left edge of the montage, spanning its full
 height, one per network, each filled with its `NETWORK_COLORS` entry and named
 beside it. It is why no panel needs a nine-network legend: panel A's legend
-strip carries only the between-subject band, panel C labels its points in
+strip carries only the between-subject curve, panel C labels its points in
 their network colour, and the bar panels carry a coloured bubble at each x
 tick. The masks come from the MNI group atlas via `analysis/atlas_maps.py`
 (see the `anat/atlases` exception above); if that content is missing the
@@ -457,10 +475,10 @@ of 2026-10-04) — so the key doubles as a ranking of which networks carry the
 most stable connectomes. `stability_ordered_networks()` in
 `figure_connectomes.ipynb` derives it from `longitudinal_lag.tsv`, falling back
 to `NETWORK_ORDER` if that table is empty and sorting any network friends does
-not cover to the end. **Panels G, B, D, E and F share this one order**
+not cover to the end. **Panels J and the bar panels D-I share this one order**
 (`NETWORK_STABILITY_ORDER`, computed once from panel A), so x positions stay
 comparable across the bar panels and the bars step down left to right; as of
-2026-10-04 it matches panel B's within-subject/within-task ranking. Panel A's
+2026-10-04 it matches panel D's within-subject/within-task ranking. Panel A's
 lines, panel C's points and the diagnostic grid keep `NETWORK_ORDER`, where
 order carries no meaning.
 
@@ -649,7 +667,7 @@ called.
 
 **Testing:** Two baseline checks, and they cover different failures. `invoke run-smoke` is the behavioural one: does the pipeline run end to end and produce something. `invoke verify` is the structural one: do the code, config, data and docs still describe the same project. Run both before committing; neither substitutes for the other. Add unit tests in a tests directory, using the project's chosen test framework, when a function contains non-trivial logic, has edge cases the smoke test won't catch, or is shared across multiple steps. Unit tests are optional for simple glue/orchestration code but encouraged for any pure transformation or computation logic in `analysis/`. This project uses `pytest`; tests live in `tests/` — `analysis/parcel_networks.py`, `timeseries_reader.py`, `connectome_estimators.py`, `qc_join.py`, `connectome_store.py`, `similarity.py`, `friends_seasons.py`, `group_stats.py`, `domain_titles.py`, `quality_strata.py`, `motion_strata.py`, `tsnr_strata.py`, `bids_inventory.py`, `asset_inventory.py` and `inventory_summary.py` each have real coverage now, all offline against synthetic fixtures.
 
-**`run-group-stats` as the worked example for a new analysis step:** `analysis/group_stats.py` reads the per-session connectomes `run-connectomes` writes (`output_data/connectomes/{dataset}_{parcellation}.h5`, via `analysis/connectome_store.py`), applies the usable-data gate (`usable_duration_sec >= group_stats.min_usable_seconds` in `invoke.yaml`, see "Settled analysis decisions" above), and produces the two headline analyses — cross-context (all datasets) and longitudinal (`friends` only) — plus the domain-restricted robustness check (see "Domain-restricted cross-context figures" above) for `analysis_measure` (Pearson), gated and ungated, into eleven tidy TSVs under `output_data/group_stats/`. `notebooks/figure_connectomes.ipynb` reads those TSVs and plots only; it does no similarity computation itself. Follow this same pattern for a new `run-{name}` step: real logic in a new `analysis/` module, the task body kept to argument handling plus the existence check that makes it idempotent, a matching `clean-{name}`, and a notebook that only plots.
+**`run-group-stats` as the worked example for a new analysis step:** `analysis/group_stats.py` reads the per-session connectomes `run-connectomes` writes (`output_data/connectomes/{dataset}_{parcellation}.h5`, via `analysis/connectome_store.py`), applies the usable-data gate (`usable_duration_sec >= group_stats.min_usable_seconds` in `invoke.yaml`, see "Settled analysis decisions" above), and produces the two headline analyses — cross-context (all datasets) and longitudinal (`friends` only) — plus the domain-restricted robustness check (see "Domain-restricted cross-context figures" above) and the task-category check (see "Task categories" above) for `analysis_measure` (Pearson), gated and ungated, into twelve tidy TSVs under `output_data/group_stats/` (plus three `category_*` TSVs). `notebooks/figure_connectomes.ipynb` reads those TSVs and plots only; it does no similarity computation itself. Follow this same pattern for a new `run-{name}` step: real logic in a new `analysis/` module, the task body kept to argument handling plus the existence check that makes it idempotent, a matching `clean-{name}`, and a notebook that only plots.
 
 **Respect the analysis hierarchy; do not flatten it.** A step belongs to exactly one tier:
 
