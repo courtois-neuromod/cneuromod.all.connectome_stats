@@ -118,25 +118,26 @@ Two table families under `output_data/tables/` inside the checkout, both
   groups.
 
 **Coverage is partial, and downstream code must tolerate it** — this is an
-upstream credentialed-content gap, not a bug here. As of **2026-08-17**: 17 of
-21 per-run tables are populated (`anat`, `emotion-videos`, `langlocalizer`,
-`mario` are empty 1-byte files); only **3** `atlas_tsnr` tables are populated
-(`things`, `retinotopy`, `floc`) — the other 17 are empty. `analysis.qc_measures.
+upstream credentialed-content gap, not a bug here. As of **2026-10-04**
+(qa_figures `53a3340`): 18 of 21 per-run tables are populated (`anat`,
+`emotion-videos`, `mario` are empty 1-byte files); **11** of 20 `atlas_tsnr`
+tables are populated (`floc`, `friends`, `gamepad`, `hcptrt`, `langlocalizer`,
+`mario`, `movie10`, `mutemusic`, `narratives`, `retinotopy`, `things`) — the
+other 9 are empty. `analysis.qc_measures.
 available_datasets` reports only the non-empty tables, and the loaders skip
 empty ones rather than raising.
 
-**The `atlas_tsnr` gap is load-bearing for the analysis, not just tidiness.**
-The three populated tables — `things`, `retinotopy`, `floc` — are exactly the
-three datasets the `usable_duration_sec >= 1800` gate removes entirely
-(CLAUDE.md, "Settled analysis decisions"). So although `run-connectomes` joins
-per-network tSNR onto every session index as `tsnr_{network}`, those columns
-are non-NaN for **0 of the 304 QC-covered sessions**. Any per-network tSNR
-analysis — including a per-network version of `run-tsnr-strata` — is
-impossible until the naturalistic datasets' `atlas_tsnr` tables are populated
-upstream. `run-tsnr-strata` therefore uses the whole-brain `tsnr` scalar only,
-and `group_stats.network_quality` reports per-network tSNR from those three
-gate-excluded datasets purely as context. Nothing in this repository can close
-this gap; it needs an upstream qa_figures export.
+**The `atlas_tsnr` gap used to be load-bearing for the analysis.** Until
+2026-10-04 only `things`, `retinotopy` and `floc` were populated — exactly the
+three datasets the `usable_duration_sec >= 1800` gate removes — so the
+`tsnr_{network}` columns `run-connectomes` joins onto every session index were
+non-NaN for none of the QC-covered sessions, and `run-tsnr-strata` was built
+on the whole-brain `tsnr` scalar only. With the naturalistic tables now
+populated, those columns are non-NaN for **379 of 496 QC-covered sessions**
+(`multfs`, `petit-prince`, `shinobi` still uncovered; `mario` has per-network
+tSNR but no motion table, so it stays outside the QC-covered population).
+`run-tsnr-strata` is still whole-brain only; a per-network version is now
+feasible but not implemented (CLAUDE.md, "Still open").
 
 `analysis/qc_join.py` joins these entities against the timeseries `.h5` run
 keys (`ses-XXX/ses-XXX_task-..._run-N_timeseries`), normalizing both sides

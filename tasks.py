@@ -700,8 +700,9 @@ def run_tsnr_strata(c, dataset=None, smoke=False):
     `stratum_def` column: `raw` tSNR, and `fd_residual` — tSNR residualized on
     `fd_mean` within the same cell, which is what separates a signal-quality
     effect from the motion effect the two axes share (r=-0.68). Whole-brain
-    tSNR only: `atlas_tsnr` is empty upstream for every gated dataset, so the
-    per-network columns are non-NaN for none of the covered sessions.
+    tSNR only, chosen when `atlas_tsnr` was empty upstream for every gated
+    dataset; it is now populated for most of them, but this step has not been
+    extended per network.
     Standalone figure, not placed in the headline montage — see CLAUDE.md.
 
     Reads output_data/connectomes/{dataset}_{parcellation}.h5 (`run-connectomes`'s

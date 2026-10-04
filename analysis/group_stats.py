@@ -70,7 +70,7 @@ def network_quality(index_frame, network_order):
     """Per network: median `tsnr_{network}`, coverage count, contributing datasets.
 
     Returns NaN median with `n_tsnr=0` rather than raising when a network has
-    no coverage — most `atlas_tsnr` tables are still empty upstream (see
+    no coverage — several `atlas_tsnr` tables are still empty upstream (see
     CLAUDE.md, "The QC measures asset").
     """
     rows = []

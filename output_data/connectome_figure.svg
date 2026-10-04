@@ -149,16 +149,16 @@
   <image
      xlink:href="figures/figure_connectomes/cross_context_legend.png"
      x="84.129167"
-     y="50.960666"
+     y="50.4"
      width="104.166666"
-     height="9.6"
+     height="8.4"
      id="image30" />
   <image
      xlink:href="figures/figure_connectomes/network_quality_legend.png"
      x="139.9625"
      y="48.085675"
      width="48.333333"
-     height="5"
+     height="4"
      id="image31" />
   <!-- ================= Row 2 — robustness check on claim B ================= -->
   <text

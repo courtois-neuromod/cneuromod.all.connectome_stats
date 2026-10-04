@@ -8,10 +8,11 @@ configuration over the same `analysis/quality_strata.py` core. Two facts shape
 it (CLAUDE.md, "tSNR stratification"):
 
 - **Whole-brain tSNR only.** The stored session index carries `tsnr_{network}`
-  for every network, but `tables/atlas_tsnr/` is populated upstream only for
-  `floc`, `retinotopy` and `things` — exactly the three datasets the 1800 s
-  gate removes — so those columns are non-NaN for 0 of the 246 QC-covered
-  sessions. A per-network stratification would be all-NaN today.
+  for every network. When this was written `tables/atlas_tsnr/` was populated
+  upstream only for the three datasets the 1800 s gate removes, so those
+  columns were all-NaN over the QC-covered population; upstream filled most of
+  the gap on 2026-10-04, and a per-network version is now feasible but not
+  implemented (CLAUDE.md, "Still open").
 - **Two stratum definitions, not one.** `tsnr` and `fd_mean` correlate at
   r=-0.68, and a raw tSNR median split agrees with the motion stratum on 72%
   of sessions, so a raw-only analysis would largely re-run the motion result.

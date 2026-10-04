@@ -74,8 +74,8 @@ def join_network_tsnr(entities, qa_root, network_order, datasets=None):
     """Add one `tsnr_<network>` column per entry in `network_order`.
 
     NaN when the entity or the group is not covered by qa_figures (see
-    CLAUDE.md — only 3 of 20 `atlas_tsnr` tables are populated, and subcortex
-    coverage is partial even where the table exists).
+    `source_data/CONTENT.md` — 11 of 20 `atlas_tsnr` tables are populated, and
+    subcortex coverage is partial even where the table exists).
     """
     entities = normalize_entities(entities)
     long = load_atlas_tsnr(qa_root, datasets=datasets)

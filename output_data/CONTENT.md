@@ -133,9 +133,9 @@ Once the pipeline is run, this folder will contain the following.
   `"raw"` (median split on `tsnr`) or `"fd_residual"` (median split on `tsnr`
   residualized on `fd_mean` within the same cell — near-independent of the
   motion stratum, where `raw` is 72% concordant with it). Whole-brain `tsnr`
-  only: the per-network `tsnr_{network}` columns are non-NaN for none of the
-  covered sessions, because `atlas_tsnr` is populated upstream only for the
-  three datasets the gate removes (see `source_data/CONTENT.md`).
+  only — chosen when per-network `atlas_tsnr` was empty upstream for every
+  gated dataset; it has since been populated for most of them (see
+  `source_data/CONTENT.md`), but this step has not been extended.
   - `tsnr_strata.tsv` — `network × stratum_def × split × bin` -> `n, median,
     q25, q75, mean, sd, n_sessions`. `bin` is one of the six `{high-high,
     low-high, low-low}/{within-task, between-task}` labels — good-good first,

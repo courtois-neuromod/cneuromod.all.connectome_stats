@@ -41,12 +41,12 @@
   },
   "outputs": {
     "connectome_figure.png": {
-      "sha256": "3582dcd936bbeded78cbc2f84170ac8e17b702ecf197c0ad89de1f6da674b510",
-      "size_bytes": 869087
+      "sha256": "c9e148ea2b0450568a0f64b3c024607d7c0cd57b4e75dd8c86eaab182e1b99f2",
+      "size_bytes": 869862
     },
     "connectome_figure.svg": {
-      "sha256": "6a1dd99958b427bdd8d00fdea7bfddce7c4778911b4f42a99a01616e9af7835f",
-      "size_bytes": 6905
+      "sha256": "168898d1e26b0f32e1f9a0acdf0608c60603c94fee7e1e19e1fa43f584e02638",
+      "size_bytes": 6900
     },
     "connectome_figure_caption.md": {
       "sha256": "2f2372006e003d12d0aa4373c071ecb8a0b8101d8280923d751b6d22ea569577",
@@ -121,8 +121,8 @@
       "size_bytes": 42021
     },
     "figures/figure_connectomes/cross_context_legend.png": {
-      "sha256": "667505f91133b30f014752e7c75c49fa44379aa765e3b7de69a4424b50c1f528",
-      "size_bytes": 24662
+      "sha256": "c0cbe8940c13a2b300ac782f930395733f2180ab66f18b7596f2fe677e2cc416",
+      "size_bytes": 24452
     },
     "figures/figure_connectomes/cross_context_pearson_histograms.png": {
       "sha256": "2f91b303f3b69f276a5745b00e1a9322bba6d43b92eb239449401e453835fadd",
@@ -173,8 +173,8 @@
       "size_bytes": 69855
     },
     "figures/figure_connectomes/network_quality_legend.png": {
-      "sha256": "102fb82aea22bdf9107a43fa016ccbb1812c8277bed11afc1f638902ab294f5e",
-      "size_bytes": 6498
+      "sha256": "aa541b9edcdea8ad99f817bcd2974f36741980ef0ab37a6f3bef61219186e966",
+      "size_bytes": 6389
     },
     "figures/figure_connectomes/network_quality_note.txt": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -201,7 +201,7 @@
       "size_bytes": 83486
     },
     "figures/panel_sizes.json": {
-      "sha256": "e782cba7e3c194c7f41bcafee8578e7f9755aafe0903684cccff0af027628a33",
+      "sha256": "11e66293e1ef88080519d90f65b45a6ad523d7314463cfc81496c8c38700622a",
       "size_bytes": 839
     },
     "group_stats/cross_context.tsv": {
@@ -253,7 +253,7 @@
       "size_bytes": 874
     },
     "inventory/inventory_dashboard.html": {
-      "sha256": "cded72fd424297e99dddc40da405192c53e87b99eb38a542197fb717a3afd52f",
+      "sha256": "fe627b307e8dd1c0dc0892b87afab9825650186005092ea547885700bab6ca67",
       "size_bytes": 17735
     },
     "inventory/inventory_gaps.tsv": {
@@ -313,10 +313,10 @@
       "size_bytes": 33953
     }
   },
-  "recorded_at": "2026-10-04T20:13:46+00:00",
+  "recorded_at": "2026-10-04T20:19:21+00:00",
   "repository": {
     "branch": "main",
-    "commit": "bb57cfbeac2b1e65c851f223e8121cdd5e43a343",
+    "commit": "934ba55fefe7230fe401cf9991f51454365264cc",
     "dirty": true,
     "remote": "git@github.com:courtois-neuromod/cneuromod.all.connectome_stats.git",
     "toplevel": "/home/pbellec/git/cneuromod.all.connectome_stats"

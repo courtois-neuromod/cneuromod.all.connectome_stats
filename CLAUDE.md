@@ -168,7 +168,7 @@ The companion robustness-tier check on the other QC axis (`analysis/tsnr_strata.
 
 Two empirical facts shaped the design, both settled before the code was written:
 
-- **Whole-brain tSNR only — per-network is impossible, not merely complex.** `run-connectomes` already joins `tsnr_{network}` onto every session index for all nine networks, but `tables/atlas_tsnr/` is populated upstream only for `floc`, `retinotopy` and `things` — exactly the three datasets the 1800 s gate removes entirely. So those columns are non-NaN for **0 of the 304 QC-covered sessions**, and a per-network stratification would be all-NaN. This is an upstream export gap this repo cannot fix; see `source_data/CONTENT.md`, "QC measures (qa_figures)". Do not reopen a per-network version without new `atlas_tsnr` data.
+- **Whole-brain tSNR only.** This was forced when the step was written: `tables/atlas_tsnr/` was then populated upstream only for `floc`, `retinotopy` and `things` — the three datasets the 1800 s gate removes — so the per-network `tsnr_{network}` columns `run-connectomes` joins onto every session index were all-NaN over the QC-covered population. **That gap closed upstream on 2026-10-04** (qa_figures `53a3340`): `atlas_tsnr` is now populated for 11 datasets — `floc`, `friends`, `gamepad`, `hcptrt`, `langlocalizer`, `mario`, `movie10`, `mutemusic`, `narratives`, `retinotopy` and `things` — and the columns are non-NaN for **379 of 496 QC-covered sessions** (`multfs`, `petit-prince`, `shinobi` remain uncovered). A per-network version is therefore now feasible; it is not implemented, and whether to add it is open (see "Still open" below).
 - **tSNR is strongly coupled to motion, so there are two stratum definitions.** `fd_mean` vs. `tsnr` is r = -0.68, and a raw tSNR median split lands in the same stratum as the motion split for **196 of 276** sessions (71%) — a raw-only analysis would largely re-run the motion check. Every table therefore carries a `stratum_def` column alongside `split`: `raw` (median split on `tsnr`) and `fd_residual` (median split on `tsnr` residualized on `fd_mean` **within the same cell**, via an OLS fit falling back to mean-centering on a zero-variance predictor). `fd_residual` is 146/276 concordant with the motion stratum — close enough to chance to read as an independent axis — and is the definition that answers "does signal quality matter *beyond* head motion". Both run in one code path, as `MOTION_SPLITS` already does for the split axis.
 
 **QC-covered population is keyed on `fd_mean`, not `tsnr`** (`quality_strata.COVERAGE_COLUMN`). The two have identical coverage in practice (304/304 QC-covered sessions, since both come from the same qa_figures table), and sharing one population definition is what makes `high_tsnr` vs. `low_motion` a like-for-like comparison — and what makes the `fd_residual` definition well-defined at all. `motion_balance.tsv` and `tsnr_balance.tsv` are deliberately symmetric about this: each reports the *other* axis alongside its own, never presenting the two as independent.
@@ -243,7 +243,9 @@ gaps this table is meant to surface all reproduce on real data: `mario3`,
 `mariostars`, `ood` show `timeseries_content_missing` (their `.h5` files are
 registered annex symlinks with 0 content fetched); `emotion-videos`,
 `langlocalizer`, `mario` show `qc_table_empty`; `atlas_tsnr_populated` is true
-only for `floc`, `retinotopy`, `things`.
+only for `floc`, `retinotopy`, `things`. (Those were the gaps when the step was
+written; upstream has since filled `langlocalizer`'s QC table and 8 more
+`atlas_tsnr` tables — exactly the drift `inventory_gaps.tsv` exists to show.)
 
 Dataset universe: every top-level `cneuromod.all` directory carrying a `bids`
 and/or timeseries-marker mountpoint (`analysis.asset_inventory.dataset_universe`),
@@ -292,7 +294,7 @@ runs.
 Do not settle these unilaterally — raise them with the user:
 
 - **Whether finer-grained usable-data criteria are worth adding** — e.g. per-run FD thresholds within a session, rather than the single session-level `usable_duration_sec >= 1800` gate. One standing rule: **exclusion thresholds must not be tuned against similarity contrasts.** Pick them a priori from QC, then report headline results with and without the worst-quality sessions.
-- **Whether to ask the qa_figures maintainers to populate `tables/atlas_tsnr/` for the naturalistic datasets.** It is currently exported for `floc`, `retinotopy` and `things` only — exactly the three datasets the 1800 s gate removes — which is the sole reason `run-tsnr-strata` cannot run per network (see "tSNR stratification" above). Nothing in this repository can close that gap; it needs an upstream export.
+- **Whether to add a per-network version of `run-tsnr-strata`.** Upstream populated `tables/atlas_tsnr/` for the naturalistic datasets on 2026-10-04, so per-network tSNR now covers 379 of 496 QC-covered sessions (see "tSNR stratification" above) — the blocker that kept the step whole-brain only is gone. `multfs`, `petit-prince` and `shinobi` are still uncovered, so a per-network version would run on a smaller population than the whole-brain one.
 - **Whether the cneuromod2026 label-ordering assumption in `build_cneuromod2026_labels` is correct.** It is asserted against known per-network counts and raises if wrong, but has not yet been checked against a real dseg (no S3 credentials were available while implementing it) — see "The parcel -> network lookup" above.
 
 ### Project-specific conventions
